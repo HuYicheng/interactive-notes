@@ -14,6 +14,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 |---|---|---|---|
 | 1 | Four Ways to Write a Rotation · 旋转的四种写法 | https://huyicheng.github.io/interactive-notes/rotation/ | `rotation/index.html` |
 | 2 | From Depth to Registration · 从深度到配准 | https://huyicheng.github.io/interactive-notes/perception/ | `perception/index.html` |
+| 3 | From Demonstration to Trial and Error · 从示范到试错 | https://huyicheng.github.io/interactive-notes/robot-learning/ | `robot-learning/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -22,9 +23,10 @@ Add `#en` to any address to open it in English, for example https://huyicheng.gi
 ## Layout · 目录结构
 
 ```
-index.html               home page, the explainers side by side · 首页，各篇并排
-rotation/index.html      Four Ways to Write a Rotation · 旋转的四种写法
-perception/index.html    From Depth to Registration · 从深度到配准
+index.html                 home page, the explainers side by side · 首页，各篇并排
+rotation/index.html        Four Ways to Write a Rotation · 旋转的四种写法
+perception/index.html      From Depth to Registration · 从深度到配准
+robot-learning/index.html  From Demonstration to Trial and Error · 从示范到试错
 ```
 
 ## Open it · 打开方式
@@ -33,8 +35,8 @@ Open the live pages above in any browser, on a phone or a computer. There is no 
 
 直接打开上面的网址即可，手机和电脑都能用。页面不需要编译，下载对应的 `index.html` 后离线打开也行。
 
-- **Language / 语言**: the 中 / EN button at the top right switches language and keeps your place on the page, and the choice carries over between the home page and both explainers. 右上角的「中 / EN」按钮一键切换，并停留在你正在读的位置；选好的语言在首页和两篇之间通用。
-- **Cross-links / 互相链接**: each explainer links to the other at the top and at the bottom. 每篇的开头和结尾都有到另一篇的链接。
+- **Language / 语言**: the 中 / EN button at the top right switches language and keeps your place on the page, and the choice carries over between the home page and every explainer. 右上角的「中 / EN」按钮一键切换，并停留在你正在读的位置；选好的语言在首页和各篇之间通用。
+- **Cross-links / 互相链接**: each explainer links to the previous and next one at the top and at the bottom. 每篇的开头和结尾都有到上一篇、下一篇的链接。
 
 ## 1. Four Ways to Write a Rotation · 旋转的四种写法
 
@@ -82,6 +84,31 @@ Every matrix gets its own small interactive before its formula: dragging a point
 Conventions: the camera frame has x right, y down, z forward (the OpenCV and RealSense optical frame). The extrinsics `[R | t]` map world coordinates into camera coordinates, and `T_ab` is the pose of frame b in frame a.
 
 约定：相机坐标系 x 向右、y 向下、z 朝前（OpenCV 和 RealSense 的光学坐标系）；外参 `[R | t]` 把世界坐标换算成相机坐标；`T_ab` 表示 b 坐标系在 a 坐标系里的位姿。
+
+## 3. From Demonstration to Trial and Error · 从示范到试错
+
+Robot-learning paradigms laid out along one spectrum of where the learning signal comes from: demonstrations, video, preferences, rewards, and no labels at all. For each stop: what problem it solves, its key ideas, what it is good at and where it breaks, with the representative papers linked inline.
+
+机器人学习的几大范式，按"学习信号从哪来"排成一条光谱：示范、视频、偏好、奖励、无标签。每一站讲清它解决什么问题、核心概念、好在哪、坑在哪，代表性论文直接链到原文。
+
+0. Overview: the spectrum, and what one piece of data looks like at each stop
+1. Basics: state, action, policy, transition, reward, return, discount, value
+2. Imitation learning: behaviour cloning, distribution shift, DAgger, noisy demonstrations, multimodality, action chunking
+3. Variants of demonstration: learning from video with inverse dynamics, inverse RL and GAIL, preference learning and RLHF
+4. Reinforcement learning: values, the Bellman equation, value iteration versus Q-learning, exploration, policy gradients and baselines, PPO and SAC
+5. Rewards: reward hacking, potential-based shaping, sparse rewards, HER, curiosity
+6. Sim to real: domain randomization, teacher-student training with privileged information
+7. Self-supervision and world models: forward and inverse models, planning, Dreamer, play data
+8. Combining them: imitation then RL, offline RL, vision-language-action models, and real systems placed on the spectrum
+9. Summary: comparison table, rules of thumb, check questions, further reading
+
+Interactive demos: the spectrum with a pancake-flipping data strip; a grid world where you are the policy (discount and a slippery floor); behaviour cloning on a race track with DAgger and noisy demonstrations; a drone passing a tree (averaging versus sampling versus action chunks); value iteration versus Q-learning with ε-greedy and optimistic initial values; REINFORCE on a dartboard with and without a baseline; a robot dog that learns to pace instead of entering the door, fixed by potential shaping; curling with domain randomization; and seven real systems placed on the spectrum.
+
+交互：光谱和翻煎饼的数据条；你来当策略的格子世界（折扣、地板打滑）；赛道上的行为克隆、DAgger 和加噪声示范；无人机绕树（取平均、逐步采样、动作块）；价值迭代和 Q 学习（ε-贪心、乐观初值）；飞镖靶上的 REINFORCE（有无基线）；只想刷分、在门口踱步的机器狗和势能塑形；冰壶和域随机化；七个真实系统在光谱上的位置。
+
+Conventions: s state, a action, π policy, r reward, G return, γ discount factor; V and Q are values.
+
+约定：s 状态，a 动作，π 策略，r 奖励，G 回报，γ 折扣因子，V 和 Q 是价值。
 
 ## Adding a page · 新加一篇
 
