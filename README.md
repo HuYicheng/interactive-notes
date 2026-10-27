@@ -15,6 +15,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 | 1 | Four Ways to Write a Rotation · 旋转的四种写法 | https://huyicheng.github.io/interactive-notes/rotation/ | `rotation/index.html` |
 | 2 | From Depth to Registration · 从深度到配准 | https://huyicheng.github.io/interactive-notes/perception/ | `perception/index.html` |
 | 3 | From Demonstration to Trial and Error · 从示范到试错 | https://huyicheng.github.io/interactive-notes/robot-learning/ | `robot-learning/index.html` |
+| 4 | From Fully Connected to Attention · 从全连接到注意力 | https://huyicheng.github.io/interactive-notes/backbones/ | `backbones/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -27,6 +28,7 @@ index.html                 home page, the explainers side by side · 首页，�
 rotation/index.html        Four Ways to Write a Rotation · 旋转的四种写法
 perception/index.html      From Depth to Registration · 从深度到配准
 robot-learning/index.html  From Demonstration to Trial and Error · 从示范到试错
+backbones/index.html       From Fully Connected to Attention · 从全连接到注意力
 ```
 
 ## Open it · 打开方式
@@ -102,13 +104,37 @@ Robot-learning paradigms laid out along one spectrum of where the learning signa
 8. Combining them: imitation then RL, offline RL, vision-language-action models, and real systems placed on the spectrum
 9. Summary: comparison table, rules of thumb, check questions, further reading
 
-Interactive demos: the spectrum with a pancake-flipping data strip; a grid world where you are the policy (discount and a slippery floor); behaviour cloning on a race track with DAgger and noisy demonstrations; a drone passing a tree (averaging versus sampling versus action chunks); value iteration versus Q-learning with ε-greedy and optimistic initial values; REINFORCE on a dartboard with and without a baseline; a robot dog that learns to pace instead of entering the door, fixed by potential shaping; curling with domain randomization; and seven real systems placed on the spectrum.
+Interactive demos: the spectrum with a pancake-flipping data strip; a one-knob experiment comparing three ways of scoring; a grid world where you are the policy (discount and a slippery floor); behaviour cloning on a race track with DAgger and noisy demonstrations; a drone passing a tree (averaging versus sampling versus action chunks); value iteration versus Q-learning with ε-greedy and optimistic initial values; REINFORCE on a dartboard with and without a baseline; a robot dog that learns to pace instead of entering the door, fixed by potential shaping; curling with domain randomization; and seven real systems placed on the spectrum.
 
-交互：光谱和翻煎饼的数据条；你来当策略的格子世界（折扣、地板打滑）；赛道上的行为克隆、DAgger 和加噪声示范；无人机绕树（取平均、逐步采样、动作块）；价值迭代和 Q 学习（ε-贪心、乐观初值）；飞镖靶上的 REINFORCE（有无基线）；只想刷分、在门口踱步的机器狗和势能塑形；冰壶和域随机化；七个真实系统在光谱上的位置。
+交互：光谱和翻煎饼的数据条；只有一个旋钮、比较三种打分的小实验；你来当策略的格子世界（折扣、地板打滑）；赛道上的行为克隆、DAgger 和加噪声示范；无人机绕树（取平均、逐步采样、动作块）；价值迭代和 Q 学习（ε-贪心、乐观初值）；飞镖靶上的 REINFORCE（有无基线）；只想刷分、在门口踱步的机器狗和势能塑形；冰壶和域随机化；七个真实系统在光谱上的位置。
 
 Conventions: s state, a action, π policy, r reward, G return, γ discount factor; V and Q are values.
 
 约定：s 状态，a 动作，π 策略，r 奖励，G 回报，γ 折扣因子，V 和 Q 是价值。
+
+## 4. From Fully Connected to Attention · 从全连接到注意力
+
+Neural-network backbones from scratch: what fully connected layers, convolutional networks, recurrent networks, U-Nets and Transformers look like, why they look that way, and what each is good and bad at. Every backbone mixes numbers and then bends them; they differ only in which positions get mixed and whether the weights are shared, and that choice is an assumption about the data. Also covers backpropagation, and why a diffusion model is not a backbone but a training objective plus a way of generating.
+
+神经网络的主干结构从零讲起：全连接、卷积、循环、U-Net、Transformer 长什么样，为什么长这样，各有什么优劣。每种结构都是"混合，再弯一下"，区别只在混合哪些位置、权重共不共享，而这个选择就是对数据的假设。还讲了反向传播，以及扩散模型为什么不是一种主干，而是一种训练目标加一种生成方式。
+
+0. Overview: four ways to connect a layer, and the inductive bias each one encodes
+1. One layer: weighted sums and ReLU, universal approximation, backpropagation and the chain rule, why fully connected layers are not enough
+2. Convolution: kernels, channels and parameter counts, receptive fields and stride, residual connections and vanishing gradients
+3. Recurrence: hidden state, backpropagation through time, LSTM gates
+4. U-Net: encoder, decoder and skip connections
+5. Attention and Transformers: queries, keys and values, positional encoding, the Transformer block, ViT and GPT
+6. Diffusion is not a backbone: the forward process, the noise-prediction loss, why one step collapses to the mean, backbone versus objective versus sampling
+7. Putting it together: ResNet, ViT, GPT, Stable Diffusion, ACT, Diffusion Policy, π0 and Dreamer, block by block
+8. Summary: comparison table, check questions, further reading
+
+Interactive demos: the connectivity of each backbone and what one output can see; fitting curves with ReLU neurons (including one you draw); backpropagation through a three-layer network, step by step, with a check against a small nudge; a sliding convolution kernel with translation equivariance; receptive fields with and without stride; gradients through a deep plain versus residual network; memory fading in an RNN versus a gated memory; a simplified U-Net with skip connections off, copied or filtered; attention heads on a table of objects, with positional encoding and shuffling; diffusion on 2D data, noising and step-by-step generation; and eight real systems taken apart.
+
+交互：四种连法和一个输出能看到哪些输入；用 ReLU 神经元拟合曲线（可以自己画）；三层小网络上一步步做反向传播，并真的拧一下来验证；滑动的卷积核和平移等变；有无步长时的感受野；普通深网络和残差网络里的梯度；循环网络的记忆衰减和加了门的记忆；可以关掉、原样抄或过滤跳连的简化 U-Net；桌上物体的注意力头，加上位置编码和打乱顺序；二维数据上的加噪和一步步去噪生成；拆开来看的八个真实系统。
+
+Conventions: x input, h hidden output, y output, W and b weights and biases, ℓ loss.
+
+约定：x 输入，h 中间层的输出，y 输出，W 和 b 是权重和偏置，ℓ 是损失。
 
 ## Adding a page · 新加一篇
 
