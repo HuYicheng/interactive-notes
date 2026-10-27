@@ -1,28 +1,28 @@
-# Rotations, Cameras and Registration · 旋转、相机与配准
+# Interactive Notes · 交互笔记
 
-Interactive, bilingual (中文 / English) explainers for robotics. Each page is a single self-contained HTML file: every formula comes with a symbol guide, a plain-words explanation and a small worked example you can check by hand, and the interactive demos run in the browser.
+Interactive, bilingual (中文 / English) explainers on computer vision, robotics and learning. Each page is a single self-contained HTML file: every formula comes with a symbol guide, a plain-words explanation and a small worked example you can check by hand, and the interactive demos run in the browser.
 
-一组中英双语的机器人学交互讲解页。每篇都是一个独立的 HTML 文件：每个公式都配了符号说明、白话解释和能手算的小例子，交互演示直接在浏览器里运行。
+计算机视觉、机器人和机器学习方面的交互讲解，中英双语。每篇都是一个独立的 HTML 文件：每个公式都配了符号说明、白话解释和能手算的小例子，交互演示直接在浏览器里运行。
 
-**Site · 网站: https://huyicheng.github.io/rotation-representations/**
+**Site · 网站: https://huyicheng.github.io/interactive-notes/**
 
-The home page lists the two explainers side by side, and each one lives in its own folder.
+The home page lists the explainers side by side, and each one lives in its own folder.
 
-首页把两篇并排列出来，每篇各占一个文件夹。
+首页把各篇并排列出来，每篇各占一个文件夹。
 
 | | Page · 页面 | Live page · 在线网页 | File · 文件 |
 |---|---|---|---|
-| 1 | Four Ways to Write a Rotation · 旋转的四种写法 | https://huyicheng.github.io/rotation-representations/rotation/ | `rotation/index.html` |
-| 2 | From Depth to Registration · 从深度到配准 | https://huyicheng.github.io/rotation-representations/perception/ | `perception/index.html` |
+| 1 | Four Ways to Write a Rotation · 旋转的四种写法 | https://huyicheng.github.io/interactive-notes/rotation/ | `rotation/index.html` |
+| 2 | From Depth to Registration · 从深度到配准 | https://huyicheng.github.io/interactive-notes/perception/ | `perception/index.html` |
 
-Add `#en` to any address to open it in English, for example https://huyicheng.github.io/rotation-representations/perception/#en.
+Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
 在网址后面加 `#en` 直接打开英文版。
 
 ## Layout · 目录结构
 
 ```
-index.html               home page, the two explainers side by side · 首页，两篇并排
+index.html               home page, the explainers side by side · 首页，各篇并排
 rotation/index.html      Four Ways to Write a Rotation · 旋转的四种写法
 perception/index.html    From Depth to Registration · 从深度到配准
 ```
@@ -82,6 +82,12 @@ Every matrix gets its own small interactive before its formula: dragging a point
 Conventions: the camera frame has x right, y down, z forward (the OpenCV and RealSense optical frame). The extrinsics `[R | t]` map world coordinates into camera coordinates, and `T_ab` is the pose of frame b in frame a.
 
 约定：相机坐标系 x 向右、y 向下、z 朝前（OpenCV 和 RealSense 的光学坐标系）；外参 `[R | t]` 把世界坐标换算成相机坐标；`T_ab` 表示 b 坐标系在 a 坐标系里的位姿。
+
+## Adding a page · 新加一篇
+
+Put each new explainer in its own folder as `name/index.html`, link to other pages with relative paths such as `../rotation/`, and add a card for it on the home page.
+
+每篇新的讲解放进自己的文件夹，写成 `name/index.html`；链接别的篇目用相对路径，比如 `../rotation/`；再在首页加一张卡片。
 
 ## Publishing · 发布
 

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>旋转、相机与配准</title>
-<meta name="description" content="Two interactive, bilingual robotics explainers: rotation representations, and depth cameras, camera matrices and ICP registration. 两篇中英双语的机器人学交互讲解：旋转的表示；深度相机、相机矩阵与 ICP 配准。">
+<title>交互笔记</title>
+<meta name="description" content="Interactive, bilingual explainers on computer vision, robotics and learning. 计算机视觉、机器人与机器学习的交互讲解，中英双语。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;600;700&family=Noto+Serif+SC:wght@600;700&display=swap">
@@ -54,7 +54,7 @@ h1{font-family:var(--f-display);font-size:clamp(30px,7.5vw,44px);line-height:1.2
 </style>
 <script>
 (function(){var root=document.documentElement,lang='zh';try{var h=(location.hash||'').slice(1);if(h==='en'||h==='zh')lang=h;else{var s=localStorage.getItem('rot-lang');if(s==='en'||s==='zh')lang=s}}catch(e){}
-var T={zh:'旋转、相机与配准',en:'Rotations, Cameras and Registration'};
+var T={zh:'交互笔记',en:'Interactive Notes'};
 function apply(){root.setAttribute('data-lang',lang);root.lang=lang==='en'?'en':'zh-CN';document.title=T[lang];var b=document.getElementById('langBtn');if(b)b.setAttribute('aria-pressed',lang==='en'?'true':'false');document.querySelectorAll('a[data-page]').forEach(function(a){a.setAttribute('href',a.getAttribute('data-page')+(lang==='en'?'#en':''))})}
 root.setAttribute('data-lang',lang);
 document.addEventListener('DOMContentLoaded',function(){apply();document.getElementById('langBtn').addEventListener('click',function(){lang=lang==='en'?'zh':'en';try{localStorage.setItem('rot-lang',lang)}catch(e){}if(location.hash==='#en'||location.hash==='#zh'){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}}apply()})});
@@ -63,14 +63,14 @@ document.addEventListener('DOMContentLoaded',function(){apply();document.getElem
 </head>
 <body>
 <header class="wrap top">
-<span class="brand"><span class="zh">机器人学 · 交互讲解</span><span class="en">Robotics · interactive notes</span></span>
+<span class="brand">HuYicheng</span>
 <button class="lang" id="langBtn" type="button" aria-label="Switch language / 切换语言" aria-pressed="false"><span class="lz">中</span><span class="le">EN</span></button>
 </header>
 <main class="wrap">
 <section class="hero">
-<p class="eyebrow"><span class="zh">两篇交互讲解 · 中英双语</span><span class="en">Two interactive explainers · Chinese and English</span></p>
-<h1><span class="zh">旋转、相机与配准</span><span class="en">Rotations, Cameras and Registration</span></h1>
-<p class="lead"><span class="zh">从机器人怎么描述一个旋转，讲到深度相机拍到的头皮怎么和术前 MRI 对齐。每个公式都配了符号说明、白话解释和能手算的小例子，交互里的滑块都可以随手拖。</span><span class="en">From how a robot describes a rotation to how a depth camera’s view of the scalp gets aligned with a pre-operative MRI. Every formula comes with a symbol guide, a plain-words explanation and a small example you can check by hand, and every interactive is there to be dragged.</span></p>
+<p class="eyebrow"><span class="zh">计算机视觉 · 机器人 · 机器学习 · 中英双语</span><span class="en">Computer vision · Robotics · Learning · Chinese and English</span></p>
+<h1><span class="zh">交互笔记</span><span class="en">Interactive Notes</span></h1>
+<p class="lead"><span class="zh">计算机视觉、机器人和机器学习里值得真正弄懂的题目。每篇都从直觉讲起：公式旁边配着符号说明、白话解释和能手算的小例子，交互里的滑块都可以随手拖。</span><span class="en">Topics in computer vision, robotics and machine learning that are worth really understanding. Each one starts from intuition: formulas come with a symbol guide, a plain-words explanation and a small example you can check by hand, and every interactive is there to be dragged.</span></p>
 </section>
 <nav class="menu" aria-label="文章 / Articles">
 <a class="card" href="rotation/" data-page="rotation/">
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded',function(){apply();document.getElem
 <span class="go"><span class="zh">打开</span><span class="en">Open</span> →</span>
 </a>
 </nav>
-<p class="foot"><span class="zh">两篇可以按任意顺序读，第二篇用到的旋转矩阵、叉乘矩阵和 exp，第一篇里都有。右上角选的语言会带进两篇文章。源码在 <a href="https://github.com/HuYicheng/rotation-representations">GitHub</a>。</span><span class="en">Read them in either order; the rotation matrices, cross-product matrices and exp used in the second are all covered in the first. The language you pick at the top right carries over into both. Source on <a href="https://github.com/HuYicheng/rotation-representations">GitHub</a>.</span></p>
+<p class="foot"><span class="zh">每篇都可以单独读，用到别篇内容的地方，文中会说明。右上角选的语言会带进每一篇。源码在 <a href="https://github.com/HuYicheng/interactive-notes">GitHub</a>。</span><span class="en">Each piece stands on its own and says so where it builds on another. The language you pick at the top right carries over into every piece. Source on <a href="https://github.com/HuYicheng/interactive-notes">GitHub</a>.</span></p>
 </main>
 </body>
 </html>
