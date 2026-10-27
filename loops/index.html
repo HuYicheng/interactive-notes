@@ -295,6 +295,51 @@ i.v{font-family:var(--f-math);font-style:italic;font-weight:400;padding:0 .04em}
 .chain.c3>div:nth-child(3n){text-align:right;align-items:flex-end}
 .chain .off,.chain .off b{color:var(--faint)}
 .nw{white-space:nowrap}
+.flow{display:grid;grid-template-columns:22px minmax(0,1fr) 22px;margin:16px 0 6px}
+.flow .rl{position:relative}
+.flow .rl.lft{--rc:var(--faint)}
+.flow .rl.rgt{--rc:var(--teal)}
+.flow .rl.v::before,.flow .rl.vt::before,.flow .rl.vb::before{content:"";position:absolute;left:10px;top:0;bottom:0;border-left:2px solid var(--rc)}
+.flow .rl.vt::before{top:50%}
+.flow .rl.vb::before{bottom:50%}
+.flow .rl.st::after{content:"";position:absolute;top:50%;margin-top:-1px;border-top:2px solid var(--rc)}
+.flow .rl.lft.st::after{left:10px;right:0}
+.flow .rl.rgt.st::after{left:0;right:10px}
+.flow .rl i{position:absolute;top:50%;margin-top:-5px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent}
+.flow .rl.lft i{right:-1px;border-left:7px solid var(--rc)}
+.flow .rl.rgt i{left:-1px;border-right:7px solid var(--rc)}
+.fbx{min-width:0;border:1px solid var(--line);border-left:4px solid var(--gc);border-radius:10px;background:var(--surface);padding:8px 12px 9px}
+.fbx.g0,.scb.g0{--gc:var(--teal)}.fbx.g1,.scb.g1{--gc:var(--k)}.fbx.g2,.scb.g2{--gc:var(--amber)}.fbx.g3,.scb.g3{--gc:var(--x)}
+.fbx .fq{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 8px}
+.fbx .fq b{font-size:15.5px;font-weight:600}
+.fbx .fq>span{font-size:13.5px;color:var(--muted)}
+.fbx p{margin:2px 0 0;font-size:14px;line-height:1.6}
+.fbx p.fu{font-size:12.5px;line-height:1.55;color:var(--muted);margin-top:3px}
+.fbx.fw{border:1px dashed var(--faint);background:var(--bg);text-align:center;font-size:13.5px;color:var(--muted);padding:7px 10px}
+.far{min-width:0;margin:0;font-size:12.5px;line-height:1.5;color:var(--muted);padding:5px 4px 5px 12px}
+.far b{color:var(--fg);font-weight:600}
+.far .fin{display:inline-block;margin-left:6px;padding:0 7px;border:1px solid var(--k);border-radius:8px;color:var(--k);font-size:12px;white-space:nowrap}
+.scp .btn{display:inline-flex;flex-direction:column;align-items:flex-start;gap:1px;padding:6px 10px;line-height:1.25;text-align:left}
+.scp .btn b{font-weight:600;font-size:13.5px}
+.scp .btn small{font-size:11.5px;color:var(--muted)}
+.scp .btn.on small{color:var(--accent-fg)}
+.scm{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.scm .btn{min-width:40px;padding:8px 11px}
+.sctl{margin:10px 0 2px;font-size:14.5px;line-height:1.45}
+.sctl b{font-weight:600}
+.scf{display:flex;flex-direction:column;margin:6px 0 0}
+.scb{display:block;width:100%;text-align:left;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--gc);border-radius:9px;padding:6px 10px 7px;cursor:pointer;transition:opacity .3s,box-shadow .3s,background-color .2s}
+.scb.off{opacity:.52}
+.scb.hot{box-shadow:0 0 0 2px var(--gc)}
+.scb[aria-pressed="true"]{background:var(--accent-soft);opacity:1}
+.sch{display:flex;align-items:center;flex-wrap:wrap;gap:3px 6px;font-size:13.5px;line-height:1.35}
+.sch b{font-weight:600}
+.sco{font-weight:600;font-size:12.5px;color:var(--gc);letter-spacing:1px}
+.scn{font-size:11px;line-height:1.5;color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:0 6px}
+.scr{margin-left:auto;font:11.5px/1.35 var(--f-mono);color:var(--muted);white-space:nowrap}
+.sct{display:block;font-size:13px;line-height:1.55;margin-top:2px}
+.scb.off .sct{color:var(--muted)}
+.sca{font-size:12px;line-height:1.35;color:var(--muted);padding:4px 0 4px 12px}
 </style>
 </head>
 <body>
@@ -364,9 +409,479 @@ i.v{font-family:var(--f-math);font-style:italic;font-weight:400;padding:0 .04em}
 <main class="wrap">
 <section id="s-map">
 <p class="eyebrow"><span class="zh" lang="zh-CN">第 0 步 · 总览</span><span class="en" lang="en">Step 0 · Overview</span></p>
-<h2><span class="zh" lang="zh-CN">被推了一下的 0.3 秒</span><span class="en" lang="en">The 0.3 seconds after a push</span></h2>
-<p><span class="zh" lang="zh-CN">一台四足机器人站在原地，你从侧面推它一把。它晃了一下，脚挪了半步，站稳了，前后不到半秒。这半秒里，机器人里面发生了什么？</span><span class="en" lang="en">A legged robot is standing still and you shove it from the side. It sways, shifts a foot half a step, and steadies itself, all in under half a second. What happens inside the robot during that half second?</span></p>
-<p><span class="zh" lang="zh-CN">不是一个程序在反应，而是好几层程序同时在跑，各有各的节拍。最里面的电流环每秒跑几万次，你的手刚碰到它，它已经调整了几十次；把身体要的动作分配成每个关节力矩的全身控制，每秒 500 次；规划落脚点的模型预测控制（MPC：往前预测一小段，算出最好的一串动作，只执行第一步）每秒几十次；相机每秒 30 帧；决定往哪走的导航规划一秒才一次；至于"今天要去哪"的任务层，压根不知道你推过它。MPC 和全身控制的频率取自 MIT 的四足机器人 Mini Cheetah（<a href="https://arxiv.org/abs/1909.06586" rel="noopener" target="_blank">Kim 等 2019</a>），别的四足机器人量级相近。关节 PD 在下面画成每秒 1 万次，好和电流环分开看；Mini Cheetah 上它和电流环一样，每秒 4 万次。</span><span class="en" lang="en">It is not one program reacting but several layers running at the same time, each to its own beat. The current loop at the very bottom runs tens of thousands of times a second, and has adjusted dozens of times before your hand has even settled; whole-body control, which shares out the motion the body needs as torques for each joint, runs 500 times a second; model predictive control (MPC: it predicts a short way ahead, works out the best sequence of actions and carries out only the first), which plans the footholds, runs dozens of times a second; the camera delivers 30 frames a second; navigation, which decides where to go, runs once a second; and the task layer, which knows where the robot is supposed to be today, never finds out you pushed it. The MPC and whole-body control rates are those of MIT’s Mini Cheetah quadruped (<a href="https://arxiv.org/abs/1909.06586" rel="noopener" target="_blank">Kim et al. 2019</a>); other legged robots are in the same range. Joint PD is drawn below at 10,000 times a second to keep it apart from the current loop; on Mini Cheetah it runs, like the current loop, 40,000 times a second.</span></p>
+<h2><span class="zh" lang="zh-CN">从"去扫厨房"到轮子转起来</span><span class="en" lang="en">From “clean the kitchen” to turning wheels</span></h2>
+<p><span class="zh" lang="zh-CN">你在手机上点一下"扫厨房"。十几秒后，扫地机器人离开充电座，绕过扶手椅，又绕过路上的一只袜子，开进厨房，一条一条地来回扫。从一句话到轮子转起来，机器人里的程序分成六道工序，像一条流水线：每道工序吃进上一道交来的东西，加工一下，再交给下一道。</span><span class="en" lang="en">You tap “clean the kitchen” on your phone. A dozen seconds later the robot vacuum leaves its dock, goes round the armchair, then round a sock lying in its way, drives into the kitchen and sweeps it in back-and-forth passes. Between that one sentence and the wheels turning, the robot’s software works in six stages, like an assembly line: each stage takes in what the one before handed over, works on it, and passes the result to the next.</span></p>
+<div class="flow">
+<div class="rl lft vt st"><i></i></div>
+<div class="fbx g0"><div class="fq"><b><span class="zh" lang="zh-CN">传感</span><span class="en" lang="en">Sensing</span></b><span><span class="zh" lang="zh-CN">测到了什么？</span><span class="en" lang="en">What has been measured?</span></span></div><p><span class="zh" lang="zh-CN">把光、距离、转动、受力、电流这些物理量变成数字，每个数字都记下测量的时刻。</span><span class="en" lang="en">Turns physical quantities such as light, distance, rotation, force and current into numbers, each stamped with the moment it was measured.</span></p><p class="fu"><span class="zh" lang="zh-CN">常用：相机、激光雷达、IMU（测转动和加速度）、关节编码器、力传感器、电流传感器</span><span class="en" lang="en">Typical: cameras, lidar, IMU (measures rotation and acceleration), joint encoders, force sensors, current sensors</span></p></div>
+<div class="rl"></div>
+<div class="rl lft v"></div>
+<p class="far"><span class="zh" lang="zh-CN">↓ <b>原始数据</b>：一帧帧图像、一圈圈激光测距、关节角度、加速度、电流</span><span class="en" lang="en">↓ <b>Raw data</b>: camera frames, lidar sweeps of distances, joint angles, accelerations, currents</span></p>
+<div class="rl"></div>
+<div class="rl lft v"></div>
+<div class="fbx g0"><div class="fq"><b><span class="zh" lang="zh-CN">感知与估计</span><span class="en" lang="en">Perception and estimation</span></b><span><span class="zh" lang="zh-CN">这些数字说明了什么？</span><span class="en" lang="en">What do these numbers mean?</span></span></div><p><span class="zh" lang="zh-CN">把一堆数字变成对世界的描述：我在哪、朝哪、在怎么动，周围有什么、它们在怎么动。</span><span class="en" lang="en">Turns a heap of numbers into a description of the world: where am I, which way am I facing, how am I moving, what is around me, and how is it moving.</span></p><p class="fu"><span class="zh" lang="zh-CN">常用：卡尔曼滤波（按可信程度把预测和测量合起来）、SLAM（边建图边定位）、目标检测（上一篇的卷积网络和 Transformer 主要用在这里）</span><span class="en" lang="en">Typical: Kalman filters (which blend predictions and measurements by how far each can be trusted), SLAM (mapping while localising), object detection (where the convolutional networks and Transformers of the previous piece mostly live)</span></p></div>
+<div class="rl rgt vt st"></div>
+<div class="rl lft v"></div>
+<p class="far"><span class="zh" lang="zh-CN">↓ <b>世界状态</b>：我的位置和速度、地图、物体列表（是什么、在哪、多快）<span class="fin">＋ 人给的任务</span></span><span class="en" lang="en">↓ <b>World state</b>: my position and velocity, the map, a list of objects (what, where, how fast)<span class="fin">+ the task from a person</span></span></p>
+<div class="rl rgt v"></div>
+<div class="rl lft v"></div>
+<div class="fbx g1"><div class="fq"><b><span class="zh" lang="zh-CN">决策</span><span class="en" lang="en">Decision</span></b><span><span class="zh" lang="zh-CN">现在该做什么？</span><span class="en" lang="en">What should I do now?</span></span></div><p><span class="zh" lang="zh-CN">结合任务和现状，选出眼下的目标或模式。大部分时候不变，到了关键时刻才切换。</span><span class="en" lang="en">Combines the task and the current situation to choose the goal or mode for now. Most of the time it stays the same, switching only at key moments.</span></p><p class="fu"><span class="zh" lang="zh-CN">常用：有限状态机（几种模式加上切换条件）、行为树（把任务拆成一棵按顺序和条件执行的树）、任务规划</span><span class="en" lang="en">Typical: finite state machines (a few modes plus the conditions for switching between them), behaviour trees (a task broken into a tree that runs in order and on conditions), task planning</span></p></div>
+<div class="rl rgt v"></div>
+<div class="rl lft v"></div>
+<p class="far"><span class="zh" lang="zh-CN">↓ <b>目标</b>：去哪个点、抓哪个东西、用哪种模式</span><span class="en" lang="en">↓ <b>Goal</b>: which point to go to, which object to pick up, which mode to use</span></p>
+<div class="rl rgt v"></div>
+<div class="rl lft v"></div>
+<div class="fbx g1"><div class="fq"><b><span class="zh" lang="zh-CN">规划</span><span class="en" lang="en">Planning</span></b><span><span class="zh" lang="zh-CN">怎么做到？</span><span class="en" lang="en">How do I get it done?</span></span></div><p><span class="zh" lang="zh-CN">算出一条路线，或者一段带时间的轨迹：第几秒该在哪、什么姿态，同时绕开障碍。</span><span class="en" lang="en">Works out a route, or a timed trajectory (where to be, and in what pose, at each moment) that also avoids obstacles.</span></p><p class="fu"><span class="zh" lang="zh-CN">常用：A* 这类路径搜索、轨迹优化、MPC（往前预测一小段，算出最好的一串动作，只执行第一步）</span><span class="en" lang="en">Typical: path search such as A*, trajectory optimisation, MPC (it predicts a short way ahead, works out the best sequence of actions and carries out only the first)</span></p></div>
+<div class="rl rgt v st"><i></i></div>
+<div class="rl lft v"></div>
+<p class="far"><span class="zh" lang="zh-CN">↓ <b>计划</b>：一串路点，或者每个时刻的目标位置、速度、姿态</span><span class="en" lang="en">↓ <b>Plan</b>: a string of waypoints, or target positions, velocities and poses for every moment</span></p>
+<div class="rl rgt v"></div>
+<div class="rl lft v"></div>
+<div class="fbx g2"><div class="fq"><b><span class="zh" lang="zh-CN">控制</span><span class="en" lang="en">Control</span></b><span><span class="zh" lang="zh-CN">此刻用多大的劲？</span><span class="en" lang="en">How hard should I push right now?</span></span></div><p><span class="zh" lang="zh-CN">每秒几十到几千次，比较"计划要的"和"实际测到的"，算出给执行器的命令。</span><span class="en" lang="en">Tens to thousands of times a second, compares what the plan wants with what is actually measured and works out the commands for the actuators.</span></p><p class="fu"><span class="zh" lang="zh-CN">常用：PID（第 1 步）、全身控制（把身体要的动作分配成每个关节的力矩）、学到的策略</span><span class="en" lang="en">Typical: PID (step 1), whole-body control (shares out the motion the body needs as torques for each joint), learned policies</span></p></div>
+<div class="rl rgt vb st"><i></i></div>
+<div class="rl lft v"></div>
+<p class="far"><span class="zh" lang="zh-CN">↓ <b>命令</b>：轮速、关节力矩、推力、转向角</span><span class="en" lang="en">↓ <b>Commands</b>: wheel speeds, joint torques, thrusts, steering angles</span></p>
+<div class="rl"></div>
+<div class="rl lft v"></div>
+<div class="fbx g3"><div class="fq"><b><span class="zh" lang="zh-CN">执行</span><span class="en" lang="en">Actuation</span></b><span><span class="zh" lang="zh-CN">怎么把命令变成力？</span><span class="en" lang="en">How do commands become force?</span></span></div><p><span class="zh" lang="zh-CN">驱动器调节电机里的电流，电流产生力矩，力矩让身体动起来。</span><span class="en" lang="en">The drives regulate the current in the motors; current makes torque, and torque moves the body.</span></p><p class="fu"><span class="zh" lang="zh-CN">常用：驱动器、电机、减速器（第 4 步）</span><span class="en" lang="en">Typical: drives, motors, gearboxes (step 4)</span></p></div>
+<div class="rl"></div>
+<div class="rl lft v"></div>
+<p class="far"><span class="zh" lang="zh-CN">↓ <b>力和运动</b></span><span class="en" lang="en">↓ <b>Force and motion</b></span></p>
+<div class="rl"></div>
+<div class="rl lft vb st"></div>
+<div class="fbx fw"><span class="zh" lang="zh-CN">物理世界：机器人自己的身体，和它周围的一切</span><span class="en" lang="en">The physical world: the robot’s own body, and everything around it</span></div>
+<div class="rl"></div>
+</div>
+<p class="cap"><span class="zh" lang="zh-CN">左边的灰线：执行改变了世界，传感器再测到这个变化，环就闭上了。右边的青线：感知的结果也直接交给规划和控制，它们不用等决策层。</span><span class="en" lang="en">The grey line on the left: actuation changes the world, the sensors measure the change, and the loop is closed. The teal line on the right: perception’s results also go straight to planning and control, which do not wait for the decision layer.</span></p>
+<p><span class="zh" lang="zh-CN">读这张图，记住三件事：</span><span class="en" lang="en">To read this chart, keep three things in mind:</span></p>
+<ul>
+<li><span class="zh" lang="zh-CN"><b>方框是工序，箭头是交接的东西。</b>每一层只认上一层交来的东西，不管它是怎么算出来的。换一个更好的激光雷达，只要感知层交出的"世界状态"格式不变，下面几层一行代码都不用改。</span><span class="en" lang="en"><b>Boxes are stages; arrows are what gets handed over.</b> Each layer only relies on what the layer above hands it, not on how it was worked out. Swap in a better lidar, and as long as perception hands on its “world state” in the same format, not a line of code below needs to change.</span></li>
+<li><span class="zh" lang="zh-CN"><b>左边那条线让它成了环。</b>执行改变了世界，传感器再测到变化，下一轮算出来的就不一样了。这就是第 1 步要讲的"闭环"。</span><span class="en" lang="en"><b>The line on the left makes it a loop.</b> Actuation changes the world, the sensors measure the change, and the next round comes out differently. This is the “closed loop” of step 1.</span></li>
+<li><span class="zh" lang="zh-CN"><b>不是每件事都要走完整条链。</b>控制层每秒要比较几十到几千次"计划要的"和"实际测到的"，它直接拿感知的最新结果，不等决策层点头。所以一台机器人里不止一个环：任务的大环里套着规划的环，规划的环里套着控制的环，最里面还有驱动器里的电流环。这就是这一篇的题目"环环相扣"。</span><span class="en" lang="en"><b>Not everything has to go down the whole chain.</b> Control compares “what the plan wants” with “what is actually measured” tens to thousands of times a second, so it takes perception’s latest result directly instead of waiting for the decision layer’s nod. That is why a robot has more than one loop: the planning loop sits inside the big task loop, the control loop sits inside the planning loop, and innermost of all is the current loop inside each drive. Hence the title of this piece, “Loops Within Loops”.</span></li>
+</ul>
+<h3><span class="zh" lang="zh-CN">五台机器人，各做一件事</span><span class="en" lang="en">Five robots, five jobs</span></h3>
+<p><span class="zh" lang="zh-CN">同一张图，换成具体的机器人、具体的事，每个方框里装的就是实实在在的数字。下面五个例子，机器人不同，事情的种类也不同：打扫（在房间里移动）、抓放（用手臂操作东西）、避让（对突发情况做反应）、送货（在空中飞）、爬楼梯（保持平衡）。</span><span class="en" lang="en">Take the same chart, give it a particular robot and a particular job, and every box fills with real numbers. The five examples below differ both in the robot and in the kind of job: cleaning (moving around a room), pick-and-place (handling objects with an arm), giving way (reacting to the unexpected), delivery (flying), and climbing stairs (keeping balance).</span></p>
+<ul class="rules">
+<li><span class="zh" lang="zh-CN">先选一个例子。数字按钮是这件事里的几个关键时刻，点数字或者"下一刻"往下走。</span><span class="en" lang="en">First pick an example. The numbered buttons are key moments in that job; press a number or “Next” to move on.</span></li>
+<li><span class="zh" lang="zh-CN">下面的流程图写着这一刻每一层交出的东西。这一刻有变化的层亮着，圆圈里的数字是消息传到它的先后；没变的层变淡，标着"照旧"。右上角是这一层在这台机器人上大约每秒跑几次（Hz），"事件"表示有事才跑。</span><span class="en" lang="en">The flowchart underneath shows what each layer hands on at this moment. Layers that changed at this moment are lit, and the circled numbers give the order in which the news reached them; layers that did not change are faded and marked “no change”. At the top right is roughly how many times a second this layer runs on this robot (Hz); “events” means it runs only when something happens.</span></li>
+<li><span class="zh" lang="zh-CN">点流程图里的一层，场景图里就只突出这一层的东西：传感是原始测量（青色的点和视野），感知是认出来的东西（青色虚线框），决策是目标（紫色的旗子和左上角的状态），规划是路线（紫色的线），控制是命令（橙色箭头），执行是电机的电流（红色）。再点一次取消。</span><span class="en" lang="en">Tap a layer in the flowchart and the picture highlights only that layer’s part: sensing is the raw measurements (teal dots and fields of view), perception is what has been recognised (dashed teal boxes), decision is the goal (purple flag, and the state at the top left), planning is the route (purple line), control is the commands (orange arrows), and actuation is the motor currents (red). Tap again to clear.</span></li>
+</ul>
+<p class="try"><span class="zh" lang="zh-CN"><b>先玩：</b>扫地机器人第 2 刻（袜子）：哪一层没变，为什么？第 4 刻（椅子腿）：消息先到了哪一层？换成汽车第 2 刻：从看到行人到开始刹车，经过了哪几层、大约多久？最后看四足机器人第 2、3 刻：决策层在干什么？</span><span class="en" lang="en"><b>Play first:</b> robot vacuum, moment 2 (the sock): which layer does not change, and why? Moment 4 (the chair leg): which layer does the news reach first? Switch to the car, moment 2: from seeing the pedestrian to braking, which layers are involved, and roughly how long does it take? Finally, quadruped moments 2 and 3: what is the decision layer doing?</span></p>
+<div class="wg" id="sc">
+<div class="btns scp" id="sc-p"></div>
+<canvas aria-label="所选机器人此刻的场景：青色是测量和认出来的东西，紫色是目标和路线，橙色是命令，红色是电机的电流" data-al-en="The selected robot’s scene at this moment: teal is what has been measured and recognised, purple is goals and routes, orange is commands, red is motor currents" data-al-zh="所选机器人此刻的场景：青色是测量和认出来的东西，紫色是目标和路线，橙色是命令，红色是电机的电流" id="sc-cv"></canvas>
+<p class="hint" id="sc-h"></p>
+<div class="scm" id="sc-m"></div>
+<p class="sctl" id="sc-tl"></p>
+<div class="scf" id="sc-f"></div>
+<div class="status" id="sc-st" role="status"></div>
+</div>
+<script>
+(()=>{const X=RX,$=i=>document.getElementById(i),cv=$('sc-cv'),C=n=>X.col(n),D=Math.PI/180;
+const LN=[['传感','Sensing'],['感知与估计','Perception & estimation'],['决策','Decision'],['规划','Planning'],['控制','Control'],['执行','Actuation']];
+const AR=[['原始数据','raw data'],['世界状态','world state'],['目标','goal'],['计划','plan'],['命令','commands']];
+const GC=[0,0,1,1,2,3],LC=['--teal','--teal','--k','--k','--amber','--x'];
+const S=[
+{k:'vac',zh:'扫地机器人',en:'Robot vacuum',tz:'扫厨房',te:'Clean the kitchen',
+rt:[['5 Hz · 1 kHz','5 Hz · 1 kHz'],['5 Hz','5 Hz'],['事件','events'],['事件 · 10 Hz','events · 10 Hz'],['50 Hz','50 Hz'],['1 kHz','1 kHz']],
+ms:[
+{t:'0 s',zh:'接到任务',en:'The task arrives',p:[2,3,4,5],d:['前往厨房门口','to the kitchen door'],L:[
+[0,'激光雷达每 0.2 秒扫一圈，测 360 个距离；轮子的编码器在数转了多少','The lidar sweeps 360 distances every 0.2 s; the wheel encoders count how far each wheel has turned'],
+[0,'我在充电座前 (0.6, 0.6) m，朝东；地图上有墙、沙发、扶手椅和橱柜','I am in front of the dock at (0.6, 0.6) m, facing east; the map has the walls, sofa, armchair and kitchen counters'],
+[1,'收到任务"扫厨房"：状态 待命 → 前往；目标：厨房门口 (4.7, 2.1) m','Task received, “clean the kitchen”: state idle → travelling; goal: the kitchen door at (4.7, 2.1) m'],
+[1,'在地图上搜出一条路线：一串路点，从扶手椅下方绕过去，全长约 4.5 m','Searches the map for a route: a string of waypoints passing below the armchair, about 4.5 m long'],
+[1,'沿路线：前进 0.25 m/s、左转 0.4 rad/s → 左轮 0.20、右轮 0.30 m/s','Along the route: forward 0.25 m/s, turning left 0.4 rad/s → left wheel 0.20, right wheel 0.30 m/s'],
+[1,'左右轮的驱动器调电流：0.6 A、0.8 A，轮子转起来','The left and right wheel drives set their currents, 0.6 A and 0.8 A, and the wheels start turning']],
+n:['任务从决策层进来：你只说了"扫厨房"，决策层把它变成第一个具体目标"先到厨房门口"，规划层在地图上找路，控制层把路换算成两个轮子的速度。传感和感知一直在跑，只是这一刻它们交出的东西和上一刻差不多，所以画得淡一些。','The task enters at the decision layer: all you said was “clean the kitchen”, and the decision layer turns it into a first concrete goal, “get to the kitchen door”; planning finds a way on the map, and control turns the route into two wheel speeds. Sensing and perception never stop running, but right now they hand on much the same as a moment ago, so they are drawn faded.']},
+{t:'6 s',zh:'路上有只袜子',en:'A sock in the way',p:[0,1,3,4,5],d:['前往厨房门口','to the kitchen door'],L:[
+[1,'激光雷达：正前方 0.6 m 处多了十几个点，那里原来是空的','Lidar: a dozen or so new points 0.6 m straight ahead, where there was nothing before'],
+[1,'地图上多了一个障碍：约 0.2 m 宽，在 (3.85, 1.6) m','A new obstacle on the map: about 0.2 m wide, at (3.85, 1.6) m'],
+[0,'目标还是厨房门口','The goal is still the kitchen door'],
+[1,'原来的路线被挡住了 → 重新搜路：向左绕开约 0.3 m','The old route is blocked → search again: swing about 0.3 m to the left'],
+[1,'左转加大到 0.9 rad/s → 左轮 0.14、右轮 0.36 m/s','Turn left harder, 0.9 rad/s → left wheel 0.14, right wheel 0.36 m/s'],
+[1,'右轮电流升到 1.1 A，左轮降到 0.4 A','Right wheel current up to 1.1 A, left down to 0.4 A']],
+n:['这次消息从传感进来，一路传到执行，只有决策层没动：绕开袜子是"怎么走"的问题，不是"做什么"的问题，规划层自己就能解决。每一层只处理自己那一级的变化。','This time the news comes in at sensing and runs all the way down to actuation; only the decision layer stays put. Getting round a sock is a question of how to go, not what to do, so planning sorts it out by itself. Each layer only deals with changes at its own level.']},
+{t:'15 s',zh:'到了厨房',en:'In the kitchen',p:[1,2,3,4,5],d:['清扫厨房','cleaning the kitchen'],L:[
+[0,'激光雷达和编码器照常工作','Lidar and encoders working as usual'],
+[1,'我在 (5.0, 2.05) m，已经进了厨房门；定位误差约 3 cm','I am at (5.0, 2.05) m, through the kitchen door; position error about 3 cm'],
+[1,'到了第一个目标 → 状态：前往 → 清扫；新目标：盖满厨房的地面','First goal reached → state: travelling → cleaning; new goal: cover the kitchen floor'],
+[1,'规划"弓"字形的覆盖路线：8 条来回的平行线，间距 0.25 m','Plans a back-and-forth coverage route: 8 parallel passes, 0.25 m apart'],
+[1,'沿直线 0.3 m/s，不转弯 → 两个轮子都是 0.3 m/s','Straight along a pass at 0.3 m/s, no turning → both wheels at 0.3 m/s'],
+[1,'两个轮子各约 0.7 A；吸尘风机和边刷启动','About 0.7 A for each wheel; the suction fan and the side brush start']],
+n:['这次的起点是感知：它报告"到了"，决策层才把状态从"前往"切到"清扫"，换一个新目标。决策层像一个开关：大部分时候不动，只在这种关键时刻切一下。','This time it starts at perception: it reports “arrived”, and only then does the decision layer switch from travelling to cleaning and set a new goal. The decision layer works like a switch: most of the time it does nothing, and it flips only at moments like this.']},
+{t:'1 min',zh:'撞到椅子腿',en:'Bumping a chair leg',p:[0,4,5,1,3,4],d:['清扫厨房','cleaning the kitchen'],L:[
+[1,'碰撞开关被压下：椅子腿只有 3 cm 粗，激光雷达漏掉了','The bumper switch is pressed: the chair leg is only 3 cm thick, and the lidar missed it'],
+[1,'在撞到的位置 (5.8, 2.15) m 记下一个障碍','Marks an obstacle where it hit, at (5.8, 2.15) m'],
+[0,'还在清扫','Still cleaning'],
+[1,'这一条线在那一点绕一下，后面的线照旧','This pass detours round that spot; the remaining passes stay the same'],
+[1,'安全规则先接管：立刻停车、后退 5 cm；然后沿改过的路线继续','The safety rule takes over first: stop at once and back off 5 cm; then carry on along the amended route'],
+[1,'两个轮子先反转 0.2 秒，再恢复向前','Both wheels run backwards for 0.2 s, then forwards again']],
+n:['撞上的那一刻，消息走了近路：碰撞开关直接交给底盘控制器里的安全规则，几毫秒内就停车后退，不等感知和规划。之后感知才把这一点记进地图，规划把这一条线改一改。要紧的反应放在下面，"想明白"放在上面。','At the moment of impact the news takes a shortcut: the bumper goes straight to a safety rule in the base controller, which stops and backs off within milliseconds without waiting for perception or planning. Only afterwards does perception mark the spot on the map and planning amend this pass. Urgent reactions sit low down; working things out sits higher up.']},
+{t:'8 min',zh:'电量只剩 18%',en:'Battery down to 18%',p:[0,1,2,3,4,5],d:['回充','back to charge'],L:[
+[1,'电池电压降到 14.0 V','Battery voltage down to 14.0 V'],
+[1,'估计剩余电量 18%，按现在的耗电还能用约 6 分钟','Estimated charge 18%: about 6 minutes left at the current draw'],
+[1,'清扫 → 回充：记下扫到了哪，充满后回来接着扫','Cleaning → return to charge: note where it stopped, and come back after charging'],
+[1,'规划回充电座的路线：约 7.5 m，避开记下的袜子','Plans the route back to the dock: about 7.5 m, avoiding the sock it recorded'],
+[1,'沿回程路线，0.3 m/s','Follows the return route at 0.3 m/s'],
+[1,'风机和边刷关掉省电；轮子照常驱动','Fan and side brush off to save power; the wheels keep driving']],
+n:['这次整条链都动了：电量是一个测量值，感知把它换算成"还能用几分钟"，决策层据此改了要做的事，下面几层跟着重来一遍。同一台机器人，不同的事从不同的层进来。','This time the whole chain moves: the battery level is a measurement, perception turns it into “minutes left”, the decision layer changes what to do because of it, and every layer below starts over. Same robot, different events entering at different layers.']}]},
+{k:'arm',zh:'机械臂',en:'Robot arm',tz:'把杯子放上架子',te:'Put the cup on the shelf',
+rt:[['30 Hz · 1 kHz','30 Hz · 1 kHz'],['10 Hz','10 Hz'],['事件','events'],['事件','events'],['1 kHz','1 kHz'],['20 kHz','20 kHz']],
+ms:[
+{t:'0 s',zh:'接到任务',en:'The task arrives',p:[2,3,4,5],d:['第 1/6 步：移到杯子上方','step 1/6: above the cup'],L:[
+[0,'桌子上方的相机每秒拍 30 帧彩色图和深度图；6 个关节的编码器','The camera above the table takes 30 colour and depth images a second; encoders on all 6 joints'],
+[0,'认出杯子（把握 94%），在前方 0.58 m；瓶子在 0.40 m，高 24 cm；还有手臂此刻的姿态','Recognises the cup (94% confident) 0.58 m ahead and the bottle at 0.40 m, 24 cm tall; plus the arm’s current pose'],
+[1,'把任务拆成 6 步：移到杯子上方、下降、夹住、举起、移到架子上方、放下松开；现在做第 1 步','Splits the task into 6 steps: move above the cup, go down, grip, lift, move over the shelf, put down and let go; now on step 1'],
+[1,'算出一条不碰瓶子的轨迹：从瓶子上方越过去，用时 1.6 秒','Computes a trajectory that misses the bottle: over the top of it, 1.6 s long'],
+[1,'每 1 毫秒比较 6 个关节的目标角度和实际角度，算出各关节的力矩；肩关节最吃力，大半用来托住手臂自己','Every 1 ms compares the 6 joints’ target and measured angles and works out each joint’s torque; the shoulder works hardest, mostly holding up the arm itself'],
+[1,'6 个关节各有一个驱动器，按力矩调电流','Each of the 6 joints has a drive that sets its current from the torque']],
+n:['机械臂的"决策"是把一句话拆成一串步骤（一个简单的状态机或行为树），每次只交给规划层一步。规划层关心"怎么走不碰东西"，控制层只关心"这 1 毫秒每个关节用多大劲"。','For the arm, “decision” means breaking one sentence into a sequence of steps (a simple state machine or behaviour tree) and handing planning one step at a time. Planning cares about how to move without hitting anything; control only cares how hard each joint should push in this millisecond.']},
+{t:'2.1 s',zh:'夹住杯子',en:'Gripping the cup',p:[0,1,2,3,4,5],d:['第 4/6 步：举起','step 4/6: lift'],L:[
+[1,'夹爪电机的电流升到 0.8 A，两指停在 6.5 cm 不再合拢','The gripper motor current rises to 0.8 A, and the fingers stop closing at 6.5 cm'],
+[1,'判断：夹住了，杯子在两指之间','Conclusion: gripped, with the cup between the fingers'],
+[1,'第 3 步"夹住"完成 → 第 4 步：举起','Step 3, “grip”, done → step 4: lift'],
+[1,'竖直举起 15 cm 的轨迹，用时 0.8 秒','A straight 15 cm lift, 0.8 s long'],
+[1,'杯子连水约 0.3 kg：肩关节的力矩多出约 1.7 N·m 来托住它','The cup with its water is about 0.3 kg: the shoulder adds about 1.7 N·m to hold it'],
+[1,'肩关节的电流多出约 0.2 A（经过 100 比 1 的减速器）','The shoulder current goes up by about 0.2 A (through a 100:1 gearbox)']],
+n:['"夹住了"不是看出来的，是从夹爪电机的电流里推出来的：手指碰到杯子、合不拢了，电流就上去。感知层把这个数字翻译成"抓住了"，决策层才进到下一步。','“Gripped” is not seen; it is inferred from the gripper motor’s current: once the fingers meet the cup and cannot close further, the current rises. Perception translates that number into “holding it”, and only then does the decision layer move on to the next step.']},
+{t:'3.0 s',zh:'有人把手伸进来',en:'A hand reaches in',p:[0,1,2,3,4,5],d:['暂停：有人','paused: person nearby'],L:[
+[1,'相机画面右边多出一块东西，正在靠近','Something new appears at the right of the camera image, moving closer'],
+[1,'认出：人手，离夹爪约 0.2 m，正在靠近','Recognised: a person’s hand, about 0.2 m from the gripper and getting closer'],
+[1,'安全规则：有人进了工作区 → 暂停；手离开后再继续第 5 步','Safety rule: someone is in the workspace → pause; resume step 5 once the hand has gone'],
+[1,'改成一条 0.3 秒内平稳停下的轨迹','Replaced by a trajectory that comes smoothly to a stop within 0.3 s'],
+[1,'跟着减速；停下以后只出托住手臂和杯子的力矩','Follows the slowdown; once stopped, puts out only the torque that holds up the arm and the cup'],
+[1,'电流降到只够托住重量','Currents drop to just what holds the weight']],
+n:['这一刻感知的变化直接改变了"做什么"：从"移到架子"变成"暂停"。规划层也没有让手臂急刹，而是算了一条 0.3 秒平稳停下的轨迹：猛停会让水洒出来，手臂也会晃。','Here a change in perception directly changes what to do: from “move to the shelf” to “pause”. Planning does not slam on the brakes either; it computes a smooth 0.3 s stop, because a sudden stop would spill the water and set the arm shaking.']},
+{t:'6.0 s',zh:'放到架子上',en:'Onto the shelf',p:[0,1,2,3,4,5],d:['第 6/6 步：松开','step 6/6: let go'],L:[
+[1,'手腕的力传感器：向上的力突然多了 1.5 N','Wrist force sensor: a sudden extra 1.5 N pushing up'],
+[1,'判断：杯底碰到了架面','Conclusion: the base of the cup has touched the shelf'],
+[1,'第 6 步：松开；然后退回原位，任务完成','Step 6: let go; then return home, task done'],
+[1,'先张开夹爪，再向后上方退 10 cm','Open the gripper first, then back away 10 cm, up and back'],
+[1,'夹爪张到 8 cm；手臂跟着后退的轨迹','Gripper opens to 8 cm; the arm follows the retreat trajectory'],
+[1,'夹爪电机反转；各关节电流随轨迹变化','The gripper motor reverses; joint currents follow the trajectory']],
+n:['"放下"到哪一刻才算完？不是到了某个坐标，而是测到"碰上了"：架子的高度可能差几毫米，靠力传感器判断接触，比靠坐标可靠。很多任务的切换点，都是这样由一个测量触发的。','When does “put down” count as done? Not at some coordinate, but when contact is felt: the shelf may be a few millimetres off, and judging contact with the force sensor is more reliable than trusting coordinates. Many of a robot’s switching points are triggered like this, by a measurement.']}]},
+{k:'car',zh:'自动驾驶汽车',en:'Self-driving car',tz:'行人突然横穿',te:'A pedestrian steps out',
+rt:[['10–30 Hz','10–30 Hz'],['10–30 Hz','10–30 Hz'],['10 Hz','10 Hz'],['10 Hz','10 Hz'],['50–100 Hz','50–100 Hz'],['1 kHz 以上','1 kHz+']],
+ms:[
+{t:'0 s',zh:'跟车行驶',en:'Following traffic',p:[0,1,2,3,4,5],d:['跟车','follow'],L:[
+[1,'8 路相机每秒 30 帧，激光雷达每秒转 10 圈，还有毫米波雷达、卫星定位、轮速','8 cameras at 30 frames a second, a lidar spinning 10 times a second, plus radar, satellite positioning and wheel speeds'],
+[1,'本车在车道中间，偏右 0.1 m；前车在 35 m 外，38 km/h；右边停着一辆货车','The car is mid-lane, 0.1 m right of centre; the car ahead is 35 m away at 38 km/h; a van is parked on the right'],
+[1,'行为：跟车，和前车保持约 2 秒的车距','Behaviour: follow, keeping about a 2-second gap to the car ahead'],
+[1,'未来 5 秒的轨迹：沿车道中线，40 km/h，每 0.1 秒一个点','Trajectory for the next 5 s: along the lane centre at 40 km/h, one point every 0.1 s'],
+[1,'方向盘修正 1.2°，驱动扭矩 80 N·m，保持车速','Steering correction of 1.2°, drive torque 80 N·m to hold the speed'],
+[1,'转向电机、驱动电机各自的控制器调电流','The steering motor and the drive motor each have a controller setting the current']],
+n:['平稳行驶时，六层都在按自己的节拍跑，每次算出来的和上一次差不多。注意右边那辆货车：它后面的一块（图上的灰色阴影），传感器看不到。','In steady driving, all six layers run to their own beat, and each result is much like the last. Note the van on the right: the patch behind it (the grey shadow) is out of the sensors’ sight.']},
+{t:'1.2 s',zh:'行人从货车前面走出来',en:'A pedestrian steps out past the van',p:[0,1,2,3,4,5],d:['让行','yield'],L:[
+[1,'右前方相机的画面里出现一个 40 × 90 像素的人形；激光雷达在那里打到 23 个点','A 40 × 90-pixel human shape appears in the front-right camera; the lidar gets 23 points there'],
+[1,'行人，在前方 22 m，正以 1.0 m/s 横穿；预计 1 秒后走进本车道','A pedestrian 22 m ahead, crossing at 1.0 m/s; expected in this lane in 1 s'],
+[1,'跟车 → 让行：在行人前面停下','Follow → yield: stop before the pedestrian'],
+[1,'新的速度曲线：在 17 m 内从 40 km/h 减到 0，减速度约 3.6 m/s²','New speed profile: from 40 km/h to 0 within 17 m, braking at about 3.6 m/s²'],
+[1,'制动请求 −3.6 m/s²：按实际减速度不断修正制动力','Brake request of −3.6 m/s², constantly corrected against the measured deceleration'],
+[1,'线控制动建立液压，驱动电机同时反向发电、回收能量','Brake-by-wire builds hydraulic pressure while the drive motor regenerates']],
+n:['从相机第一次拍到行人到刹车起作用，一个典型的估算是 0.3 秒左右：曝光和传输几十毫秒，检测和跟踪约 0.1 秒，决策和规划几十毫秒，制动系统建立压力还要约 0.1 秒。这 0.3 秒里，40 km/h 的车已经开出去 3 m 多，所以每一层的延迟都要算进去。','From the first camera image of the pedestrian to the brakes taking effect, a typical estimate is about 0.3 s: tens of milliseconds for exposure and transfer, about 0.1 s for detection and tracking, tens of milliseconds for decision and planning, and about 0.1 s for the brakes to build pressure. In those 0.3 s a car at 40 km/h covers over 3 m, so every layer’s delay counts.']},
+{t:'4.6 s',zh:'停住，等行人走过',en:'Stopped, waiting',p:[0,1,3,4,5],d:['让行','yield'],L:[
+[1,'行人在车头前方约 1.6 m，正走过本车道','The pedestrian is about 1.6 m ahead of the bumper, crossing the lane'],
+[1,'行人还在本车道里，1.0 m/s，约 1 秒后走出去','The pedestrian is still in this lane at 1.0 m/s, out in about 1 s'],
+[0,'让行，直到行人离开本车道','Yield until the pedestrian has left this lane'],
+[1,'保持停车：速度 0','Stay stopped: speed 0'],
+[1,'保持制动，防止溜车','Hold the brakes so the car does not roll'],
+[1,'制动压力保持','Brake pressure held']],
+n:['决策层没变："让行"这个决定一直有效，直到感知报告行人走出本车道。规划和控制此刻的任务很简单：停着别动。','The decision layer has not changed: “yield” stays in force until perception reports that the pedestrian has left this lane. Planning and control have an easy job right now: stay put.']},
+{t:'6.5 s',zh:'继续前进',en:'Moving off again',p:[0,1,2,3,4,5],d:['跟车','follow'],L:[
+[1,'行人已经走过中线','The pedestrian has crossed the centre line'],
+[1,'本车道里没有障碍了；前车已在 70 m 外','Nothing left in this lane; the car ahead is now 70 m away'],
+[1,'让行 → 跟车','Yield → follow'],
+[1,'起步：约 8 秒加速回 40 km/h','Pull away: back to 40 km/h in about 8 s'],
+[1,'松开制动，驱动扭矩逐渐加大','Release the brakes and raise the drive torque gradually'],
+[1,'制动压力释放，驱动电机电流上升','Brake pressure released, drive motor current rising']],
+n:['决策层又切换了一次。行为层每秒可能评估十次，但真正改变决定的时刻并不多：大部分时候，它交给规划的目标和上一次一样。','The decision layer switches once more. The behaviour layer may re-evaluate ten times a second, but the moments when the decision actually changes are few: most of the time it hands planning the same goal as last time.']}]},
+{k:'uav',zh:'四旋翼',en:'Quadrotor',tz:'送包裹到阳台',te:'Deliver a parcel',
+rt:[['1 kHz · 10 Hz','1 kHz · 10 Hz'],['250 Hz','250 Hz'],['事件','events'],['1–10 Hz','1–10 Hz'],['50 Hz–1 kHz','50 Hz–1 kHz'],['几十 kHz','tens of kHz']],
+ms:[
+{t:'0 s',zh:'起飞',en:'Take-off',p:[2,3,4,5],d:['起飞','take-off'],L:[
+[0,'IMU 每秒 1000 次；卫星定位每秒 10 次，收到 14 颗卫星；气压计','IMU 1000 times a second; satellite positioning 10 times a second, 14 satellites in view; barometer'],
+[0,'在院子的起降点上，机身水平；水平位置误差约 0.5 m','On the pad in the yard, level; horizontal position error about 0.5 m'],
+[1,'收到任务：把包裹送到 250 m 外三楼的阳台；状态：起飞','Task received: deliver the parcel to a third-floor balcony 250 m away; state: take-off'],
+[1,'先爬升到 30 m，再沿航点飞过去，巡航 8 m/s','Climb to 30 m first, then fly the waypoints at 8 m/s'],
+[1,'第 3 步那套级联：位置 → 速度 → 姿态 → 角速度，最后算出四个电机各要多大推力','The cascade from step 3: position → velocity → attitude → turning rate, ending in a thrust for each of the four motors'],
+[1,'四个电调把电机转速提上去，直到推力超过重量','The four ESCs spin the motors up until the thrust exceeds the weight']],
+n:['和扫地机器人一样，任务从决策层进来。四旋翼的控制层特别厚：四个环一层套一层，第 3 步会拆开来看。','As with the vacuum, the task comes in at the decision layer. The quadrotor’s control layer is especially thick: four loops, one inside the next, which step 3 takes apart.']},
+{t:'40 s',zh:'迎面一阵强风',en:'A strong headwind gust',p:[0,1,4,5],d:['沿航线','en route'],L:[
+[1,'陀螺仪：机头突然被往上掀，每秒 15°','Gyro: the nose is suddenly pitched up at 15° a second'],
+[1,'姿态：机头抬起了 4°；对地速度从 8 降到 6 m/s；估计迎面有约 7 m/s 的风','Attitude: nose up 4°; ground speed down from 8 to 6 m/s; estimated headwind of about 7 m/s'],
+[0,'按航线飞','Fly the route'],
+[0,'航线和巡航速度都不变','Same route, same cruise speed'],
+[1,'角速度环几毫秒内加大前后推力差，把机头压回去；速度环让机身再多前倾 8°，迎着风保持 8 m/s','Within milliseconds the rate loop raises the front-to-back thrust difference to push the nose back down; the velocity loop tilts the body another 8° forward to hold 8 m/s into the wind'],
+[1,'后面两个电机加速、前面两个减速','The rear two motors speed up and the front two slow down']],
+n:['风没有改变"去哪"，也没有改变"走哪条路"，所以决策和规划都没动：消息只在最下面几层转了一圈，这就是内环。第 3 步会把这个内环拆开来看。','The wind changes neither where to go nor which way, so decision and planning do not move: the news only goes round the bottom layers. That is the inner loop, which step 3 takes apart.']},
+{t:'70 s',zh:'卫星信号变差',en:'Satellite signal degrades',p:[0,1,2,3,4,5],d:['沿航线 · 降速','en route · slowed'],L:[
+[1,'飞进两栋高楼之间，收到的卫星从 14 颗降到 5 颗','Flying between two tall buildings, satellites in view drop from 14 to 5'],
+[1,'卫星定位的误差从 0.5 m 涨到约 4 m；改为更多依靠下视相机看地面的移动','The satellite position error grows from 0.5 m to about 4 m; it now leans more on the downward camera watching the ground move'],
+[1,'定位变差 → 降速到 3 m/s；20 秒内恢复不了就悬停等待','Positioning has degraded → slow to 3 m/s; hover and wait if it has not recovered within 20 s'],
+[1,'按 3 m/s 重新安排剩下的航线，从两栋楼中间穿过时离两边至少 8 m','Re-times the rest of the route for 3 m/s, keeping at least 8 m from the buildings on either side'],
+[1,'跟着更慢的速度目标','Follows the slower speed target'],
+[1,'前倾变小，电机转速略降','Less forward tilt; motor speeds drop slightly']],
+n:['感知交出的不只是"我在哪"，还有"有多准"。决策层看到定位变差，就换一种更保守的做法；下面几层不用知道原因，只管执行新的目标。','Perception hands on not only where the drone is but also how sure it is. Seeing the position get worse, the decision layer switches to a more cautious plan; the layers below need not know why, they just carry out the new goal.']},
+{t:'95 s',zh:'到了阳台上空',en:'Over the balcony',p:[0,1,2,3,4,5],d:['降落放货','descend and drop'],L:[
+[1,'下视相机的画面里出现阳台上的降落标记','The downward camera sees the landing marker on the balcony'],
+[1,'标记在正下方 4 m、偏左 0.3 m','The marker is 4 m below and 0.3 m to the left'],
+[1,'沿航线 → 降落放货','En route → descend and drop off'],
+[1,'对准标记，每秒 0.5 m 下降到标记上方 1 m','Line up on the marker and descend at 0.5 m a second to 1 m above it'],
+[1,'位置环对准标记中心；到了以后命令挂钩打开','The position loop centres on the marker; once there, it commands the hook to open'],
+[1,'电机减速下降；挂钩的舵机转动，放下包裹','The motors slow for the descent; the hook’s servo turns and releases the parcel']],
+n:['最后一段又是由一个测量引发的：看到标记，决策才切到"降落"。机器人做的事几乎都能拆成这样的一串：感知报告一件事，决策换一个目标，规划、控制、执行跟着重来一遍。','The last stretch is again set off by a measurement: seeing the marker is what switches the decision to “descend”. Almost everything a robot does breaks down into a string like this: perception reports something, decision sets a new goal, and planning, control and actuation start over.']}]},
+{k:'leg',zh:'四足机器人',en:'Quadruped',tz:'上楼梯',te:'Climb the stairs',
+rt:[['30 Hz · 1 kHz','30 Hz · 1 kHz'],['30 Hz · 500 Hz','30 Hz · 500 Hz'],['事件','events'],['30–40 Hz','30–40 Hz'],['500 Hz','500 Hz'],['40 kHz','40 kHz']],
+ms:[
+{t:'0 s',zh:'走到楼梯前',en:'Reaching the stairs',p:[0,1,2,3,4,5],d:['上楼梯步态','stair gait'],L:[
+[1,'头上的深度相机拍到前方地面的点云；12 个关节编码器和 IMU 每秒 1000 次','The depth camera on the head captures a point cloud of the ground ahead; 12 joint encoders and the IMU report 1000 times a second'],
+[1,'高程图：前方 0.3 m 起有 4 级台阶，每级高 17 cm、深 28 cm','Height map: 4 steps starting 0.3 m ahead, each 17 cm high and 28 cm deep'],
+[1,'平地小跑 → 上楼梯步态：抬腿更高，走得更慢','Trotting on the flat → stair gait: higher steps, slower pace'],
+[1,'挑落脚点：每只脚踩在台阶中间、离边缘至少 5 cm；机身跟着台阶升高','Picks footholds: each foot in the middle of a step, at least 5 cm from the edge; the body rises with the stairs'],
+[1,'MPC 算每只着地的脚该用多大的力；全身控制每秒 500 次把它换成 12 个关节的力矩','MPC works out how hard each foot on the ground should push; whole-body control turns that into torques for the 12 joints, 500 times a second'],
+[1,'12 个关节的驱动器每秒 4 万次调电流','The 12 joint drives adjust their currents 40,000 times a second']],
+n:['四足机器人的"看路"和"迈步"分得很清楚：感知把点云整理成一张"每一格有多高"的地图，规划在这张图上挑落脚点，控制只管让脚踩到、身体撑住。','The quadruped keeps looking at the ground and taking steps well apart: perception turns the point cloud into a map of how high each cell is, planning picks footholds on that map, and control only makes sure the feet land and the body is held up.']},
+{t:'3.2 s',zh:'一只脚踩在台阶边上打滑',en:'A foot slips on a step edge',p:[0,1,3,4,5],d:['上楼梯步态','stair gait'],L:[
+[1,'右前腿的关节角显示：脚往后滑了 3 cm；这条腿的力矩突然变小','The front-right leg’s joint angles show the foot sliding back 3 cm; that leg’s torque suddenly drops'],
+[1,'估计：右前脚没踩实，机身开始往右前方倾','Estimate: the front-right foot has lost its footing, and the body is starting to tip forward and to the right'],
+[0,'还是上楼梯步态','Still the stair gait'],
+[1,'MPC 重新安排：把重量移到另外三条腿，下一步踩得离边缘更远 4 cm','MPC re-plans: shift the weight onto the other three legs and put the next step 4 cm further from the edge'],
+[1,'全身控制加大另外三条腿的力矩，撑住机身','Whole-body control raises the torques of the other three legs to hold the body up'],
+[1,'另外三条腿的膝关节电流加大','The knee currents of the other three legs go up']],
+n:['打滑不需要重新想"做什么"，只需要换个踩法：规划和控制就地解决，决策层甚至不知道发生过。','A slip does not call for rethinking what to do, only for a different footing: planning and control sort it out on the spot, and the decision layer never even hears about it.']},
+{t:'4.0 s',zh:'被人从后面推了一下',en:'A push from behind',p:[0,1,4,5,3],d:['上楼梯步态','stair gait'],L:[
+[1,'IMU：向前的加速度突然变大；几个关节被推得偏离目标角度','IMU: a sudden jump in forward acceleration; several joints are pushed off their target angles'],
+[1,'估计：机身突然以 0.5 m/s 往前冲','Estimate: the body is suddenly lurching forward at 0.5 m/s'],
+[0,'还是上楼梯步态','Still the stair gait'],
+[1,'MPC 把下一步迈得更远一些，接住这一冲','MPC makes the next step longer to catch the lurch'],
+[1,'关节 PD 和全身控制在几毫秒内先顶住','Joint PD and whole-body control push back first, within milliseconds'],
+[1,'电流在几十微秒内跟上新的力矩','The currents follow the new torques within tens of microseconds']],
+n:['被推的这一刻，越下面的层反应越早：控制和执行在几毫秒内顶住，MPC 要几十毫秒后才挪脚。下面的"被推了一下的 0.3 秒"用时间放大镜把这个先后拉开来看。','At the moment of the push, the lower the layer, the sooner it reacts: control and actuation push back within milliseconds, and MPC only moves a foot tens of milliseconds later. “The 0.3 s after a push” below uses a time magnifier to pull this order apart.']}]}];
+let si=0,mi=0,focus=null,t0=0,anim=false,run=false,vis=false,lastK=-1,played=false;
+const STEP=.42,reduced=X.reduced;
+const cur=()=>S[si].ms[mi];
+function lay(i){const m=cur(),ch=m.L[i][0];let a=ch?1:.3;if(anim&&ch){const el=(performance.now()-t0)/1000,k=m.p.indexOf(i);if(k>=0){a=Math.max(.1,Math.min(1,(el-k*STEP)/.25))}}if(focus!==null)a=focus===i?1:Math.min(a,.12);return a}
+function lab(g,s,x,y,col,al,bl,sz,b){g.font=(b?'600 ':'')+X.font(sz||10.5);g.textAlign=al||'left';g.textBaseline=bl||'middle';g.lineJoin='round';g.lineWidth=3;g.strokeStyle=C('--bg');g.strokeText(s,x,y);g.fillStyle=col;g.fillText(s,x,y)}
+function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function dbox(g,x0,y0,x1,y1,col,s,below){g.save();g.setLineDash([4,3]);g.strokeStyle=col;g.lineWidth=1.5;g.strokeRect(Math.min(x0,x1),Math.min(y0,y1),Math.abs(x1-x0),Math.abs(y1-y0));g.restore();if(s)lab(g,s,Math.min(x0,x1),below?Math.max(y0,y1)+8:Math.min(y0,y1)-7,col,'left','middle',10.5,true)}
+function poly(g,pts,col,w,dash){if(pts.length<2)return;g.save();if(dash)g.setLineDash(dash);g.strokeStyle=col;g.lineWidth=w||2;g.lineJoin='round';g.lineCap='round';g.beginPath();pts.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.stroke();g.restore()}
+function dots(g,pts,col,r){g.fillStyle=col;pts.forEach(p=>{g.beginPath();g.arc(p[0],p[1],r||2,0,7);g.fill()})}
+function flag(g,x,y,col,s){g.strokeStyle=col;g.lineWidth=1.6;g.beginPath();g.moveTo(x,y);g.lineTo(x,y-17);g.stroke();g.fillStyle=col;g.beginPath();g.moveTo(x,y-17);g.lineTo(x+10,y-13.5);g.lineTo(x,y-10);g.closePath();g.fill();if(s)lab(g,s,x+12,y-13,col,'left','middle',10.5,true)}
+function resample(P,step){const out=[P[0]];let acc=0;for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i],L=Math.hypot(b[0]-a[0],b[1]-a[1]);let s=step-acc;while(s<=L){out.push([a[0]+(b[0]-a[0])*s/L,a[1]+(b[1]-a[1])*s/L]);s+=step}acc=L-(s-step)}return out}
+function decide(g,W){const m=cur(),s=X.t('决策：','Decision: ')+X.t(m.d[0],m.d[1]);g.globalAlpha=lay(2);g.font='600 '+X.font(11.5);const w=g.measureText(s).width+30;g.fillStyle=C('--surface');g.strokeStyle=C('--k');g.lineWidth=1.3;rr(g,6,5,w,21,6);g.fill();g.stroke();g.fillStyle=C('--k');g.beginPath();g.moveTo(14,9.5);g.lineTo(14,21.5);g.stroke();g.beginPath();g.moveTo(14,9.5);g.lineTo(21,12.5);g.lineTo(14,15.5);g.closePath();g.fill();g.textAlign='left';g.textBaseline='middle';g.fillText(s,24,16);g.globalAlpha=1}
+// ---------- A: robot vacuum (top view) ----------
+const VA={rects:[[0.6,3.75,2.6,4.45,'沙发','sofa'],[1.6,1.15,2.4,1.85,'扶手椅','armchair'],[1.1,2.55,2.1,3.15,'茶几','coffee table'],[4.75,4.0,8.4,4.6,'橱柜','counter'],[7.8,0.5,8.4,4.0,'','']],walls:[[4.6,0,4.75,1.6],[4.6,2.6,4.75,4.6]],tl:[[5.53,2.78],[6.67,2.78],[5.53,3.52],[6.67,3.52]],cl:[[5.78,2.13],[6.12,2.13],[5.78,2.47],[6.12,2.47]],sock:[3.85,1.6]};
+const PA0=[[0.6,0.6],[1.4,0.75],[2.6,0.75],[3.2,1.18],[4.7,2.1]],PA1=[[3.2,1.18],[3.5,1.9],[4.2,2.05],[4.7,2.1]],PA4=[[6.9,0.55],[5.0,1.95],[4.7,2.1],[3.2,1.9],[2.6,0.75],[1.4,0.75],[0.6,0.6]];
+function cover(det){const L=[];let y=2.05,dir=1;for(let k=0;k<8;k++){if(dir>0){L.push([4.95,y]);if(det&&k===0)L.push([5.55,y],[5.75,1.84],[6.15,1.84],[6.35,y]);L.push([7.55,y])}else L.push([7.55,y],[4.95,y]);y-=.25;dir=-dir}return L}
+const RA=[[0.6,0.6,0.185],[3.2,1.18,1.176],[5.0,2.05,0],[5.61,2.05,0],[6.9,0.55,2.51]],VW=[[0.25,0.4],[0.25,0.9],[0.3,0],[-0.1,0],[0.3,0.6]],IA=[[0.6,0.8],[0.4,1.1],[0.7,0.7],[-0.5,-0.5],[0.7,0.7]];
+function castA(ox,oy,c,s,m){let t=6;const hitR=(x0,y0,x1,y1)=>{let tn=-1e9,tf=1e9;if(Math.abs(c)<1e-9){if(ox<x0||ox>x1)return}else{let a=(x0-ox)/c,b=(x1-ox)/c;if(a>b)[a,b]=[b,a];tn=Math.max(tn,a);tf=Math.min(tf,b)}if(Math.abs(s)<1e-9){if(oy<y0||oy>y1)return}else{let a=(y0-oy)/s,b=(y1-oy)/s;if(a>b)[a,b]=[b,a];tn=Math.max(tn,a);tf=Math.min(tf,b)}if(tn<=tf&&tn>0)t=Math.min(t,tn)};
+const hitC=(cx,cy,r)=>{const fx=ox-cx,fy=oy-cy,b=fx*c+fy*s,q=fx*fx+fy*fy-r*r,disc=b*b-q;if(disc<0)return;const u=-b-Math.sqrt(disc);if(u>0)t=Math.min(t,u)};
+if(c>0)t=Math.min(t,(8.4-ox)/c);if(c<0)t=Math.min(t,-ox/c);if(s>0)t=Math.min(t,(4.6-oy)/s);if(s<0)t=Math.min(t,-oy/s);
+VA.rects.forEach(r=>hitR(r[0],r[1],r[2],r[3]));VA.walls.forEach(r=>hitR(r[0],r[1],r[2],r[3]));VA.tl.forEach(p=>hitC(p[0],p[1],.025));if(m>=1)hitC(VA.sock[0],VA.sock[1],.1);return t}
+function drawA(g,W,H){const m=mi,top=32,s=Math.min((W-12)/8.4,(H-top-6)/4.6),ox=(W-8.4*s)/2,oy=top+4.6*s,P=(x,y)=>[ox+x*s,oy-y*s],Ls=v=>v*s;
+g.fillStyle=C('--surface');g.fillRect(ox,top,8.4*s,4.6*s);
+VA.rects.forEach(r=>{const a=P(r[0],r[3]);g.fillStyle=C('--surface-2');g.strokeStyle=C('--line');g.lineWidth=1;g.fillRect(a[0],a[1],Ls(r[2]-r[0]),Ls(r[3]-r[1]));g.strokeRect(a[0]+.5,a[1]+.5,Ls(r[2]-r[0])-1,Ls(r[3]-r[1])-1);if(r[4])lab(g,X.t(r[4],r[5]),a[0]+Ls(r[2]-r[0])/2,a[1]+Ls(r[3]-r[1])/2,C('--faint'),'center','middle',10)});
+g.fillStyle=C('--fg');VA.walls.forEach(r=>{const a=P(r[0],r[3]);g.fillRect(a[0],a[1],Ls(r[2]-r[0]),Ls(r[3]-r[1]))});g.strokeStyle=C('--fg');g.lineWidth=2.5;g.strokeRect(ox,top,8.4*s,4.6*s);
+const tb=P(5.5,3.55),ch=P(5.75,2.5);g.save();g.setLineDash([3,3]);g.strokeStyle=C('--faint');g.lineWidth=1;g.strokeRect(tb[0],tb[1],Ls(1.2),Ls(.8));g.strokeRect(ch[0],ch[1],Ls(.4),Ls(.4));g.restore();lab(g,X.t('餐桌','table'),tb[0]+Ls(.6),tb[1]+Ls(.4),C('--faint'),'center','middle',10);
+g.fillStyle=C('--muted');VA.tl.concat(VA.cl).forEach(p=>{const q=P(p[0],p[1]);g.beginPath();g.arc(q[0],q[1],Math.max(1.6,Ls(.02)),0,7);g.fill()});
+const dk=P(0.35,0.14);g.fillStyle=C('--muted');g.fillRect(dk[0],dk[1],Ls(.5),Ls(.14));lab(g,X.t('充电座','dock'),dk[0]+Ls(.25),dk[1]-6,C('--faint'),'center','middle',10);
+lab(g,X.t('客厅','living room'),P(3.3,4.3)[0],P(3.3,4.3)[1],C('--faint'),'center','middle',10.5,true);lab(g,X.t('厨房','kitchen'),P(6.1,3.78)[0],P(6.1,3.78)[1],C('--faint'),'center','middle',10.5,true);
+if(m>=1){const q=P(VA.sock[0],VA.sock[1]);g.fillStyle=C('--muted');g.beginPath();g.ellipse(q[0],q[1],Ls(.11),Ls(.07),.5,0,7);g.fill()}
+const R=RA[m],rp=P(R[0],R[1]),hx=Math.cos(R[2]),hy=-Math.sin(R[2]),nx=-hy,ny=hx,rad=Ls(.17);
+// planning
+g.globalAlpha=lay(3);let path=m===0?PA0:m===1?PA1:m===2?cover(false):m===3?cover(true):PA4;if(m===3)path=[[5.56,2.05]].concat(path.slice(2));
+if(m===1){g.globalAlpha=lay(3)*.45;poly(g,PA0.slice(3).map(p=>P(p[0],p[1])),C('--k'),1.6,[4,4]);g.globalAlpha=lay(3)}
+const pp=path.map(p=>P(p[0],p[1]));poly(g,pp,C('--k'),2.2);dots(g,resample(path,m>=2&&m<=3?.6:.35).map(p=>P(p[0],p[1])),C('--k'),1.9);
+// perception
+g.globalAlpha=lay(1);g.save();g.setLineDash([3,3]);g.strokeStyle=C('--teal');g.lineWidth=1.4;g.beginPath();g.arc(rp[0],rp[1],rad+5,0,7);g.stroke();g.restore();
+if(m>=1){const q=P(VA.sock[0],VA.sock[1]);dbox(g,q[0]-8,q[1]-8,q[0]+8,q[1]+8,C('--teal'),m===1?X.t('新障碍','new obstacle'):'',true)}
+if(m>=3){const q=P(5.78,2.13);dbox(g,q[0]-6,q[1]-6,q[0]+6,q[1]+6,C('--teal'),m===3?X.t('撞到的点','hit here'):'')}
+if(m===4)lab(g,X.t('电量 18%','charge 18%'),rp[0]-rad-8,rp[1]+12,C('--teal'),'right','middle',10.5,true);
+// sensing
+g.globalAlpha=lay(0);const hits=[];for(let a=0;a<360;a+=4){const c=Math.cos(a*D),sn=Math.sin(a*D),t=castA(R[0],R[1],c,sn,m);hits.push([R[0]+c*t,R[1]+sn*t,t])}
+g.strokeStyle=C('--teal');g.lineWidth=.6;g.globalAlpha=lay(0)*.08;g.beginPath();hits.forEach(h=>{g.moveTo(rp[0],rp[1]);const q=P(h[0],h[1]);g.lineTo(q[0],q[1])});g.stroke();g.globalAlpha=lay(0);
+hits.forEach(h=>{const q=P(h[0],h[1]),onS=m>=1&&Math.hypot(h[0]-VA.sock[0],h[1]-VA.sock[1])<.16;g.fillStyle=C('--teal');g.beginPath();g.arc(q[0],q[1],onS?3:1.7,0,7);g.fill()});
+if(m===3){g.strokeStyle=C('--teal');g.lineWidth=3;g.beginPath();g.arc(rp[0],rp[1],rad+1,-R[2]-1.0,-R[2]+.2);g.stroke()}
+if(m===4){lab(g,'14.0 V',rp[0]-rad-8,rp[1]-2,C('--teal'),'right','middle',10.5,true)}
+g.globalAlpha=1;
+// robot body
+g.fillStyle=C('--surface');g.strokeStyle=C('--fg');g.lineWidth=2;g.beginPath();g.arc(rp[0],rp[1],rad,0,7);g.fill();g.stroke();g.beginPath();g.moveTo(rp[0],rp[1]);g.lineTo(rp[0]+hx*rad,rp[1]+hy*rad);g.stroke();
+// actuation
+g.globalAlpha=lay(5);[[-1,IA[m][0]],[1,IA[m][1]]].forEach(([sd,I])=>{const wx=rp[0]-sd*nx*(rad+3),wy=rp[1]-sd*ny*(rad+3);g.strokeStyle=C('--x');g.lineWidth=3.2;g.lineCap='round';g.beginPath();g.moveTo(wx,wy);g.lineTo(wx+hx*Ls(.3)*I,wy+hy*Ls(.3)*I);g.stroke();g.lineCap='butt'});
+if(m===2||m===3){g.strokeStyle=C('--x');g.lineWidth=1.4;for(let k=0;k<3;k++){const a=k*2.094;g.beginPath();g.arc(rp[0],rp[1],rad*.55,a,a+1.2);g.stroke()}}
+// control
+g.globalAlpha=lay(4);const v=VW[m][0],w=VW[m][1],L=Ls(Math.abs(v)*2.6)+6,dir=v<0?-1:1;X.arrow(g,[rp[0]+hx*rad*dir,rp[1]+hy*rad*dir],[rp[0]+hx*(rad+L)*dir,rp[1]+hy*(rad+L)*dir],C('--amber'),2.4,7);
+if(Math.abs(w)>.05){g.strokeStyle=C('--amber');g.lineWidth=1.6;const a0=-R[2];g.beginPath();g.arc(rp[0],rp[1],rad+9,a0-.1,a0-.1-Math.min(1.4,w*1.2),true);g.stroke()}
+if(m===3)lab(g,X.t('后退','back off'),rp[0]-hx*(rad+L+4),rp[1]-hy*(rad+L+4)+10,C('--amber'),'center','middle',10.5,true);
+// decision
+g.globalAlpha=lay(2);const gl=m<2?[4.7,2.1]:m<4?[6.3,1.15]:[0.6,0.42],gq=P(gl[0],gl[1]);flag(g,gq[0],gq[1],C('--k'),m<2?X.t('目标','goal'):m<4?X.t('盖满厨房','cover the kitchen'):X.t('回充','dock'));g.globalAlpha=1;decide(g,W)}
+// ---------- B: robot arm (side view) ----------
+const L1=.5,L2=.45,L3=.12,SH=[0,.12];
+function ik(tip){const Wp=[tip[0],tip[1]+L3],dx=Wp[0]-SH[0],dz=Wp[1]-SH[1],d=Math.min(L1+L2-1e-3,Math.hypot(dx,dz)),c=(L1*L1+d*d-L2*L2)/(2*L1*d),t1=Math.atan2(dz,dx)+Math.acos(Math.max(-1,Math.min(1,c)));return{E:[SH[0]+L1*Math.cos(t1),SH[1]+L1*Math.sin(t1)],Wp}}
+const TB=[[0.30,0.45],[0.58,0.05],[0.66,0.43],[0.80,0.345]],OPB=[.09,.065,.065,.08],PB=[[[0.30,0.45],[0.38,0.45],[0.46,0.41],[0.53,0.33],[0.58,0.24]],[[0.58,0.05],[0.58,0.20]],[[0.66,0.43],[0.685,0.44],[0.70,0.442]],[[0.80,0.345],[0.80,0.43],[0.68,0.48]]],GB=[[0.58,0.24],[0.58,0.20],[0.70,0.442],[0.68,0.48]],TQB=[[1,.55],[1.25,.7],[.9,.5],[.95,.5]];
+function drawB(g,W,H){const m=mi,top=32,x0=-.34,x1=1.1,z0=-.06,z1=.92,s=Math.min((W-10)/(x1-x0),(H-top-4)/(z1-z0)),ox=(W-(x1-x0)*s)/2-x0*s,oy=top+(z1)*s,P=(x,z)=>[ox+x*s,oy-z*s],Ls=v=>v*s;
+const tt=P(x0,0),te=P(x1,0);g.fillStyle=C('--surface-2');g.fillRect(tt[0],tt[1],te[0]-tt[0],Ls(.05));g.strokeStyle=C('--fg');g.lineWidth=2;g.beginPath();g.moveTo(tt[0],tt[1]);g.lineTo(te[0],te[1]);g.stroke();
+const sp=P(.70,.30),spp=P(.96,.28);g.fillStyle=C('--muted');g.fillRect(sp[0],sp[1],Ls(.28),Ls(.02));g.fillRect(spp[0],spp[1],Ls(.02),Ls(.28));lab(g,X.t('架子','shelf'),P(.84,.36)[0],P(.84,.36)[1],C('--faint'),'center','middle',10);
+const bo=P(.365,.19);g.fillStyle=C('--surface-2');g.strokeStyle=C('--muted');g.lineWidth=1.2;g.fillRect(bo[0],bo[1],Ls(.07),Ls(.19));g.strokeRect(bo[0],bo[1],Ls(.07),Ls(.19));const bn=P(.39,.24);g.fillRect(bn[0],bn[1],Ls(.02),Ls(.05));g.strokeRect(bn[0],bn[1],Ls(.02),Ls(.05));
+const pst=P(-.3,.9),cam=P(.45,.9);g.strokeStyle=C('--line');g.lineWidth=2;g.beginPath();g.moveTo(P(-.3,0)[0],P(-.3,0)[1]);g.lineTo(pst[0],pst[1]);g.lineTo(cam[0],cam[1]);g.stroke();g.fillStyle=C('--muted');g.fillRect(cam[0]-6,cam[1]-2,12,8);
+let cup=m<2?[.58,.045]:m===2?[TB[2][0],TB[2][1]]:[.80,.345];if(m===1)cup=[.58,.045];
+// sensing: camera view
+g.globalAlpha=lay(0);const fl=P(-.35,0),fr=P(1.25,0);g.fillStyle=C('--teal');g.globalAlpha=lay(0)*.035;g.beginPath();g.moveTo(cam[0],cam[1]+6);g.lineTo(fl[0],fl[1]);g.lineTo(fr[0],fr[1]);g.closePath();g.fill();g.globalAlpha=lay(0)*.35;g.strokeStyle=C('--teal');g.lineWidth=1;g.beginPath();g.moveTo(fl[0],fl[1]);g.lineTo(cam[0],cam[1]+6);g.lineTo(fr[0],fr[1]);g.stroke();g.globalAlpha=lay(0);lab(g,X.t('相机','camera'),cam[0]+10,cam[1]+2,C('--teal'),'left','middle',10.5,true);g.globalAlpha=1;
+const K=ik(TB[m]),Sp=P(SH[0],SH[1]),Ep=P(K.E[0],K.E[1]),Wq=P(K.Wp[0],K.Wp[1]),tip=P(TB[m][0],TB[m][1]);
+// cup
+const cq=P(cup[0]-.035,cup[1]+.045);g.fillStyle=C('--surface');g.strokeStyle=C('--fg');g.lineWidth=1.6;g.fillRect(cq[0],cq[1],Ls(.07),Ls(.09));g.strokeRect(cq[0],cq[1],Ls(.07),Ls(.09));g.beginPath();g.arc(cq[0]+Ls(.07)+3,cq[1]+Ls(.045),Ls(.02),-1.4,1.4);g.stroke();
+// hand
+if(m===2){const hp=P(.87,.5),he=P(1.14,.58);g.strokeStyle=C('--faint');g.lineWidth=Math.max(6,Ls(.045));g.lineCap='round';g.beginPath();g.moveTo(he[0],he[1]);g.lineTo(hp[0]+Ls(.03),hp[1]);g.stroke();g.fillStyle=C('--faint');rr(g,hp[0]-Ls(.03),hp[1]-Ls(.025),Ls(.06),Ls(.05),4);g.fill();g.lineWidth=Math.max(2,Ls(.01));for(let k=0;k<4;k++){const y=hp[1]-Ls(.018)+k*Ls(.012);g.beginPath();g.moveTo(hp[0]-Ls(.02),y);g.lineTo(hp[0]-Ls(.065),y+Ls(.004));g.stroke()}g.lineCap='butt'}
+// planning
+g.globalAlpha=lay(3);if(m===2){g.globalAlpha=lay(3)*.45;poly(g,[[.58,.20],[.62,.40],[.70,.46],[.80,.44],[.80,.345]].map(p=>P(p[0],p[1])),C('--k'),1.5,[4,4]);g.globalAlpha=lay(3)}
+poly(g,PB[m].map(p=>P(p[0],p[1])),C('--k'),2.2);dots(g,resample(PB[m],.035).map(p=>P(p[0],p[1])),C('--k'),1.8);
+// arm
+const pd=P(-.06,.12);g.fillStyle=C('--surface-2');g.strokeStyle=C('--fg');g.lineWidth=1.5;g.fillRect(pd[0],pd[1],Ls(.12),Ls(.12));g.strokeRect(pd[0],pd[1],Ls(.12),Ls(.12));
+g.strokeStyle=C('--fg');g.lineCap='round';g.lineWidth=7;g.beginPath();g.moveTo(Sp[0],Sp[1]);g.lineTo(Ep[0],Ep[1]);g.lineTo(Wq[0],Wq[1]);g.stroke();g.lineWidth=4;const pw=Ls(.045),pz=Wq[1]+Ls(.03);g.beginPath();g.moveTo(Wq[0],Wq[1]);g.lineTo(Wq[0],pz);g.stroke();g.lineWidth=2.6;g.beginPath();g.moveTo(Wq[0]-Math.max(pw,Ls(OPB[m]/2)+2),pz);g.lineTo(Wq[0]+Math.max(pw,Ls(OPB[m]/2)+2),pz);g.stroke();
+[-1,1].forEach(sd=>{const fx=tip[0]+sd*(Ls(OPB[m]/2)+1.5);g.beginPath();g.moveTo(fx,pz);g.lineTo(fx,tip[1]+Ls(.01));g.stroke()});g.lineCap='butt';
+[Sp,Ep,Wq].forEach(q=>{g.fillStyle=C('--surface');g.strokeStyle=C('--fg');g.lineWidth=2;g.beginPath();g.arc(q[0],q[1],4.5,0,7);g.fill();g.stroke()});
+// perception
+g.globalAlpha=lay(1);const cb=P(.58-.05,.15),bb=P(.355,.27);if(m<2){dbox(g,cb[0],cb[1],cb[0]+Ls(.1),P(.58,-.01)[1],C('--teal'),m===0?X.t('杯子 94%','cup 94%'):'')}dbox(g,bb[0],bb[1],bb[0]+Ls(.09),P(.4,-.01)[1],C('--teal'),m===0?X.t('瓶子','bottle'):'');
+if(m===1)lab(g,X.t('夹住了','gripped'),tip[0]+Ls(.07),tip[1]-Ls(.09),C('--teal'),'left','middle',10.5,true);
+if(m===2){const hb=P(.80,.56);dbox(g,hb[0],hb[1],hb[0]+Ls(.16),hb[1]+Ls(.12),C('--teal'),X.t('人手 0.2 m','hand 0.2 m'))}
+if(m===3)lab(g,X.t('碰到架面','touching'),P(.80,.26)[0],P(.80,.26)[1]+4,C('--teal'),'center','middle',10.5,true);
+// sensing extras
+g.globalAlpha=lay(0);g.strokeStyle=C('--teal');g.lineWidth=1.6;[Sp,Ep].forEach(q=>{g.beginPath();g.arc(q[0],q[1],8,-2.4,-.7);g.stroke()});
+if(m===1)lab(g,X.t('夹爪 0.8 A','gripper 0.8 A'),tip[0]+Ls(.07),tip[1]-Ls(.01),C('--teal'),'left','middle',10.5,true);
+if(m===3){X.arrow(g,[Wq[0]+10,Wq[1]+18],[Wq[0]+10,Wq[1]-4],C('--teal'),2,6);lab(g,'1.5 N',Wq[0]+16,Wq[1]+8,C('--teal'),'left','middle',10.5,true)}
+// control
+g.globalAlpha=lay(4);[[Sp,TQB[m][0],16],[Ep,TQB[m][1],13]].forEach(([q,tq,r])=>{const a1=-.6,a2=a1-tq*1.6;g.strokeStyle=C('--amber');g.lineWidth=2.4;g.beginPath();g.arc(q[0],q[1],r,a2,a1);g.stroke();const hx=q[0]+r*Math.cos(a2),hy=q[1]+r*Math.sin(a2);g.fillStyle=C('--amber');g.beginPath();g.arc(hx,hy,2.6,0,7);g.fill()});
+// actuation
+g.globalAlpha=lay(5);[[Sp,TQB[m][0]],[Ep,TQB[m][1]]].forEach(([q,tq])=>{g.fillStyle=C('--x');g.fillRect(q[0]+9,q[1]+6,4,-Math.max(3,tq*16))});if(m===1||m===3){g.fillStyle=C('--x');g.fillRect(Wq[0]-14,Wq[1]+4,4,-10)}
+// decision
+g.globalAlpha=lay(2);const gq=P(GB[m][0],GB[m][1]);flag(g,gq[0]+4,gq[1]-4,C('--k'),'');g.globalAlpha=1;decide(g,W)}
+// ---------- C: car (top view) ----------
+const FC=[2.7,16,36.4,36.6],PC=[[38.4,-5.0],[38,-4.6],[38,-1.2],[38,0.7]],VAN=[31.5,37.5,-5.35,-3.65];
+function drawC(g,W,H){const m=mi,top=32,X0=-2.5,X1=44.5,sx=(W-8)/(X1-X0),sy=Math.min((H-top-4)/12,sx*1.8),ox=4-X0*sx,oy=top+5*sy+((H-top-4)-12*sy)/2,P=(x,y)=>[ox+x*sx,oy-y*sy];
+const r0=P(X0,3.5),r1=P(X1,-5.5);g.fillStyle=C('--surface-2');g.fillRect(r0[0],r0[1],r1[0]-r0[0],r1[1]-r0[1]);g.fillStyle=C('--surface');const sw=P(X0,-5.5),swe=P(X1,-7);g.fillRect(sw[0],sw[1],swe[0]-sw[0],swe[1]-sw[1]);const sn=P(X0,5),sne=P(X1,3.5);g.fillRect(sn[0],sn[1],sne[0]-sn[0],sne[1]-sn[1]);
+const hline=(y,dash,col,w)=>{const a=P(X0,y),b=P(X1,y);g.save();if(dash)g.setLineDash(dash);g.strokeStyle=col;g.lineWidth=w;g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.stroke();g.restore()};hline(3.5,null,C('--muted'),1.4);hline(-5.5,null,C('--muted'),1.4);hline(0,[8,7],C('--faint'),1.2);hline(-3.5,[2,4],C('--faint'),1.2);
+const car=(xf,yc,col,fill,lw)=>{const a=P(xf-4.6,yc+.95),b=P(xf,yc-.95);g.fillStyle=fill;g.strokeStyle=col;g.lineWidth=lw;rr(g,a[0],a[1],b[0]-a[0],b[1]-a[1],3);g.fill();g.stroke();const w=P(xf-1.4,yc);g.lineWidth=1.2;g.beginPath();g.moveTo(w[0],a[1]+2);g.lineTo(w[0],b[1]-2);g.stroke();return[a,b]};
+const va=P(VAN[0],VAN[3]),vb=P(VAN[1],VAN[2]);g.fillStyle=C('--muted');rr(g,va[0],va[1],vb[0]-va[0],vb[1]-va[1],3);g.fill();lab(g,X.t('货车','van'),(va[0]+vb[0])/2,(va[1]+vb[1])/2,C('--surface'),'center','middle',10,true);
+if(m===0){const[a,b]=car(42.3,-1.75,C('--muted'),C('--surface'),1.4);lab(g,X.t('前车','car ahead'),(a[0]+b[0])/2,b[1]+9,C('--faint'),'center','middle',10)}
+const xf=FC[m],so=[xf,-1.75],ray=(an,R)=>[so[0]+R*Math.cos(an),so[1]+R*Math.sin(an)];
+// sensing
+g.globalAlpha=lay(0)*.05;g.fillStyle=C('--teal');g.beginPath();const q0=P(so[0],so[1]);g.moveTo(q0[0],q0[1]);for(let an=-32;an<=32;an+=4){const q=P(...ray(an*D,30));g.lineTo(q[0],q[1])}g.closePath();g.fill();
+if(VAN[0]>so[0]+1){const cs=[[VAN[0],VAN[2]],[VAN[1],VAN[2]],[VAN[0],VAN[3]],[VAN[1],VAN[3]]].map(p=>[Math.atan2(p[1]-so[1],p[0]-so[0]),p]);let lo=cs[0],hi=cs[0];cs.forEach(c=>{if(c[0]<lo[0])lo=c;if(c[0]>hi[0])hi=c});g.globalAlpha=lay(0)*.16;g.fillStyle=C('--fg');const A1=P(...lo[1]),A2=P(...hi[1]),B2=P(...ray(hi[0],60)),B1=P(...ray(lo[0],60));g.beginPath();g.moveTo(A1[0],A1[1]);g.lineTo(A2[0],A2[1]);g.lineTo(B2[0],B2[1]);g.lineTo(B1[0],B1[1]);g.closePath();g.fill()}
+g.globalAlpha=lay(0);const pts=[];if(VAN[0]>so[0]){for(let x=VAN[0];x<=VAN[1];x+=.8)pts.push([x,VAN[3]]);for(let y=VAN[3];y>=VAN[2];y-=.5)pts.push([VAN[0],y])}if(m===0)for(let y=-2.6;y<=-.9;y+=.35)pts.push([37.7,y]);if(m>=1){const pc=PC[m];for(let k=0;k<6;k++)pts.push([pc[0]-.3*Math.cos(k),pc[1]+.3*Math.sin(k)])}dots(g,pts.map(p=>P(p[0],p[1])),C('--teal'),1.8);g.globalAlpha=1;
+// pedestrian (world)
+const pc=P(PC[m][0],PC[m][1]);g.globalAlpha=m===0?.35:1;g.fillStyle=C('--fg');g.beginPath();g.arc(pc[0],pc[1],Math.max(3.2,sx*.35),0,7);g.fill();g.globalAlpha=1;lab(g,X.t('行人','person'),pc[0]+8,pc[1],C('--faint'),'left','middle',10);
+// planning
+g.globalAlpha=lay(3);const sp=[],V=11.1;if(m===0)for(let t=0;t<=5;t+=.5)sp.push(V*t);else if(m===1)for(let t=0;t<=5;t+=.5){const tau=Math.max(0,t-.3),tt=Math.min(tau,V/3.6);sp.push(V*Math.min(t,.3)+V*tt-1.8*tt*tt)}else if(m===3)for(let t=0;t<=5;t+=.5)sp.push(.7*t*t);
+const eg=P(xf,-1.75),tp=sp.filter(d=>xf+d<=(m===0?36.5:43.8)).map(d=>P(xf+d,-1.75));poly(g,[eg].concat(tp),C('--k'),1.6);dots(g,tp,C('--k'),2.3);
+// decision: stop line
+g.globalAlpha=lay(2);if(m===1||m===2){const a=P(36.6,-3.4),b=P(36.6,-.1);g.strokeStyle=C('--k');g.lineWidth=2.4;g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.stroke();if(m===1)lab(g,X.t('停车线','stop line'),b[0]-4,b[1]-8,C('--k'),'right','middle',10.5,true)}g.globalAlpha=1;
+const[ea,eb]=car(xf,-1.75,C('--fg'),C('--surface'),2);if(m===0)lab(g,X.t('本车','this car'),(ea[0]+eb[0])/2,eb[1]+9,C('--fg'),'center','middle',10,true);
+// perception
+g.globalAlpha=lay(1);dbox(g,va[0]-3,va[1]-3,vb[0]+3,vb[1]+3,C('--teal'),m===0?X.t('停着的货车','parked van'):'',true);
+if(m===0){const a=P(37.4,-.6),b=P(42.6,-2.9);dbox(g,a[0],a[1],b[0],b[1],C('--teal'),X.t('前车 35 m','car ahead 35 m'))}
+if(m>=1){dbox(g,pc[0]-6,pc[1]-6,pc[0]+6,pc[1]+6,C('--teal'),'');if(m===1){const t=P(37.6,-6.25);lab(g,X.t('行人 22 m · 1.0 m/s','person 22 m · 1.0 m/s'),t[0],t[1],C('--teal'),'right','middle',10.5,true)}else lab(g,m===2?X.t('还在本车道','still in lane'):X.t('已出本车道','out of lane'),pc[0],pc[1]-14,C('--teal'),'center','middle',10.5,true);if(m<=2){g.save();g.setLineDash([2,3]);X.arrow(g,[pc[0],pc[1]-8],[pc[0],P(0,PC[m][1]+(m===1?1.6:1.2))[1]],C('--teal'),1.5,5);g.restore()}}
+// control
+g.globalAlpha=lay(4);const cy=ea[1]-5,cxm=(ea[0]+eb[0])/2;if(m===1||m===2){X.arrow(g,[cxm+12,cy],[cxm-14,cy],C('--amber'),2.6,7);lab(g,m===1?'−3.6 m/s²':X.t('保持制动','hold brakes'),cxm-18,cy,C('--amber'),'right','middle',10.5,true)}else{X.arrow(g,[cxm-10,cy],[cxm+(m===3?16:10),cy],C('--amber'),2.6,7);if(m===3)lab(g,'+1.4 m/s²',cxm-14,cy,C('--amber'),'right','middle',10.5,true)}
+// actuation
+g.globalAlpha=lay(5);g.fillStyle=C('--x');[[xf-.9,-.9],[xf-.9,-2.6],[xf-3.7,-.9],[xf-3.7,-2.6]].forEach(([x,y],k)=>{const q=P(x,y);if(m===1||m===2)g.fillRect(q[0]-3,q[1]-2,6,4);else if(k>=2)g.fillRect(q[0]-1.5,q[1]-1.5,3,3)});if(m===0||m===3){const q=P(xf-3.7,-1.75);g.fillRect(q[0]-4,q[1]-4,8,8)}
+g.globalAlpha=1;decide(g,W)}
+// ---------- D: quadrotor (side view, not to scale) ----------
+const DP=[[10,1.6,0],[95,30,-6],[176,30,-4],[258,13.5,0]],DPath=[[10,1],[10,30],[100,30],[176,30],[236,30],[258,13.5]],SAT=[18,52,86,122,162,204,240,284];
+function drawD(g,W,H){const m=mi,top=32,sx=(W-8)/300,sz=(H-top-6)/62,ox=4,oy=H-6,P=(x,z)=>[ox+x*sx,oy-z*sz];
+const gl=P(0,0),ge=P(300,0);g.strokeStyle=C('--fg');g.lineWidth=2;g.beginPath();g.moveTo(gl[0],gl[1]);g.lineTo(ge[0],ge[1]);g.stroke();
+const pad=P(4,0);g.fillStyle=C('--muted');g.fillRect(pad[0],pad[1]-3,sx*12,3);
+[40,62,120].forEach(x=>{const b=P(x,0),t=P(x,7);g.strokeStyle=C('--muted');g.lineWidth=1.5;g.beginPath();g.moveTo(b[0],b[1]);g.lineTo(t[0],t[1]);g.stroke();g.fillStyle=C('--surface-2');g.beginPath();g.arc(t[0],t[1],Math.max(5,sz*3),0,7);g.fill()});
+const B1=P(148,50),B1e=P(168,0);g.fillStyle=C('--surface-2');g.fillRect(B1[0],B1[1],B1e[0]-B1[0],B1e[1]-B1[1]);g.strokeStyle=C('--line');g.strokeRect(B1[0],B1[1],B1e[0]-B1[0],B1e[1]-B1[1]);const B2=P(184,46),B2e=P(204,0);g.fillStyle=C('--surface-2');g.fillRect(B2[0],B2[1],B2e[0]-B2[0],B2e[1]-B2[1]);g.strokeRect(B2[0],B2[1],B2e[0]-B2[0],B2e[1]-B2[1]);lab(g,X.t('高楼','tall buildings'),P(176,50)[0],P(176,50)[1]-6,C('--faint'),'center','middle',10);
+const h0=P(262,14),h1=P(300,0);g.fillStyle=C('--surface-2');g.fillRect(h0[0],h0[1],h1[0]-h0[0],h1[1]-h0[1]);g.strokeRect(h0[0],h0[1],h1[0]-h0[0],h1[1]-h0[1]);const bl=P(250,9.2),ble=P(262,8.6);g.fillStyle=C('--muted');g.fillRect(bl[0],bl[1],ble[0]-bl[0],ble[1]-bl[1]);g.strokeStyle=C('--muted');g.lineWidth=1.2;g.beginPath();g.moveTo(bl[0],bl[1]);g.lineTo(bl[0],P(250,11)[1]);g.stroke();lab(g,X.t('阳台','balcony'),P(256,6)[0],P(256,6)[1]+2,C('--faint'),'center','middle',10);const mk=P(256,9.2);g.fillStyle=C('--fg');g.fillRect(mk[0]-3,mk[1]-2,6,2);
+const sats=SAT.map(x=>P(x,59));g.fillStyle=C('--faint');sats.forEach(q=>{g.fillRect(q[0]-2,q[1]-2,4,4);g.fillRect(q[0]-6,q[1]-1,3,2);g.fillRect(q[0]+3,q[1]-1,3,2)});
+const dp=DP[m],dq=P(dp[0],dp[1]),th=-dp[2]*D;
+// sensing
+g.globalAlpha=lay(0);const blocked=m===2?[0,1,5,6,7]:[];sats.forEach((q,k)=>{const bl=blocked.includes(k);g.save();g.globalAlpha=lay(0)*(bl?.3:.4);if(bl)g.setLineDash([3,4]);g.strokeStyle=C('--teal');g.lineWidth=1;g.beginPath();g.moveTo(dq[0],dq[1]);g.lineTo(q[0],q[1]);g.stroke();g.restore();if(bl){const mx=(dq[0]+q[0])/2,my=(dq[1]+q[1])/2;g.strokeStyle=C('--teal');g.lineWidth=1.4;g.beginPath();g.moveTo(mx-3,my-3);g.lineTo(mx+3,my+3);g.moveTo(mx+3,my-3);g.lineTo(mx-3,my+3);g.stroke()}});
+if(m===3){g.globalAlpha=lay(0)*.12;g.fillStyle=C('--teal');const a=P(dp[0]-6,8.6),b=P(dp[0]+6,8.6);g.beginPath();g.moveTo(dq[0],dq[1]+4);g.lineTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.closePath();g.fill();g.globalAlpha=lay(0)}
+if(m===1)lab(g,X.t('陀螺仪 15°/s','gyro 15°/s'),dq[0]+4,dq[1]+22,C('--teal'),'center','middle',10.5,true);
+// planning
+g.globalAlpha=lay(3);let pth=m===0?DPath:m===1?[[95,30]].concat(DPath.slice(3)):m===2?[[176,30]].concat(DPath.slice(4)):[[258,13.5],[258,10.2]];poly(g,pth.map(p=>P(p[0],p[1])),C('--k'),2);dots(g,resample(pth,m===2?6:m===3?1:16).map(p=>P(p[0],p[1])),C('--k'),1.9);
+// drone
+g.globalAlpha=1;g.save();g.translate(dq[0],dq[1]);g.rotate(th);g.strokeStyle=C('--fg');g.lineWidth=3;g.beginPath();g.moveTo(-13,0);g.lineTo(13,0);g.stroke();g.fillStyle=C('--fg');g.fillRect(-5,-3,10,5);[-13,13].forEach(x=>{g.fillStyle=C('--muted');g.beginPath();g.ellipse(x,-4,8,1.8,0,0,7);g.fill()});g.restore();
+const pk=[dq[0],dq[1]+(m===3?14:7)];g.strokeStyle=C('--muted');g.lineWidth=1;g.beginPath();g.moveTo(dq[0],dq[1]+2);g.lineTo(pk[0],pk[1]);g.stroke();g.fillStyle=C('--surface-2');g.strokeStyle=C('--muted');g.fillRect(pk[0]-4,pk[1],8,6);g.strokeRect(pk[0]-4,pk[1],8,6);
+// perception
+g.globalAlpha=lay(1);g.save();g.setLineDash([3,3]);g.strokeStyle=C('--teal');g.lineWidth=1.3;g.beginPath();g.arc(dq[0],dq[1],[9,9,24,7][m],0,7);g.stroke();g.restore();if(m===2)lab(g,X.t('误差约 4 m','error ≈ 4 m'),dq[0],dq[1]-30,C('--teal'),'center','middle',10.5,true);
+if(m===1){X.arrow(g,[dq[0]+48,dq[1]-14],[dq[0]+22,dq[1]-14],C('--teal'),2,6);lab(g,X.t('风约 7 m/s','wind ≈ 7 m/s'),dq[0]+50,dq[1]-14,C('--teal'),'left','middle',10.5,true)}
+if(m===3){const q=P(256,9.2);dbox(g,q[0]-7,q[1]-6,q[0]+7,q[1]+3,C('--teal'),'');lab(g,X.t('标记','marker'),q[0]-10,q[1]-3,C('--teal'),'right','middle',10.5,true)}
+// control
+g.globalAlpha=lay(4);if(m===0)X.arrow(g,[dq[0]+20,dq[1]+4],[dq[0]+20,dq[1]-18],C('--amber'),2.4,7);if(m===1){g.save();g.translate(dq[0],dq[1]);g.rotate(18*D);g.setLineDash([4,3]);g.strokeStyle=C('--amber');g.lineWidth=2;g.beginPath();g.moveTo(-17,0);g.lineTo(17,0);g.stroke();g.restore();lab(g,X.t('要前倾 18°','tilt 18° forward'),dq[0]-4,dq[1]+38,C('--amber'),'center','middle',10.5,true)}if(m===2)X.arrow(g,[dq[0]+16,dq[1]],[dq[0]+28,dq[1]],C('--amber'),2.4,6);if(m===3)X.arrow(g,[dq[0]+18,dq[1]-6],[dq[0]+18,dq[1]+12],C('--amber'),2.4,6);
+// actuation
+g.globalAlpha=lay(5);const TH=[[1,1],[1.25,.8],[.85,.85],[.75,.75]][m];g.save();g.translate(dq[0],dq[1]);g.rotate(th);g.fillStyle=C('--x');[[-13,TH[0]],[13,TH[1]]].forEach(([x,k])=>{g.fillRect(x-2,-7,4,-k*13)});g.restore();
+// decision
+g.globalAlpha=lay(2);const fq=P(256,9.6);flag(g,fq[0]-2,fq[1],C('--k'),'');g.globalAlpha=1;decide(g,W)}
+// ---------- E: quadruped on stairs (side view) ----------
+const ST=[[0,0],[1.25,0],[1.25,.17],[1.53,.17],[1.53,.34],[1.81,.34],[1.81,.51],[2.09,.51],[2.09,.68],[2.9,.68]];
+const QE=[{c:[.72,.33],p:0,F:{FL:[.95,0],FR:[.88,0],RL:[.57,0],RR:[.5,0]}},{c:[1.38,.42],p:18,F:{FL:[1.70,.34],FR:[1.55,.34],RL:[1.15,0],RR:[1.08,0]}},{c:[1.80,.70],p:22,F:{FL:[2.12,.68],FR:[1.95,.51],RL:[1.67,.34],RR:[1.60,.34]}}];
+const FH=[[1.39,.17],[1.67,.34],[1.95,.51],[2.23,.68]];
+const stairZ=x=>x<1.25?0:.17*Math.min(4,Math.floor((x-1.25)/.28)+1),pen=(A,B)=>{for(let t=.05;t<=.9;t+=.05){const x=A[0]+(B[0]-A[0])*t,z=A[1]+(B[1]-A[1])*t;if(z<stairZ(x)-.004)return true}return false};
+function knee(H,F,front){const dx=F[0]-H[0],dz=F[1]-H[1],d=Math.min(.399,Math.hypot(dx,dz)),k=Math.acos(d/.4),a=Math.atan2(dz,dx),c1=[H[0]+.2*Math.cos(a+k),H[1]+.2*Math.sin(a+k)],c2=[H[0]+.2*Math.cos(a-k),H[1]+.2*Math.sin(a-k)],pref=front?(c1[0]>c2[0]?c1:c2):(c1[0]<c2[0]?c1:c2),alt=pref===c1?c2:c1,bad=K=>pen(H,K)||pen(K,F);return bad(pref)&&!bad(alt)?alt:pref}
+function drawE(g,W,H){const m=mi,top=32,x0=.35,x1=2.72,z1=1.02,s=Math.min((W-10)/(x1-x0),(H-top-6)/(z1+.04)),ox=(W-(x1-x0)*s)/2-x0*s,oy=top+z1*s,P=(x,z)=>[ox+x*s,oy-z*s];
+g.save();g.beginPath();g.rect(0,top-2,W,H-top+2);g.clip();
+g.fillStyle=C('--surface-2');g.strokeStyle=C('--fg');g.lineWidth=1.6;g.beginPath();ST.forEach((p,i)=>{const q=P(p[0],p[1]);i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1])});const e1=P(2.9,-.04),e0=P(0,-.04);g.lineTo(e1[0],e1[1]);g.lineTo(e0[0],e0[1]);g.closePath();g.fill();g.beginPath();ST.forEach((p,i)=>{const q=P(p[0],p[1]);i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1])});g.stroke();
+const Q=QE[m],pr=Q.p*D,u=[Math.cos(pr),Math.sin(pr)],nrm=[-Math.sin(pr),Math.cos(pr)],at=(a,b)=>[Q.c[0]+a*u[0]+b*nrm[0],Q.c[1]+a*u[1]+b*nrm[1]],HF=at(.19,-.04),HR=at(-.19,-.04),cam=at(.27,.05);
+const lead=(txt,tx,tz,target,col)=>{const t=P(tx,tz),q=P(...target);g.save();g.setLineDash([2,3]);g.strokeStyle=col;g.lineWidth=1;g.beginPath();g.moveTo(t[0],t[1]+7);g.lineTo(q[0],q[1]);g.stroke();g.restore();lab(g,txt,t[0],t[1],col,'center','middle',10.5,true)};
+// sensing
+const ca=pr-40*D,cq=P(cam[0],cam[1]);g.globalAlpha=lay(0)*.05;g.fillStyle=C('--teal');g.beginPath();g.moveTo(cq[0],cq[1]);[-22,22].forEach(d=>{const q=P(cam[0]+1.35*Math.cos(ca+d*D),cam[1]+1.35*Math.sin(ca+d*D));g.lineTo(q[0],q[1])});g.closePath();g.fill();g.globalAlpha=lay(0);
+const sp=[];for(let i=1;i<ST.length;i++){const a=ST[i-1],b=ST[i],L=Math.hypot(b[0]-a[0],b[1]-a[1]);for(let t=0;t<=L;t+=.05){const x=a[0]+(b[0]-a[0])*t/L,z=a[1]+(b[1]-a[1])*t/L,dx=x-cam[0],dz=z-cam[1],r=Math.hypot(dx,dz),an=Math.atan2(dz,dx);let da=an-ca;while(da>Math.PI)da-=2*Math.PI;while(da<-Math.PI)da+=2*Math.PI;if(r<1.35&&Math.abs(da)<22*D)sp.push(P(x,z))}}dots(g,sp,C('--teal'),1.8);
+const im=P(...at(0,.03));g.strokeStyle=C('--teal');g.lineWidth=1.4;g.strokeRect(im[0]-4,im[1]-4,8,8);
+if(m===1){const q=P(...Q.F.FR);X.arrow(g,[q[0]+4,q[1]+6],[q[0]-12,q[1]+6],C('--teal'),1.8,5);const t=P(1.67,.27);lab(g,X.t('滑了 3 cm','slid 3 cm'),t[0],t[1],C('--teal'),'center','middle',10.5,true)}
+if(m===2){X.arrow(g,[im[0]-14,im[1]-16],[im[0]+6,im[1]-16],C('--teal'),1.8,5);lab(g,X.t('加速度突增','accel spike'),im[0]-18,im[1]-16,C('--teal'),'right','middle',10.5,true)}
+// perception: height map
+g.globalAlpha=lay(1);g.save();g.setLineDash([3,3]);g.strokeStyle=C('--teal');g.lineWidth=1.4;for(let k=0;k<4;k++){const a=P(1.25+k*.28,.17*(k+1)+.03),b=P(1.53+k*.28,.17*(k+1)+.03);g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.stroke()}g.restore();
+if(m===0){const q=P(1.25,.085);lab(g,'17 cm',q[0]+5,q[1],C('--teal'),'left','middle',10.5,true);const q2=P(1.67,.26);lab(g,'28 cm',q2[0],q2[1],C('--teal'),'center','middle',10.5,true)}
+if(m===1){const f=Q.F.FR;g.save();g.setLineDash([2,2]);g.strokeStyle=C('--teal');g.lineWidth=1.4;const q=P(...f);g.beginPath();g.arc(q[0],q[1],8,0,7);g.stroke();g.restore();lead(X.t('右前脚没踩实','front-right foot slipping'),.95,.86,[f[0],f[1]+.06],C('--teal'))}
+if(m===2){const a2=P(...at(.02,.2)),b2=P(...at(.24,.2));X.arrow(g,a2,b2,C('--teal'),2,6);lab(g,X.t('往前冲 0.5 m/s','lurching 0.5 m/s'),b2[0]+4,b2[1]-3,C('--teal'),'left','middle',10.5,true)}
+// planning
+g.globalAlpha=lay(3);const bt=m===2?[[Q.c[0],Q.c[1]],[2.2,.86],[2.72,.86]]:[[Q.c[0],Q.c[1]],[Math.min(2.6,Q.c[0]+.5),Math.min(.9,Q.c[1]+.3)],[2.72,.9]];poly(g,bt.map(p=>P(p[0],p[1])),C('--k'),1.6,[5,4]);
+FH.forEach((f,k)=>{let q=P(f[0],f[1]);const hi=(m===1&&k===2)||(m===2&&k===3);if(m===1&&k===2)q=P(f[0]+.04,f[1]);if(m===2&&k===3)q=P(f[0]+.08,f[1]);g.strokeStyle=C('--k');g.lineWidth=hi?2.6:1.8;g.beginPath();g.moveTo(q[0]-4,q[1]-4);g.lineTo(q[0]+4,q[1]+4);g.moveTo(q[0]+4,q[1]-4);g.lineTo(q[0]-4,q[1]+4);g.stroke();if(hi)lab(g,m===1?X.t('离边缘远一点','further from edge'):X.t('迈得更远','longer step'),q[0],m===1?q[1]-12:q[1]+13,C('--k'),'center','middle',10.5,true)});
+// legs and body
+g.globalAlpha=1;const leg=(Hh,F,col,w,fr)=>{const K=knee(Hh,F,fr),a=P(...Hh),k=P(...K),f=P(...F);g.strokeStyle=col;g.lineWidth=w;g.lineCap='round';g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(k[0],k[1]);g.lineTo(f[0],f[1]);g.stroke();g.lineCap='butt';return k};
+leg(HF,Q.F.FR,C('--faint'),3,1);leg(HR,Q.F.RR,C('--faint'),3,0);
+const bc=[at(.25,.05),at(.25,-.06),at(-.25,-.06),at(-.25,.05)].map(p=>P(p[0],p[1]));g.fillStyle=C('--surface');g.strokeStyle=C('--fg');g.lineWidth=2;g.beginPath();bc.forEach((q,i)=>i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]));g.closePath();g.fill();g.stroke();g.fillStyle=C('--fg');g.beginPath();g.arc(cq[0],cq[1],3,0,7);g.fill();
+const kF=leg(HF,Q.F.FL,C('--fg'),3.6,1),kR=leg(HR,Q.F.RL,C('--fg'),3.6,0);
+if(m===2){const q=P(...at(-.25,0));X.arrow(g,[q[0]-34,q[1]+4],[q[0]-6,q[1]+4],C('--muted'),2.6,8);lab(g,X.t('推','push'),q[0]-36,q[1]+4,C('--muted'),'right','middle',11,true)}
+// control: ground forces
+g.globalAlpha=lay(4);const stance=m===1?['FL','RL','RR']:['FL','FR','RL','RR'];stance.forEach(k=>{const f=P(...Q.F[k]),big=m===1||(m===2&&k[0]==='R');X.arrow(g,[f[0],f[1]+2],[f[0]+(m===2?5:2),f[1]-(big?22:15)],C('--amber'),2.2,6)});
+// actuation
+g.globalAlpha=lay(5);[[kF,m===1?1.4:1],[kR,m===2?1.5:1.1]].forEach(([K,c])=>{const q=P(...K);g.fillStyle=C('--x');g.beginPath();g.arc(q[0],q[1],2.5+c*2.2,0,7);g.fill()});
+g.restore();g.globalAlpha=1;decide(g,W)}
+const DR=[drawA,drawB,drawC,drawD,drawE];
+const St=X.astage(cv,.6,()=>draw(),210,360);
+function draw(){const g=St.g;if(!g)return;const W=St.w,H=St.h;g.clearRect(0,0,W,H);g.save();DR[si](g,W,H);g.restore();g.globalAlpha=1}
+// ---------- flowchart ----------
+const CIRC=['①','②','③','④','⑤','⑥','⑦'];
+function flow(el){const m=cur(),s=S[si];let h='';for(let i=0;i<6;i++){const ch=m.L[i][0],ord=[];m.p.forEach((q,k)=>{if(q===i&&(el===Infinity||el>=k*STEP))ord.push(CIRC[k])});
+const hot=anim&&m.p.some((q,k)=>q===i&&el>=k*STEP&&el<(k+1)*STEP);
+h+='<button type="button" class="scb g'+GC[i]+(ch?'':' off')+(hot?' hot':'')+'" data-i="'+i+'" aria-pressed="'+(focus===i)+'"><span class="sch"><b>'+X.t(LN[i][0],LN[i][1])+'</b>'+(ord.length?'<span class="sco">'+ord.join('')+'</span>':'')+(ch?'':'<span class="scn">'+X.t('照旧','no change')+'</span>')+'<span class="scr">'+X.t(s.rt[i][0],s.rt[i][1])+'</span></span><span class="sct">'+X.t(m.L[i][1],m.L[i][2])+'</span></button>';
+if(i<5)h+='<div class="sca">↓ '+X.t(AR[i][0],AR[i][1])+(i===1&&m.p[0]===2?X.t('　＋ 人给的任务',' + the task from a person'):'')+'</div>'}
+h+='<div class="sca">↓ '+X.t('力和运动 → 物理世界变了，传感再测到它','force and motion → the world changes, and sensing measures it again')+'</div>';$('sc-f').innerHTML=h}
+$('sc-f').addEventListener('click',e=>{const b=e.target.closest('.scb');if(!b)return;const i=+b.dataset.i;focus=focus===i?null:i;flow(anim?(performance.now()-t0)/1000:Infinity);draw()});
+function tick(){if(!anim){run=false;return}const el=(performance.now()-t0)/1000,k=Math.floor(el/STEP);if(k!==lastK){lastK=k;flow(el)}draw();if(el>cur().p.length*STEP+.3){anim=false;flow(Infinity);draw();run=false;return}requestAnimationFrame(tick)}
+function play(){if(reduced||!vis){anim=false;flow(Infinity);draw();return}anim=true;t0=performance.now();lastK=-1;if(!run){run=true;requestAnimationFrame(tick)}}
+X.onVisible(cv,v=>{const was=vis;vis=v;if(v&&!was&&!played){played=true;play()}});
+const PB2=S.map((s,i)=>{const b=document.createElement('button');b.type='button';b.className='btn';b.addEventListener('click',()=>{si=i;mi=0;focus=null;ui();play()});$('sc-p').appendChild(b);return b});
+function moments(){const s=S[si];let h='';s.ms.forEach((m,i)=>{h+='<button type="button" class="btn scmi'+(i===mi?' on':'')+'" data-m="'+i+'" aria-label="'+X.t('第 '+(i+1)+' 刻：','Moment '+(i+1)+': ')+m.t+' '+X.t(m.zh,m.en)+'">'+(i+1)+'</button>'});h+='<button type="button" class="btn" id="sc-nx">'+(mi<s.ms.length-1?X.t('下一刻 →','Next →'):X.t('从头再来 ↺','Start again ↺'))+'</button>';$('sc-m').innerHTML=h}
+$('sc-m').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.id==='sc-nx'){mi=(mi+1)%S[si].ms.length}else mi=+b.dataset.m;focus=null;ui();play()});
+function ui(){PB2.forEach((b,i)=>{b.innerHTML='<b>'+X.t(S[i].zh,S[i].en)+'</b><small>'+X.t(S[i].tz,S[i].te)+'</small>';b.classList.toggle('on',i===si)});moments();const m=cur();
+$('sc-tl').innerHTML='<b>'+(mi+1)+'</b> · '+m.t+' · '+X.t(m.zh,m.en);
+$('sc-h').textContent=X.t('点流程图里的一层，图上就只突出这一层的东西 · 青：测量和认出来的 · 紫：目标和路线 · 橙：命令 · 红：电机电流','Tap a layer in the flowchart to highlight only its part of the picture · teal: measured and recognised · purple: goals and routes · orange: commands · red: motor currents');
+$('sc-st').textContent=X.t(m.n[0],m.n[1]);flow(anim?(performance.now()-t0)/1000:Infinity);draw()}
+X.onLang(ui);X.onTheme(draw);ui()})();
+</script>
+<p><span class="zh" lang="zh-CN">五个例子放在一起，能看出三条规律：</span><span class="en" lang="en">Put the five examples side by side and three patterns appear:</span></p>
+<ul>
+<li><span class="zh" lang="zh-CN"><b>事情从哪一层进来，就从哪一层往下传。</b>人给的任务从决策层进来；路上多了东西，从传感进来，到规划为止就处理完了，决策层不用管；被推一下、被风吹一下，只在最下面几层里转一圈。</span><span class="en" lang="en"><b>Each event comes in at a particular layer and travels down from there.</b> A task from a person enters at the decision layer; something new in the way enters at sensing and is dealt with by the time it reaches planning, without the decision layer getting involved; a push or a gust only goes round the bottom few layers.</span></li>
+<li><span class="zh" lang="zh-CN"><b>决策层大部分时候不动。</b>它像一个开关，只在关键时刻切一下：到了、抓住了、看到人了、电量低了。这些时刻几乎都是由一个测量引发的。</span><span class="en" lang="en"><b>Most of the time the decision layer does nothing.</b> Like a switch, it flips only at key moments: arrived, gripped, a person spotted, battery low. Nearly every one of those moments is set off by a measurement.</span></li>
+<li><span class="zh" lang="zh-CN"><b>越要紧的反应，走的路越短。</b>撞到椅子腿，碰撞开关直接让底盘停下；汽车看到行人，整条链走下来要 0.3 秒左右，这段时间里车已经开出去 3 m 多。快的事交给下面，慢的事交给上面。</span><span class="en" lang="en"><b>The more urgent the reaction, the shorter its path.</b> Bump into a chair leg and the bumper stops the base directly; for the car to react to the pedestrian, the news has to travel the whole chain, which takes about 0.3 s, by which time the car has covered more than 3 m. Fast things go to the bottom, slow things to the top.</span></li>
+</ul>
+<h3><span class="zh" lang="zh-CN">这些层同时在跑：被推了一下的 0.3 秒</span><span class="en" lang="en">The layers all run at once: the 0.3 s after a push</span></h3>
+<p><span class="zh" lang="zh-CN">上面的流程图容易让人以为各层排着队，一个算完再交给下一个。实际上并不是这样。一台四足机器人站在原地，你从侧面推它一把。它晃了一下，脚挪了半步，站稳了，前后不到半秒。这半秒里，机器人里面发生了什么？</span><span class="en" lang="en">The flowchart above can give the impression that the layers wait in line, each finishing before handing over to the next. That is not how it works. A quadruped is standing still and you push it from the side. It sways, shifts a foot half a step and steadies itself, all in under half a second. What went on inside the robot in that half second?</span></p>
+<p><span class="zh" lang="zh-CN">不是一个程序在反应，而是好几层程序同时在跑，各有各的节拍。最里面的电流环每秒跑几万次，你的手刚碰到它，它已经调整了几十次；全身控制每秒 500 次；规划落脚点的 MPC 每秒几十次；相机每秒 30 帧；决定往哪走的导航规划一秒才一次；至于"今天要去哪"的任务层，压根不知道你推过它。MPC 和全身控制的频率取自 MIT 的四足机器人 Mini Cheetah（<a href="https://arxiv.org/abs/1909.06586" rel="noopener" target="_blank">Kim 等 2019</a>），别的四足机器人量级相近。关节 PD 在下面画成每秒 1 万次，好和电流环分开看；Mini Cheetah 上它和电流环一样，每秒 4 万次。</span><span class="en" lang="en">It is not one program reacting but several layers running at the same time, each to its own beat. The current loop at the very bottom runs tens of thousands of times a second, and has adjusted dozens of times before your hand has even settled; whole-body control runs 500 times a second; MPC, which plans the footholds, runs dozens of times a second; the camera delivers 30 frames a second; navigation, which decides where to go, runs once a second; and the task layer, which knows where the robot is supposed to be today, never finds out you pushed it. The MPC and whole-body control rates are those of MIT’s Mini Cheetah quadruped (<a href="https://arxiv.org/abs/1909.06586" rel="noopener" target="_blank">Kim et al. 2019</a>); other legged robots are in the same range. Joint PD is drawn below at 10,000 times a second to keep it apart from the current loop; on Mini Cheetah it runs, like the current loop, 40,000 times a second.</span></p>
 <ul class="rules">
 <li><span class="zh" lang="zh-CN">每一行是机器人里的一层程序，左边写着它每秒跑几次。每一道竖线是它的一次运行：读一次测量，算一次，发一次命令。</span><span class="en" lang="en">Each row is one layer of software in the robot, with how often it runs on the left. Each tick is one run: read the measurements once, compute once, send a command once.</span></li>
 <li><span class="zh" lang="zh-CN">红色虚线是被推的那一刻。竖线上方的圆点标出每一层在推完之后的第一次运行：它最早只能在那一刻做出反应。</span><span class="en" lang="en">The dashed red line is the moment of the push. The dot above each row’s ticks marks that layer’s first run after the push: that is the earliest moment it can react.</span></li>
@@ -436,16 +951,7 @@ const PRE=[[2,'100 秒','100 s'],[0,'1 秒','1 s'],[-2,'10 毫秒','10 ms'],[-4,
 $('tz-z').addEventListener('input',e=>{z=+e.target.value;ui()});X.onLang(ui);ui()})();
 </script>
 <p><span class="zh" lang="zh-CN">同一台机器人，最快的电流环（每秒 4 万次）和每秒一次的导航规划，差了将近五个数量级（差 10 倍叫一个数量级）。为什么要分这么多层、各打各的节拍？一句话：每一层管的事情快慢不同。电流在线圈里变化以微秒计，身体倒下以零点几秒计，绕开一把椅子以秒计，安排一天的工作以分钟计。第 2 步会让你亲手感受这一点。</span><span class="en" lang="en">In the same robot, the fastest layer, the current loop (40,000 times a second), and navigation, at once a second, are nearly five orders of magnitude apart (an order of magnitude is a factor of 10). Why so many layers, each keeping its own beat? In one sentence: each layer looks after something that changes at a different speed. Current in a coil changes in microseconds, a body falls in fractions of a second, getting round a chair takes seconds, planning a day’s work takes minutes. Step 2 lets you feel this for yourself.</span></p>
-<p><span class="zh" lang="zh-CN">按管的事情分，几乎所有自主机器人都有这六层：</span><span class="en" lang="en">Sorted by what they look after, almost every autonomous robot has these six layers:</span></p>
-<ol class="pipe">
-<li><span class="zh" lang="zh-CN"><b>传感</b>：把物理量变成带时间戳的数字<span class="mxl">相机、激光雷达、IMU、关节编码器、力传感器、电机里的电流传感器</span></span><span class="en" lang="en"><b>Sensing</b>: turn physical quantities into time-stamped numbers<span class="mxl">cameras, lidar, IMU, joint encoders, force sensors, the current sensors inside the motor drives</span></span></li>
-<li><span class="zh" lang="zh-CN"><b>感知与估计</b>：我在哪、我是什么姿态、周围有什么<span class="mxl">卡尔曼滤波（按各自的可信程度，把预测和测量加权合起来）、SLAM、目标检测（上一篇的卷积网络、Transformer 主要用在这里）</span></span><span class="en" lang="en"><b>Perception and estimation</b>: where am I, how am I oriented, what is around me<span class="mxl">Kalman filters (which blend predictions and measurements, each weighted by how far it can be trusted), SLAM, object detection (where the convolutional networks and Transformers of the previous piece mostly live)</span></span></li>
-<li><span class="zh" lang="zh-CN"><b>决策</b>：现在该做什么<span class="mxl">有限状态机（几种模式加上切换条件）、行为树（把任务拆成一棵树，按顺序和条件执行）、任务规划</span></span><span class="en" lang="en"><b>Decision</b>: what to do now<span class="mxl">finite state machines (a few modes plus the conditions for switching between them), behaviour trees (a task broken into a tree that runs in order and on conditions), task planning</span></span></li>
-<li><span class="zh" lang="zh-CN"><b>规划</b>：怎么过去、身体怎么动<span class="mxl">路径搜索、轨迹优化、MPC</span></span><span class="en" lang="en"><b>Planning</b>: how to get there, how the body should move<span class="mxl">path search, trajectory optimisation, MPC</span></span></li>
-<li><span class="zh" lang="zh-CN"><b>控制</b>：让身体真的按计划走<span class="mxl">PID（第 1 步）、全身控制、学到的策略</span></span><span class="en" lang="en"><b>Control</b>: make the body actually follow the plan<span class="mxl">PID (step 1), whole-body control, learned policies</span></span></li>
-<li><span class="zh" lang="zh-CN"><b>执行</b>：把电变成力<span class="mxl">驱动器、电机、减速器</span></span><span class="en" lang="en"><b>Actuation</b>: turn electricity into force<span class="mxl">drives, motors, gearboxes</span></span></li>
-</ol>
-<p><span class="zh" lang="zh-CN">还有几样东西竖着贯穿所有层：通信、时间同步、计算平台、电源，以及一条不经过任何软件的安全回路。下面一步一步拆开看：</span><span class="en" lang="en">A few things run vertically through every layer: communication, time synchronisation, the computers, power, and a safety circuit that bypasses all software. Now, one step at a time:</span></p>
+<p><span class="zh" lang="zh-CN">还有几样东西竖着贯穿所有层：通信、时间同步、计算平台、电源，以及一条不经过应用软件的安全回路。下面一步一步拆开看：</span><span class="en" lang="en">A few things also run vertically through every layer: communication, time synchronisation, the computing platform, power, and a safety circuit that does not go through the application software. Now let us take it apart step by step:</span></p>
 <ul class="steps">
 <li><span class="zh" lang="zh-CN"><b>第 1 步：一个环怎么闭上</b><br/><span class="mxl">开环和闭环；PD 控制为什么像一根弹簧；前馈和反馈怎么分工</span></span><span class="en" lang="en"><b>Step 1: how a loop closes</b><br/><span class="mxl">Open loop and closed loop; why PD control is like a spring; how feedforward and feedback share the work</span></span></li>
 <li><span class="zh" lang="zh-CN"><b>第 2 步：环要跑多快</b><br/><span class="mxl">立扫把容易、立铅笔难；采样频率和延迟要比被控的东西快多少</span></span><span class="en" lang="en"><b>Step 2: how fast a loop has to run</b><br/><span class="mxl">Why a broom is easy to balance and a pencil is not; how much faster a loop must sample, and how much shorter its delay must be, than the thing it controls</span></span></li>
@@ -1259,6 +1765,7 @@ X.onLang(ui);ui()})();
 </tbody></table></div>
 <h3><span class="zh" lang="zh-CN">回到开头的问题</span><span class="en" lang="en">Back to the opening questions</span></h3>
 <ul>
+<li><span class="zh" lang="zh-CN"><b>六层之间传的是什么？</b>传感交出原始数据，感知交出世界状态，决策交出目标，规划交出路线或轨迹，控制交出命令，执行交出力和运动；动作改变了世界，再被传感测到。事情从哪一层进来，就从哪一层往下传：任务从决策层进来，路上的障碍从传感进来、到规划为止，一阵风只在最下面几层里转一圈。</span><span class="en" lang="en"><b>What passes between the six layers?</b> Sensing hands on raw data, perception the world state, decision a goal, planning a route or trajectory, control commands, and actuation force and motion; the action changes the world, which sensing then measures again. Each event enters at a particular layer and travels down from there: a task enters at decision, an obstacle in the way enters at sensing and stops at planning, and a gust only goes round the bottom few layers.</span></li>
 <li><span class="zh" lang="zh-CN"><b>被推的那 0.3 秒里发生了什么？</b>最下面的电流环和关节 PD 先动，几十微秒到几毫秒里就开始顶住；状态估计和全身控制几毫秒后接上；MPC 几十毫秒后重新安排落脚点；相机和导航可能根本没参与。越快的扰动，由越靠下的环处理。</span><span class="en" lang="en"><b>What happened in the 0.3 s after the push?</b> The current loops and joint PD at the bottom move first, starting to push back within tens of microseconds to a few milliseconds; state estimation and whole-body control join a few milliseconds later; MPC replans the footholds after tens of milliseconds; the camera and navigation may not take part at all. The faster the disturbance, the lower the loop that handles it.</span></li>
 <li><span class="zh" lang="zh-CN"><b>为什么要分这么多层？</b>每一层管的物理过程快慢不同，环要比它管的东西快一个数量级左右；要"想"的事算得慢，"反射"简单算得快，两条趋势刚好对上。分层还让每一层都简单、扰动能就地消灭、上层出事时下层能兜底。</span><span class="en" lang="en"><b>Why so many layers?</b> Each layer looks after physics that changes at its own speed, and a loop must be about an order of magnitude faster than what it controls; things that need “thinking” are slow to compute, while “reflexes” are simple and fast, and the two trends line up neatly. Layering also keeps each layer simple, lets disturbances be dealt with on the spot, and lets a lower layer catch the robot when an upper one fails.</span></li>
 <li><span class="zh" lang="zh-CN"><b>闭环一共有几层？</b>身体里通常 4 到 7 层，看要同时应付几种时间尺度。外面还有重新规划的环、人在旁边遥控或监督的环、部署和训练之间的数据环；安全回路和整条链并联。</span><span class="en" lang="en"><b>How many loops are there?</b> Usually 4 to 7 inside the body, depending on how many time scales it has to handle at once. Outside there are more: the replanning loop, the loop of a person teleoperating or supervising, and the data loop between deployment and training; the safety circuit runs in parallel with the whole chain.</span></li>
