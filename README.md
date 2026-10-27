@@ -144,9 +144,9 @@ The layers of an autonomous robot, from the task layer down to the motor's curre
 
 自主机器人从任务层一直到电机电流环的层次，以及把它们串起来、一层套一层的闭环：一个环怎么闭上，每层要跑多快，环为什么套着环，驱动器怎么用开关控制电流，每层交给下一层什么，五种机器人怎么共用同一副骨架，硬件之间怎么连线、怎么对齐时间。例子来自机械臂、四足机器人、自动驾驶汽车、无人机和扫地机器人。
 
-0. Overview: a flowchart of the six layers and what each hands to the next; five robots doing five kinds of job, moment by moment; the 0.3 s after a robot is pushed
+0. Overview: one complete textbook control loop (target, comparator, error, controller, actuator, plant, sensor, measurement, disturbance, noise) on a robot vacuum's wheel; how feedback is built; the vacuum's three nested loops and where the six layers sit on them; five robots as stacks of loops, moment by moment
 1. One loop: open versus closed loop, PD control as a spring and a damper, feedforward plus feedback
-2. How fast: the falling time scale `T = √(l/g)`, sampling rate, delay, bandwidth, real-time and jitter
+2. How fast: the falling time scale `T = √(l/g)`, sampling rate, delay, bandwidth, real-time and jitter; the 0.3 s after a robot is pushed
 3. Loops within loops: a drone's position → velocity → attitude → rate cascade
 4. The innermost loop: torque is current, PWM and ripple, the current loop, FOC, gearboxes and backdrivability
 5. One robot from task to motor: a robot vacuum's layers and the interfaces between them, periodic versus event-driven layers, the watchdog and the bumper
@@ -154,13 +154,13 @@ The layers of an autonomous robot, from the task layer down to the motor's curre
 7. Wiring: SPI, CAN, EtherCAT, Ethernet and ROS 2; time synchronisation; real-time computers; the safety circuit
 8. Summary: table of layers, check questions, further reading
 
-Interactive demos: five scenarios (a robot vacuum cleaning a kitchen, an arm putting a cup on a shelf, a car meeting a pedestrian, a drone delivering a parcel, a quadruped climbing stairs) that show, at each key moment, what every layer hands on and in what order the news travels; a time magnifier that zooms from 100 s to 0.1 ms through every layer of a legged robot; a joint holding a weight in open loop, PD, and PD with gravity compensation; balancing a stick against sampling rate and delay; a drone cascade with the rate loop slowed down or switched off; PWM switching and a current loop riding out a supply sag; a robot vacuum whose layers you can switch off one by one, with a watchdog and a bumper; the loop rates of five kinds of robot; CAN arbitration bit by bit and an EtherCAT frame passing through the drives; and a camera and lidar whose clocks drift apart.
+Interactive demos: a textbook loop on a vacuum's wheel where you can roll onto carpet, cut or reverse the feedback, drop the integral term and change the encoder window; the vacuum's task, route and wheel loops drawn as three complete loops, each outer loop using the next as its actuator; five scenarios (a robot vacuum cleaning a kitchen, an arm putting a cup on a shelf, a car meeting a pedestrian, a drone delivering a parcel, a quadruped climbing stairs) that show, at each key moment, what each loop wants, measures, its error and its output, and which loop reacts first; a time magnifier that zooms from 100 s to 0.1 ms through every layer of a legged robot; a joint holding a weight in open loop, PD, and PD with gravity compensation; balancing a stick against sampling rate and delay; a drone cascade with the rate loop slowed down or switched off; PWM switching and a current loop riding out a supply sag; a robot vacuum whose layers you can switch off one by one, with a watchdog and a bumper; the loop rates of five kinds of robot; CAN arbitration bit by bit and an EtherCAT frame passing through the drives; and a camera and lidar whose clocks drift apart.
 
-交互：五个场景（扫地机器人扫厨房、机械臂把杯子放上架子、汽车遇到行人横穿、无人机送包裹、四足机器人上楼梯），在每个关键时刻看每一层交出什么、消息按什么顺序传下去；从 100 秒拉近到 0.1 毫秒、看四足机器人每一层节拍的时间放大镜；托着重物的关节（开环、PD、PD 加重力补偿）；随采样频率和延迟变化的立杆；可以让角速度环变慢或关掉的无人机级联；PWM 开关和顶住电源波动的电流环；可以一层层关掉、带看门狗和碰撞开关的扫地机器人；五种机器人各层的频率；一位一位比的 CAN 仲裁和穿过驱动器的 EtherCAT 帧；时钟慢慢对不齐的相机和激光雷达。
+交互：扫地机器人一个轮子的教科书式控制环，可以压上地毯、断开或接反反馈、去掉积分、改编码器的测速窗口；画成三个完整环的任务环、路线环、轮速环，外面的环把里面的环当执行器；五个场景（扫地机器人扫厨房、机械臂把杯子放上架子、汽车遇到行人横穿、无人机送包裹、四足机器人上楼梯），在每个关键时刻看每个环想要什么、测到什么、误差多少、交出什么，哪个环先反应；从 100 秒拉近到 0.1 毫秒、看四足机器人每一层节拍的时间放大镜；托着重物的关节（开环、PD、PD 加重力补偿）；随采样频率和延迟变化的立杆；可以让角速度环变慢或关掉的无人机级联；PWM 开关和顶住电源波动的电流环；可以一层层关掉、带看门狗和碰撞开关的扫地机器人；五种机器人各层的频率；一位一位比的 CAN 仲裁和穿过驱动器的 EtherCAT 帧；时钟慢慢对不齐的相机和激光雷达。
 
-Conventions: q joint angle, τ torque, a star marks a target handed down by the layer above; Hz means times per second.
+Conventions: r a loop's target, y its output, e its error, u its command; q joint angle, τ torque, a star also marks a target handed down by the layer above; Hz means times per second.
 
-约定：q 关节角，τ 力矩，带星号的是上一层给的目标；Hz 是每秒几次。
+约定：r 是一个环的目标，y 是输出，e 是误差，u 是命令；q 关节角，τ 力矩，带星号的也是上一层给的目标；Hz 是每秒几次。
 
 ## Adding a page · 新加一篇
 
