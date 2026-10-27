@@ -4,14 +4,28 @@ Interactive, bilingual (中文 / English) explainers for robotics. Each page is 
 
 一组中英双语的机器人学交互讲解页。每篇都是一个独立的 HTML 文件：每个公式都配了符号说明、白话解释和能手算的小例子，交互演示直接在浏览器里运行。
 
+**Site · 网站: https://huyicheng.github.io/rotation-representations/**
+
+The home page lists the two explainers side by side, and each one lives in its own folder.
+
+首页把两篇并排列出来，每篇各占一个文件夹。
+
 | | Page · 页面 | Live page · 在线网页 | File · 文件 |
 |---|---|---|---|
-| 1 | Four Ways to Write a Rotation · 旋转的四种写法 | https://huyicheng.github.io/rotation-representations/ | `index.html` |
+| 1 | Four Ways to Write a Rotation · 旋转的四种写法 | https://huyicheng.github.io/rotation-representations/rotation/ | `rotation/index.html` |
 | 2 | From Depth to Registration · 从深度到配准 | https://huyicheng.github.io/rotation-representations/perception/ | `perception/index.html` |
 
-Add `#en` to either address to open it in English, for example https://huyicheng.github.io/rotation-representations/perception/#en.
+Add `#en` to any address to open it in English, for example https://huyicheng.github.io/rotation-representations/perception/#en.
 
 在网址后面加 `#en` 直接打开英文版。
+
+## Layout · 目录结构
+
+```
+index.html               home page, the two explainers side by side · 首页，两篇并排
+rotation/index.html      Four Ways to Write a Rotation · 旋转的四种写法
+perception/index.html    From Depth to Registration · 从深度到配准
+```
 
 ## Open it · 打开方式
 
@@ -19,8 +33,8 @@ Open the live pages above in any browser, on a phone or a computer. There is no 
 
 直接打开上面的网址即可，手机和电脑都能用。页面不需要编译，下载对应的 `index.html` 后离线打开也行。
 
-- **Language / 语言**: the 中 / EN button at the top right switches language and keeps your place on the page. 右上角的「中 / EN」按钮一键切换，并停留在你正在读的位置。
-- **Series / 前后篇**: each page links to the other at the top and at the bottom. 每篇的开头和结尾都有到另一篇的链接。
+- **Language / 语言**: the 中 / EN button at the top right switches language and keeps your place on the page, and the choice carries over between the home page and both explainers. 右上角的「中 / EN」按钮一键切换，并停留在你正在读的位置；选好的语言在首页和两篇之间通用。
+- **Cross-links / 互相链接**: each explainer links to the other at the top and at the bottom. 每篇的开头和结尾都有到另一篇的链接。
 
 ## 1. Four Ways to Write a Rotation · 旋转的四种写法
 
