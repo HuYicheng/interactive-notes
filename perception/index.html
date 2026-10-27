@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Depth cameras, camera intrinsics and extrinsics, stereo matching, point clouds, registration and ICP, explained from scratch with interactive demos (Chinese / English). 深度相机、内参外参、立体匹配、点云、配准与 ICP：从零讲起，配交互演示（中英双语）。">
+<title>从深度到配准</title>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;family=Noto+Serif:wght@400;600;700&amp;family=Noto+Serif+SC:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+/* 版式：教科书式单栏，最宽 720px。每个公式配一张卡片：灰底公式行 + 符号 / 白话 / 算例 / 要点。x 红 y 绿 z 蓝沿用 RViz 配色，转轴 k 用紫色 */
+:root{
+--bg:#F4F5F8;--surface:#FFFFFF;--surface-2:#ECEEF3;--fg:#141922;--muted:#525C6D;--faint:#868FA0;--line:#D6DAE3;
+--accent:#4246B5;--accent-soft:#E6E7F8;--accent-fg:#2F3290;
+--x:#D0433A;--y:#38913F;--z:#2A6CC8;--k:#7856D3;--amber:#B26F0A;--teal:#13806F;
+--ok:#2B784A;--ok-soft:#E0F0E6;--warn:#8F5D00;--warn-soft:#F9EED5;--bad:#B3342A;--bad-soft:#F9E3E0;
+--f-body:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC","Noto Sans CJK SC","Segoe UI",sans-serif;
+--f-display:"Noto Serif SC","Songti SC","STSong","Source Han Serif SC",serif;
+--f-math:"Noto Serif","Cambria","Times New Roman","Noto Serif SC",serif;
+--f-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0E1117;--surface:#161A22;--surface-2:#1E232D;--fg:#E4E7ED;--muted:#A0A8B6;--faint:#6F7888;--line:#2A313C;--accent:#A2A5F3;--accent-soft:#23264A;--accent-fg:#C3C5FA;--x:#F06E61;--y:#6EC267;--z:#66A1EF;--k:#B497F4;--amber:#E1A13A;--teal:#4CC5AE;--ok:#6BC98F;--ok-soft:#13301E;--warn:#E6B85A;--warn-soft:#32260E;--bad:#F2887C;--bad-soft:#3A1B19;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0E1117;--surface:#161A22;--surface-2:#1E232D;--fg:#E4E7ED;--muted:#A0A8B6;--faint:#6F7888;--line:#2A313C;--accent:#A2A5F3;--accent-soft:#23264A;--accent-fg:#C3C5FA;--x:#F06E61;--y:#6EC267;--z:#66A1EF;--k:#B497F4;--amber:#E1A13A;--teal:#4CC5AE;--ok:#6BC98F;--ok-soft:#13301E;--warn:#E6B85A;--warn-soft:#32260E;--bad:#F2887C;--bad-soft:#3A1B19;color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.78 var(--f-body)}
+html,body{overflow-anchor:none}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.nav .bar{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.nav .in{flex:1;min-width:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-block:8px}
+.lang{flex:none;display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--surface);padding:2px;cursor:pointer;font:600 12.5px/1 var(--f-body);color:var(--muted)}
+.lang span{padding:7px 10px;border-radius:999px}
+:root:not([data-lang="en"]) .lang .lz,:root[data-lang="en"] .lang .le{background:var(--accent);color:var(--surface)}
+:root:not([data-lang="en"]) .en,:root[data-lang="en"] .zh{display:none!important}
+:root[data-lang="en"]{--f-display:"Noto Serif","Noto Serif SC",Georgia,serif}
+:root[data-lang="en"] body{line-height:1.68}
+:root[data-lang="en"] .sym::before{content:"Symbols"}
+:root[data-lang="en"] .pl::before{content:"In plain words"}
+:root[data-lang="en"] .ex::before{content:"Worked example"}
+:root[data-lang="en"] .why::before{content:"Key point"}
+.nav .in::-webkit-scrollbar{display:none}
+.nav a{flex:none;font-size:13px;line-height:1;padding:8px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);text-decoration:none}
+.nav a:hover{color:var(--fg);border-color:var(--faint)}
+.hero{padding-block:28px 6px}
+.eyebrow{margin:0 0 6px;font-size:13px;letter-spacing:.06em;color:var(--accent-fg)}
+h1,h2,h3{font-family:var(--f-display);color:var(--fg);text-wrap:balance}
+h1{font-size:clamp(28px,7.5vw,40px);line-height:1.22;margin:0 0 12px;font-weight:700}
+h2{font-size:clamp(22px,5.6vw,28px);line-height:1.35;margin:0 0 10px;font-weight:700}
+h3{font-size:18.5px;line-height:1.45;margin:30px 0 8px;font-weight:600}
+p{margin:10px 0}
+ul,ol{padding-left:1.3em;margin:10px 0}
+li{margin:6px 0}
+a{color:var(--accent-fg);text-underline-offset:3px}
+.lead{font-size:17px;color:var(--muted)}
+.note{font-size:14px;color:var(--muted)}
+section{padding-block:40px 8px;border-top:1px solid var(--line);scroll-margin-top:56px}
+.howto{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:16px 0 4px}
+.howto div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px;line-height:1.5;color:var(--muted)}
+.lab,.sym::before,.pl::before,.ex::before,.why::before{display:inline-block;font:600 12px/1 var(--f-body);padding:4px 7px;border-radius:6px;margin-right:8px;vertical-align:1px}
+.l-sym,.sym::before{background:var(--accent-soft);color:var(--accent-fg)}
+.l-pl,.pl::before{background:var(--surface-2);color:var(--fg)}
+.l-ex,.ex::before{background:var(--ok-soft);color:var(--ok)}
+.l-why,.why::before{background:var(--warn-soft);color:var(--warn)}
+.sym::before{content:"符号"}.pl::before{content:"白话"}.ex::before{content:"算例"}.why::before{content:"要点"}
+.m{font-family:var(--f-math);white-space:nowrap}
+sub,sup{font-size:.7em;line-height:0}
+.fk{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin:16px 0;overflow:hidden}
+.eq{font-family:var(--f-math);font-size:18px;line-height:1.75;background:var(--surface-2);padding:14px 16px;overflow-x:auto;text-align:center}
+.fk>.eq{border-bottom:1px solid var(--line)}
+.fb .eq{border-radius:10px;margin:10px 0}
+.eq .r{display:block;white-space:nowrap}
+.eq.sm{font-size:15px}
+.fb{padding:12px 16px 14px;font-size:15.5px;line-height:1.75}
+.fb>:first-child{margin-top:0}
+.fb ul{font-size:15.5px}
+.sym{display:grid;grid-template-columns:minmax(48px,max-content) minmax(0,1fr);gap:4px 14px;margin:0 0 6px}
+.sym::before{grid-column:1/-1;justify-self:start;margin-bottom:4px}
+.sym dt{font-family:var(--f-math);color:var(--accent-fg);white-space:nowrap}
+.sym dd{margin:0}
+.pl,.ex,.why{margin:10px 0 0}
+.mat{display:inline-grid;column-gap:14px;row-gap:1px;padding:3px 10px;border-left:1.5px solid var(--fg);border-right:1.5px solid var(--fg);border-radius:7px;vertical-align:middle;text-align:center;line-height:1.55;margin:0 3px}
+.c1{grid-template-columns:auto}.c2{grid-template-columns:repeat(2,auto)}.c3{grid-template-columns:repeat(3,auto)}
+.hl{background:var(--accent-soft);color:var(--accent-fg);border-radius:4px;padding:0 3px}
+.cx{color:var(--x)}.cy{color:var(--y)}.cz{color:var(--z)}.ck{color:var(--k)}
+.try{border-left:3px solid var(--accent);padding:2px 0 2px 12px;margin:22px 0 10px}
+.try b{color:var(--accent-fg)}
+.pc{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:10px;margin:18px 0}
+.pc>div{border-radius:12px;padding:12px 14px;min-width:0}
+.pc .good{background:var(--ok-soft)}.pc .bad{background:var(--bad-soft)}
+.pc h4{margin:0 0 4px;font:600 14px/1.4 var(--f-body)}.pc .good h4{color:var(--ok)}.pc .bad h4{color:var(--bad)}
+.pc ul{margin:0;padding-left:1.15em;font-size:15px;line-height:1.7}
+.wg{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;margin:12px 0 18px}
+.wg canvas{display:block;width:100%;border-radius:10px;background:var(--bg)}
+.hint{font-size:12.5px;color:var(--faint);text-align:center;margin:6px 0 0;line-height:1.5}
+.row{display:flex;align-items:center;gap:10px;margin:8px 0}
+.row label{font-size:14px;color:var(--muted);min-width:66px}
+.row input[type=range]{flex:1;min-width:0;accent-color:var(--accent)}
+.val{font-family:var(--f-mono);font-size:13.5px;min-width:52px;text-align:right;font-variant-numeric:tabular-nums}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 2px}
+.btn{font:14px/1.2 var(--f-body);color:var(--fg);background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:9px 12px;min-height:40px;cursor:pointer}
+.btn:hover{border-color:var(--faint)}
+.btn.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-fg)}
+.legend{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;font-size:12.5px;color:var(--muted);margin:8px 0 2px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.card{background:var(--surface-2);border:1px solid transparent;border-radius:10px;padding:8px 10px;min-width:0;transition:background .2s,border-color .2s}
+.card.j{background:var(--bad-soft);border-color:var(--bad)}
+.card .t{display:flex;justify-content:space-between;gap:6px;font-size:12.5px;color:var(--muted);margin-bottom:2px}
+.card .f{color:var(--bad);white-space:nowrap}.card .f.ok{color:var(--ok)}.card .f.ac{color:var(--accent-fg)}
+.mono{font-family:var(--f-mono);font-size:12.5px;line-height:1.6;white-space:pre;font-variant-numeric:tabular-nums;overflow-x:auto;color:var(--fg)}
+.status{font-size:13.5px;line-height:1.55;padding:8px 10px;border-radius:9px;margin:10px 0 0;background:var(--surface-2);color:var(--muted)}
+.status.ok{background:var(--ok-soft);color:var(--ok)}.status.warn{background:var(--warn-soft);color:var(--warn)}.status.bad{background:var(--bad-soft);color:var(--bad)}
+.mrow{display:flex;align-items:center;gap:10px;margin-top:10px}
+.mgrid{flex:1;min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;font-family:var(--f-mono);font-size:13px}
+.mgrid div{background:var(--surface-2);border-radius:6px;padding:3px 8px;text-align:right;font-variant-numeric:tabular-nums}
+.mgrid div.h{background:var(--accent-soft);color:var(--accent-fg)}.mgrid div.w{background:var(--warn-soft);color:var(--warn)}.mgrid div.z{background:var(--bad-soft);color:var(--bad)}
+.mgrid .hd{background:none;text-align:center;font:12.5px/1.4 var(--f-body);border-bottom:2px solid currentColor;border-radius:0;padding:0 0 3px}
+.map{display:grid;gap:8px;margin:16px 0}
+.tier{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
+.tier h4{margin:0 0 8px;font:600 13px/1.4 var(--f-body);color:var(--muted)}
+.nodes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.node{background:var(--surface-2);border-radius:9px;padding:8px 10px;font-size:15px;line-height:1.4}
+.node small{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+.arrows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;font-size:13.5px;line-height:1.4;text-align:center}
+.arrows .up{color:var(--ok)}.arrows .down{color:var(--bad)}
+.tbl{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:14.5px}
+th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}
+th{font-weight:600;font-size:13px;color:var(--muted)}
+.gl{display:grid;grid-template-columns:minmax(64px,max-content) minmax(0,1fr);gap:6px 14px;font-size:15px;margin:10px 0}
+.gl dt{font-family:var(--f-math);color:var(--accent-fg);white-space:nowrap}.gl dd{margin:0}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:10px 0}
+summary{cursor:pointer;font-weight:600;color:var(--accent-fg)}
+.c4{grid-template-columns:repeat(4,auto)}
+.met{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
+.met>div{background:var(--surface-2);border-radius:10px;padding:8px 10px;min-width:0}
+.met small{display:block;font-size:12.5px;line-height:1.4;color:var(--muted)}
+.met b{font:500 18px/1.4 var(--f-body);font-variant-numeric:tabular-nums}
+.views{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:10px}
+.views>div{min-width:0}
+.grp{font:600 13.5px/1.4 var(--f-body);color:var(--accent-fg);margin:16px 0 2px}
+.mxs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:8px;margin-top:12px}
+.mx{background:var(--surface-2);border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px;overflow-x:auto;min-width:0}
+.mx .nm{font-family:var(--f-math);white-space:nowrap;font-size:15px}
+.mx .mat{font-family:var(--f-mono);font-size:12.5px;column-gap:10px;text-align:right;line-height:1.7}
+.mx .mat .tc{border-left:1px solid var(--faint);padding-left:8px}
+.pipe{list-style:none;padding:0;margin:16px 0;display:grid;gap:8px;counter-reset:st}
+.pipe>li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px 10px 46px;position:relative;margin:0;line-height:1.6}
+.pipe>li::before{counter-increment:st;content:counter(st);position:absolute;left:12px;top:11px;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent-fg);font:600 13px/24px var(--f-body);text-align:center}
+.pipe .mxl{display:block;font-size:14.5px;color:var(--muted);margin-top:3px}
+.prev{font-size:14px;margin:0 0 8px}
+.wg .row label{flex:none;width:96px;min-width:0}
+:root[data-lang="en"] .wg .row label{width:110px}
+.foot{font-size:13.5px;color:var(--muted);padding-block:28px 56px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:420px){.eq{font-size:16px;padding:12px}.eq.sm{font-size:13.5px}.fb{padding:10px 13px 12px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script>
+window.RX=(function(){
+const D=Math.PI/180,root=document.documentElement;
+const col=n=>getComputedStyle(root).getPropertyValue(n).trim()||'#888888';
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]];
+const scl=(a,s)=>[a[0]*s,a[1]*s,a[2]*s];
+const len=a=>Math.hypot(a[0],a[1],a[2]);
+const Rz=a=>{const c=Math.cos(a),s=Math.sin(a);return[[c,-s,0],[s,c,0],[0,0,1]]};
+const Ry=a=>{const c=Math.cos(a),s=Math.sin(a);return[[c,0,s],[0,1,0],[-s,0,c]]};
+const Rx=a=>{const c=Math.cos(a),s=Math.sin(a);return[[1,0,0],[0,c,-s],[0,s,c]]};
+const mm=(A,B)=>A.map(r=>[0,1,2].map(j=>r[0]*B[0][j]+r[1]*B[1][j]+r[2]*B[2][j]));
+const mv=(A,v)=>[dot(A[0],v),dot(A[1],v),dot(A[2],v)];
+const cl=(A,j)=>[A[0][j],A[1][j],A[2][j]];
+const qm=(a,b)=>[a[0]*b[0]-a[1]*b[1]-a[2]*b[2]-a[3]*b[3],a[0]*b[1]+a[1]*b[0]+a[2]*b[3]-a[3]*b[2],a[0]*b[2]-a[1]*b[3]+a[2]*b[0]+a[3]*b[1],a[0]*b[3]+a[1]*b[2]-a[2]*b[1]+a[3]*b[0]];
+const qn=q=>{const n=Math.hypot(q[0],q[1],q[2],q[3]);return q.map(v=>v/n)};
+const qa=(k,a)=>{const s=Math.sin(a/2);return[Math.cos(a/2),k[0]*s,k[1]*s,k[2]*s]};
+const q2R=([w,x,y,z])=>[[1-2*(y*y+z*z),2*(x*y-w*z),2*(x*z+w*y)],[2*(x*y+w*z),1-2*(x*x+z*z),2*(y*z-w*x)],[2*(x*z-w*y),2*(y*z+w*x),1-2*(x*x+y*y)]];
+const e2q=(y,p,r)=>qm(qm(qa([0,0,1],y),qa([0,1,0],p)),qa([1,0,0],r));
+const R2e=R=>{const p=Math.asin(Math.max(-1,Math.min(1,-R[2][0])));if(Math.abs(R[2][0])>0.99999)return[Math.atan2(-R[0][1],R[1][1]),p,0];return[Math.atan2(R[1][0],R[0][0]),p,Math.atan2(R[2][1],R[2][2])]};
+const q2aa=q=>{let[w,x,y,z]=q;if(w<0){w=-w;x=-x;y=-y;z=-z}const s=Math.hypot(x,y,z);return{th:2*Math.atan2(s,w),k:s>1e-9?[x/s,y/s,z/s]:[0,0,0]}};
+const wrap=a=>{a=(a+Math.PI)%(2*Math.PI);if(a<0)a+=2*Math.PI;return a-Math.PI};
+const fm=(v,d)=>(Math.abs(v)<0.5*Math.pow(10,-d)?0:v).toFixed(d);
+const redraw=[];const onTheme=f=>redraw.push(f);
+const fire=()=>redraw.forEach(f=>{try{f()}catch(e){}});
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',fire)}catch(e){}
+try{new MutationObserver(fire).observe(root,{attributes:true,attributeFilter:['data-theme']})}catch(e){}
+let reduced=false;try{reduced=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}
+function stage(cv,H,draw){const st={g:null,w:340,h:H};const fit=()=>{const r=window.devicePixelRatio||1;st.w=cv.clientWidth||340;cv.width=Math.round(st.w*r);cv.height=Math.round(H*r);st.g=cv.getContext('2d');st.g.setTransform(r,0,0,r,0,0)};cv.style.height=H+'px';fit();let lw=st.w;if(window.ResizeObserver){new ResizeObserver(()=>{if(cv.clientWidth&&cv.clientWidth!==lw){lw=cv.clientWidth;fit();draw()}}).observe(cv)}else{addEventListener('resize',()=>{fit();draw()})}onTheme(draw);return st}
+function view(az,el){const ca=Math.cos(az),sa=Math.sin(az),ce=Math.cos(el),se=Math.sin(el);return{R:[-sa,ca,0],U:[-se*ca,-se*sa,ce],C:[ce*ca,ce*sa,se]}}
+function proj(V,cx,cy,s){return v=>{const Z=dot(v,V.C),f=6/(6-Z);return[cx+s*dot(v,V.R)*f,cy-s*dot(v,V.U)*f,Z]}}
+function arrow(g,A,B,c,w,hs){g.strokeStyle=c;g.fillStyle=c;g.lineWidth=w||2;g.beginPath();g.moveTo(A[0],A[1]);g.lineTo(B[0],B[1]);g.stroke();const dx=B[0]-A[0],dy=B[1]-A[1],L=Math.hypot(dx,dy);if(L<4)return;const h=Math.min(hs||8,L*0.6),ux=dx/L,uy=dy/L;g.beginPath();g.moveTo(B[0],B[1]);g.lineTo(B[0]-h*ux+h*0.5*uy,B[1]-h*uy-h*0.5*ux);g.lineTo(B[0]-h*ux-h*0.5*uy,B[1]-h*uy+h*0.5*ux);g.closePath();g.fill()}
+function drag(cv,fn,horiz){let p=null;cv.addEventListener('pointerdown',e=>{p=[e.clientX,e.clientY];if(!horiz){try{cv.setPointerCapture(e.pointerId)}catch(_){}}});cv.addEventListener('pointermove',e=>{if(!p)return;const dx=e.clientX-p[0],dy=e.clientY-p[1];p=[e.clientX,e.clientY];fn(dx,dy)});['pointerup','pointercancel','pointerleave'].forEach(n=>cv.addEventListener(n,()=>{p=null}))}
+function rotAxis(V,dx,dy){const L=Math.hypot(dx,dy);if(L<0.5)return null;return{ax:[0,1,2].map(i=>(dy*V.R[i]+dx*V.U[i])/L),ang:L/90}}
+const font=px=>px+'px '+getComputedStyle(document.body).fontFamily;
+let lang='zh';try{const h=(location.hash||'').slice(1);if(h==='en'||h==='zh')lang=h;else{const s=localStorage.getItem('rot-lang');if(s==='en'||s==='zh')lang=s}}catch(e){}
+root.setAttribute('data-lang',lang);
+const langFns=[],onLang=f=>langFns.push(f),t=(zh,en)=>lang==='en'?en:zh,TITLE={zh:'从深度到配准',en:'From Depth to Registration'};
+function applyLang(){root.setAttribute('data-lang',lang);root.lang=lang==='en'?'en':'zh-CN';document.title=TITLE[lang];document.querySelectorAll('[data-al-en]').forEach(e=>e.setAttribute('aria-label',lang==='en'?e.dataset.alEn:e.dataset.alZh));const b=document.getElementById('langBtn');if(b)b.setAttribute('aria-pressed',lang==='en'?'true':'false')}
+function navBottom(){const n=document.querySelector('.nav');return n?Math.max(0,n.getBoundingClientRect().bottom):0}
+function anchor(){const nb=navBottom()+2,els=document.querySelectorAll('h1,h2,h3,p,li,dt,dd,.eq,.wg,table,.tier,.arrows,summary,.howto>div,footer');for(const e of els){if(e.closest('.nav'))continue;const r=e.getBoundingClientRect();if(r.height>0&&r.bottom>nb)return{e,nb,top:r.top,frac:r.top<nb?(nb-r.top)/r.height:-1}}return null}
+function restore(a){if(!a||!a.e.isConnected)return;const r=a.e.getBoundingClientRect(),target=a.frac>=0?a.nb-a.frac*r.height:a.top,d=r.top-target;if(Math.abs(d)>.5){const sb=root.style.scrollBehavior;root.style.scrollBehavior='auto';window.scrollBy(0,d);root.style.scrollBehavior=sb}}
+let hold=null;['wheel','touchstart','keydown'].forEach(n=>addEventListener(n,()=>{hold=null},{passive:true}));
+function setLang(l){const a=anchor();lang=l==='en'?'en':'zh';try{localStorage.setItem('rot-lang',lang)}catch(e){}applyLang();langFns.forEach(f=>{try{f()}catch(e){}});fire();restore(a);hold=a;requestAnimationFrame(()=>{if(hold===a)restore(a)});try{document.fonts.ready.then(()=>{if(hold===a)restore(a)})}catch(e){}}
+document.addEventListener('DOMContentLoaded',()=>{applyLang();const b=document.getElementById('langBtn');if(b)b.addEventListener('click',()=>setLang(lang==='en'?'zh':'en'))});
+return{D,col,dot,cross,add,scl,len,Rz,Ry,Rx,mm,mv,cl,qm,qn,qa,q2R,e2q,R2e,q2aa,wrap,fm,onTheme,reduced,stage,view,proj,arrow,drag,rotAxis,font,t,onLang,setLang,get lang(){return lang}};
+})();
+</script>
+</head>
+<body>
+<nav aria-label="章节" class="nav" data-al-en="Sections" data-al-zh="章节"><div class="bar"><div class="in">
+<a href="#s-map"><span class="zh" lang="zh-CN">0 总览</span><span class="en" lang="en">0 Overview</span></a><a href="#s-pin"><span class="zh" lang="zh-CN">① 针孔模型</span><span class="en" lang="en">① Pinhole model</span></a><a href="#s-k"><span class="zh" lang="zh-CN">② 内参</span><span class="en" lang="en">② Intrinsics</span></a><a href="#s-rt"><span class="zh" lang="zh-CN">③ 外参</span><span class="en" lang="en">③ Extrinsics</span></a><a href="#s-p"><span class="zh" lang="zh-CN">④ 投影</span><span class="en" lang="en">④ Projection</span></a><a href="#s-st"><span class="zh" lang="zh-CN">⑤ 双目</span><span class="en" lang="en">⑤ Stereo</span></a><a href="#s-pc"><span class="zh" lang="zh-CN">⑥ 点云</span><span class="en" lang="en">⑥ Point clouds</span></a><a href="#s-reg"><span class="zh" lang="zh-CN">⑦ 配准</span><span class="en" lang="en">⑦ Registration</span></a><a href="#s-icp">⑧ ICP</a><a href="#s-sum"><span class="zh" lang="zh-CN">总结</span><span class="en" lang="en">Summary</span></a>
+</div><button aria-label="Switch language / 切换语言" aria-pressed="false" class="lang" data-noi18n="" id="langBtn" type="button"><span class="lz">中</span><span class="le">EN</span></button></div></nav>
+<header class="wrap hero">
+<p class="prev" data-noi18n=""><a href="https://huyicheng.github.io/rotation-representations/"><span class="zh" lang="zh-CN">← 上一篇：旋转的四种写法</span><span class="en" lang="en">← Previous: Four Ways to Write a Rotation</span></a></p>
+<p class="eyebrow"><span class="zh" lang="zh-CN">机器人感知 · 深度相机 · 配准</span><span class="en" lang="en">Robot perception · Depth cameras · Registration</span></p>
+<h1><span class="zh" lang="zh-CN">从深度到配准</span><span class="en" lang="en">From Depth to Registration</span></h1>
+<p class="lead"><span class="zh" lang="zh-CN">深度相机怎么测出距离，深度图怎么变成点云，点云又怎么和术前 MRI 对齐。这一篇重点讲清楚相机的内参、外参，以及沿途出现的几个矩阵。每个公式都配了符号说明、白话解释和能手算的小例子，四个交互里的滑块都可以随手拖。</span><span class="en" lang="en">How a depth camera measures distance, how a depth image becomes a point cloud, and how that point cloud gets aligned with a pre-operative MRI. This page focuses on the camera’s intrinsics and extrinsics, and on the handful of matrices that show up along the way. Every formula comes with a symbol guide, a plain-words explanation and a small example you can check by hand, and the sliders in all four interactives are there to be dragged.</span></p>
+<div class="howto">
+<div><span class="zh" lang="zh-CN"><span class="lab l-sym">符号</span>每个字母、记号是什么意思</span><span class="en" lang="en"><span class="lab l-sym">Symbols</span>What each letter and sign means</span></div>
+<div><span class="zh" lang="zh-CN"><span class="lab l-pl">白话</span>不看公式怎么理解</span><span class="en" lang="en"><span class="lab l-pl">In plain words</span>How to understand it without the formula</span></div>
+<div><span class="zh" lang="zh-CN"><span class="lab l-ex">算例</span>代入简单数字验证一遍</span><span class="en" lang="en"><span class="lab l-ex">Worked example</span>Plug in simple numbers and check</span></div>
+<div><span class="zh" lang="zh-CN"><span class="lab l-why">要点</span>最容易出错、最关键的地方</span><span class="en" lang="en"><span class="lab l-why">Key point</span>The part that matters most or trips people up</span></div>
+</div>
+<p class="note"><span class="zh" lang="zh-CN">坐标约定：相机坐标系 x 向右、y 向下、z 朝相机正前方，这是 OpenCV 和 RealSense 的"光学坐标系"。旋转矩阵 R、齐次变换 T 的读法沿用上一篇：T<sub>ab</sub> 表示"b 坐标系在 a 坐标系里的位姿"，作用是把 b 系里的坐标换算到 a 系。</span><span class="en" lang="en">Coordinate convention: in the camera frame, x points right, y points down and z points straight ahead of the camera. This is the “optical frame” used by OpenCV and RealSense. Rotation matrices R and homogeneous transforms T are read as on the previous page: T<sub>ab</sub> means “the pose of frame b in frame a”, and it converts coordinates in frame b into frame a.</span></p>
+</header>
+<main class="wrap">
+<section id="s-map">
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 0 步 · 总览</span><span class="en" lang="en">Step 0 · Overview</span></p>
+<h2><span class="zh" lang="zh-CN">一条流水线，几个矩阵</span><span class="en" lang="en">One pipeline, a handful of matrices</span></h2>
+<p><span class="zh" lang="zh-CN">从相机拍下照片，到机械臂知道换能器该往哪放，数据要经过下面四步。每一步都有一两个关键矩阵，先混个脸熟，后面逐个讲。</span><span class="en" lang="en">Between the camera taking a picture and the robot arm knowing where to put the transducer, the data goes through the four steps below. Each step has one or two key matrices. Get a first look at them here; each one is explained later.</span></p>
+<ol class="pipe">
+<li><span class="zh" lang="zh-CN"><b>拍照：世界里的点变成像素</b><span class="mxl">外参 [R | t]（世界 → 相机）、内参 K（相机 → 像素）、投影矩阵 P = K [R | t]</span></span><span class="en" lang="en"><b>Taking the picture: points in the world become pixels</b><span class="mxl">extrinsics [R | t] (world → camera), intrinsics K (camera → pixels), projection matrix P = K [R | t]</span></span></li>
+<li><span class="zh" lang="zh-CN"><b>双目测深度：两张图找对应、算视差</b><span class="mxl">两台相机之间的 R、T，本质矩阵 E、基础矩阵 F，重投影矩阵 Q</span></span><span class="en" lang="en"><b>Stereo depth: match the two images and compute disparity</b><span class="mxl">R and T between the two cameras, essential matrix E, fundamental matrix F, reprojection matrix Q</span></span></li>
+<li><span class="zh" lang="zh-CN"><b>反投影：深度图变成点云</b><span class="mxl">K⁻¹；法向量用的协方差矩阵；手眼标定得到的 T<sub>base_cam</sub></span></span><span class="en" lang="en"><b>Back-projection: the depth image becomes a point cloud</b><span class="mxl">K⁻¹; the covariance matrix used for normals; T<sub>base_cam</sub> from hand-eye calibration</span></span></li>
+<li><span class="zh" lang="zh-CN"><b>配准：点云对上 MRI</b><span class="mxl">要求的 R、t；交叉协方差矩阵 H 和它的 SVD；点到面 ICP 的 AᵀA</span></span><span class="en" lang="en"><b>Registration: the point cloud meets the MRI</b><span class="mxl">the R and t we are solving for; the cross-covariance matrix H and its SVD; AᵀA in point-to-plane ICP</span></span></li>
+</ol>
+<p><span class="zh" lang="zh-CN">贯穿全篇的例子是：用装在机械臂上的深度相机拍一块头皮，再和术前 MRI 里分割出来的头皮表面对齐。</span><span class="en" lang="en">The running example: a depth camera mounted on a robot arm photographs a patch of scalp, which is then aligned with the scalp surface segmented from a pre-operative MRI.</span></p>
+</section>
+<section id="s-pin">
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 1 步 · 针孔模型</span><span class="en" lang="en">Step 1 · Pinhole model</span></p>
+<h2><span class="zh" lang="zh-CN">针孔相机：三维点怎么变成像素</span><span class="en" lang="en">The pinhole camera: how a 3D point becomes a pixel</span></h2>
+<p><span class="zh" lang="zh-CN">最常用的相机模型是针孔模型。想象一个不透光的盒子，前面开一个小孔，光线穿过小孔打在后面的感光片上。物体上每个点只有一条光线能穿过小孔，所以感光片上会留下一个清晰但倒过来的像。真正的相机用镜头代替小孔，几何关系是一样的。为了不处理"倒过来"，通常把成像面画在小孔前面同样远的地方（虚拟成像面），像就是正的。</span><span class="en" lang="en">The most common camera model is the pinhole model. Picture a light-tight box with a tiny hole in the front: light passes through the hole and lands on the film at the back. Only one ray from each point on an object can pass through the hole, so the film records a sharp but upside-down image. A real camera uses a lens instead of a hole, but the geometry is the same. To avoid dealing with the image being upside down, the image plane is usually drawn the same distance in front of the hole (a virtual image plane), where the image is the right way up.</span></p>
+<div class="fk"><div class="eq"><span class="r"><span class="zh" lang="zh-CN">x′ = X ÷ Z，   y′ = Y ÷ Z</span><span class="en" lang="en">x′ = X ÷ Z,   y′ = Y ÷ Z</span></span></div><div class="fb">
+<dl class="sym"><dt>(X, Y, Z)</dt><dd><span class="zh" lang="zh-CN">点在相机坐标系里的坐标，Z 是它在相机正前方多远</span><span class="en" lang="en">the point’s coordinates in the camera frame; Z is how far straight ahead of the camera it is</span></dd><dt>x′, y′</dt><dd><span class="zh" lang="zh-CN">归一化坐标：这个点落在"离小孔 1 个单位远"的成像面上的位置</span><span class="en" lang="en">normalized coordinates: where the point lands on an image plane “1 unit away from the hole”</span></dd></dl>
+<p class="pl"><span class="zh" lang="zh-CN">相似三角形：同样的横向偏移 X，离相机越远（Z 越大），在成像面上越小。这就是"近大远小"，也是透视的来源。"除以 Z"是整个相机模型里唯一不是矩阵乘法的一步。</span><span class="en" lang="en">Similar triangles: the same sideways offset X looks smaller on the image plane the farther away it is (the larger Z). This is why near things look big and far things look small, and it is where perspective comes from. “Divide by Z” is the only step in the whole camera model that is not a matrix multiplication.</span></p>
+<p class="ex"><span class="zh" lang="zh-CN">点在相机前 0.5 m、偏右 5 cm：x′ = 0.05 ÷ 0.5 = 0.1。挪到 1 m 远，x′ 只剩 0.05，在图上离中心近了一半。</span><span class="en" lang="en">A point 0.5 m in front of the camera and 5 cm to the right: x′ = 0.05 ÷ 0.5 = 0.1. Move it to 1 m away and x′ is only 0.05, half as far from the centre of the image.</span></p></div></div>
+<h3><span class="zh" lang="zh-CN">齐次坐标：在后面多补一个 1</span><span class="en" lang="en">Homogeneous coordinates: append a 1</span></h3>
+<div class="fk"><div class="eq"><span class="r">(u, v) → (u, v, 1)</span><span class="r">(2, 4, 2) ≅ (1, 2, 1)</span></div><div class="fb">
+<dl class="sym"><dt><span class="zh" lang="zh-CN">齐次坐标</span><span class="en" lang="en">homogeneous coordinates</span></dt><dd><span class="zh" lang="zh-CN">在普通坐标后面多补一个数。最后一个数不是 1 时，整组除以它，就得到普通坐标</span><span class="en" lang="en">ordinary coordinates with one extra number appended. When the last number is not 1, divide the whole group by it to get the ordinary coordinates back</span></dd><dt>≅</dt><dd><span class="zh" lang="zh-CN">代表同一个点</span><span class="en" lang="en">represent the same point</span></dd></dl>
+<p class="pl"><span class="zh" lang="zh-CN">多补一个数有两个好处：一是平移也能写成矩阵乘法（上一篇的 4×4 矩阵 T 就是这么做的）；二是"除以 Z"可以先藏起来，最后统一除。三维点写成 (X, Y, Z, 1)，像素写成 (u, v, 1)。</span><span class="en" lang="en">The extra number buys two things. First, translation can also be written as a matrix multiplication (that is how the 4×4 matrix T on the previous page works). Second, “divide by Z” can be postponed and done once at the end. A 3D point is written (X, Y, Z, 1) and a pixel (u, v, 1).</span></p>
+<p class="ex"><span class="zh" lang="zh-CN">齐次坐标 (600, 300, 2) 代表的像素是 (600 ÷ 2, 300 ÷ 2) = (300, 150)。</span><span class="en" lang="en">The homogeneous coordinates (600, 300, 2) stand for the pixel (600 ÷ 2, 300 ÷ 2) = (300, 150).</span></p></div></div>
+<h3><span class="zh" lang="zh-CN">整条链路</span><span class="en" lang="en">The whole chain</span></h3>
+<p><span class="zh" lang="zh-CN">一个世界里的点，要经过四步才变成图上的像素。接下来两节分别讲内参和外参，第 4 步再把它们合成投影矩阵。</span><span class="en" lang="en">A point in the world goes through four steps before it becomes a pixel in the image. The next two sections cover intrinsics and extrinsics; step 4 then combines them into the projection matrix.</span></p>
+<ol class="pipe">
+<li><span class="zh" lang="zh-CN"><b>外参 [R | t]</b><span class="mxl">世界坐标 X<sub>w</sub> → 相机坐标 X<sub>c</sub></span></span><span class="en" lang="en"><b>Extrinsics [R | t]</b><span class="mxl">world coordinates X<sub>w</sub> → camera coordinates X<sub>c</sub></span></span></li>
+<li><span class="zh" lang="zh-CN"><b>除以深度</b><span class="mxl">相机坐标 X<sub>c</sub> → 归一化坐标 (x′, y′)</span></span><span class="en" lang="en"><b>Divide by depth</b><span class="mxl">camera coordinates X<sub>c</sub> → normalized coordinates (x′, y′)</span></span></li>
+<li><span class="zh" lang="zh-CN"><b>畸变</b><span class="mxl">(x′, y′) → (x″, y″)，模拟镜头把直线拍弯</span></span><span class="en" lang="en"><b>Distortion</b><span class="mxl">(x′, y′) → (x″, y″), modelling how the lens bends straight lines</span></span></li>
+<li><span class="zh" lang="zh-CN"><b>内参 K</b><span class="mxl">(x″, y″) → 像素 (u, v)</span></span><span class="en" lang="en"><b>Intrinsics K</b><span class="mxl">(x″, y″) → pixels (u, v)</span></span></li>
+</ol>
+</section>
+<section id="s-k">
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 2 步 · 内参</span><span class="en" lang="en">Step 2 · Intrinsics</span></p>
+<h2><span class="zh" lang="zh-CN">内参 K：相机自己的属性</span><span class="en" lang="en">Intrinsics K: properties of the camera itself</span></h2>
+<p><span class="zh" lang="zh-CN">内参描述"光线进了相机以后，怎么落到哪个像素上"。它只和相机本身（镜头、传感器）有关，和相机放在哪儿无关：把相机搬来搬去、转来转去，内参都不变。</span><span class="en" lang="en">The intrinsics describe “once light enters the camera, which pixel it lands on”. They depend only on the camera itself (lens and sensor), not on where the camera is: move it around or turn it however you like, and the intrinsics stay the same.</span></p>
+<div class="fk"><div class="eq"><span class="r">K = <span class="mat c3"><span>f<sub>x</sub></span><span>s</span><span>c<sub>x</sub></span><span>0</span><span>f<sub>y</sub></span><span>c<sub>y</sub></span><span>0</span><span>0</span><span>1</span></span></span><span class="r"><span class="zh" lang="zh-CN">u = f<sub>x</sub> x″ + s y″ + c<sub>x</sub>，   v = f<sub>y</sub> y″ + c<sub>y</sub></span><span class="en" lang="en">u = f<sub>x</sub> x″ + s y″ + c<sub>x</sub>,   v = f<sub>y</sub> y″ + c<sub>y</sub></span></span></div><div class="fb">
+<dl class="sym">
+<dt>f<sub>x</sub>, f<sub>y</sub></dt><dd><span class="zh" lang="zh-CN">焦距，单位是像素：f<sub>x</sub> = 镜头焦距（毫米）÷ 一个像素的宽度（毫米），f<sub>y</sub> 同理用像素的高度。像素是正方形时两者相等</span><span class="en" lang="en">focal length, measured in pixels: f<sub>x</sub> = lens focal length (mm) ÷ pixel width (mm), and f<sub>y</sub> likewise with the pixel height. They are equal when pixels are square</span></dd>
+<dt>c<sub>x</sub>, c<sub>y</sub></dt><dd><span class="zh" lang="zh-CN">主点：光轴打在传感器上的那个像素。理想情况下在图像正中，实际常偏几个到几十个像素</span><span class="en" lang="en">principal point: the pixel where the optical axis hits the sensor. Ideally the centre of the image; in practice often a few to a few dozen pixels off</span></dd>
+<dt>s</dt><dd><span class="zh" lang="zh-CN">斜切（skew）：像素的两条边不垂直时才不为 0，现代相机几乎都是 0</span><span class="en" lang="en">skew: non-zero only if the two sides of a pixel are not perpendicular; almost always 0 in modern cameras</span></dd>
+<dt>x″, y″</dt><dd><span class="zh" lang="zh-CN">经过畸变以后的归一化坐标，下面讲畸变；没有畸变时就是 x′, y′</span><span class="en" lang="en">the normalized coordinates after distortion (explained below); without distortion they are just x′, y′</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">K 做的事很简单：先放大（乘焦距，把"每米多少"换成"每像素多少"），再平移（加主点，把原点从图像中心挪到左上角，因为像素是从左上角开始数的）。所以 K 的左上 2×2 管缩放，第三列管平移，最后一行永远是 0 0 1。</span><span class="en" lang="en">K does something simple: first it scales (multiplying by the focal length turns “per metre” into “per pixel”), then it shifts (adding the principal point moves the origin from the image centre to the top-left corner, because pixels are counted from the top left). So the top-left 2×2 block of K handles scaling, the third column handles shifting, and the last row is always 0 0 1.</span></p>
+<p class="ex"><span class="zh" lang="zh-CN">一台相机镜头焦距 1.93 mm，像素边长 3 µm（0.003 mm），那么 f<sub>x</sub> = f<sub>y</sub> = 1.93 ÷ 0.003 ≈ 643 像素（RealSense D435 的深度模组大约就是这个规格）。设 c<sub>x</sub> = 320、c<sub>y</sub> = 240，相机前 0.5 m、偏右 5 cm、偏上 3 cm 的点（y 向下，所以 Y = −0.03）：x′ = 0.1，y′ = −0.06，u = 643 × 0.1 + 320 = 384.3，v = 643 × (−0.06) + 240 = 201.4。</span><span class="en" lang="en">A camera with a 1.93 mm lens and 3 µm (0.003 mm) pixels has f<sub>x</sub> = f<sub>y</sub> = 1.93 ÷ 0.003 ≈ 643 pixels (roughly the spec of the RealSense D435 depth module). With c<sub>x</sub> = 320 and c<sub>y</sub> = 240, a point 0.5 m in front, 5 cm to the right and 3 cm up (y points down, so Y = −0.03) has x′ = 0.1, y′ = −0.06, so u = 643 × 0.1 + 320 = 384.3 and v = 643 × (−0.06) + 240 = 201.4.</span></p>
+<p class="why"><span class="zh" lang="zh-CN">内参是对某一个分辨率标定的。图像缩小一半，f<sub>x</sub>、f<sub>y</sub>、c<sub>x</sub>、c<sub>y</sub> 都要跟着减半，否则算出来的点云会变形、错位。</span><span class="en" lang="en">Intrinsics are calibrated for one particular resolution. If you halve the image size, f<sub>x</sub>, f<sub>y</sub>, c<sub>x</sub> and c<sub>y</sub> must all be halved too, or the resulting point cloud will be distorted and shifted.</span></p></div></div>
+<h3><span class="zh" lang="zh-CN">畸变：镜头会把直线拍弯</span><span class="en" lang="en">Distortion: lenses bend straight lines</span></h3>
+<div class="fk"><div class="eq sm"><span class="r">r² = x′² + y′²</span><span class="r">x″ = x′ (1 + k₁r² + k₂r⁴ + k₃r⁶) + 2p₁x′y′ + p₂(r² + 2x′²)</span><span class="r">y″ = y′ (1 + k₁r² + k₂r⁴ + k₃r⁶) + p₁(r² + 2y′²) + 2p₂x′y′</span></div><div class="fb">
+<dl class="sym">
+<dt>r</dt><dd><span class="zh" lang="zh-CN">点离光轴有多远（在归一化成像面上量）</span><span class="en" lang="en">how far the point is from the optical axis (measured on the normalized image plane)</span></dd>
+<dt>k₁, k₂, k₃</dt><dd><span class="zh" lang="zh-CN">径向畸变系数：离中心越远，点被往外推或往里拉得越多</span><span class="en" lang="en">radial distortion coefficients: the farther from the centre, the more a point is pushed out or pulled in</span></dd>
+<dt>p₁, p₂</dt><dd><span class="zh" lang="zh-CN">切向畸变系数：镜头和传感器没装平行时才明显，通常很小</span><span class="en" lang="en">tangential distortion coefficients: only noticeable when the lens and sensor are not mounted parallel; usually small</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">真实镜头不是完美的小孔。径向畸变让画面像被吹胀或吸瘪：k₁ &lt; 0 是桶形畸变，边缘的点被往中心拉，一条不过中心的直线两头被拉进去、中间几乎不动，看起来就往外鼓，广角镜头很常见；k₁ &gt; 0 是枕形畸变，直线往里凹。这组系数（OpenCV 里的顺序是 k₁, k₂, p₁, p₂, k₃）也是内参的一部分，只是不放在 K 里面。</span><span class="en" lang="en">A real lens is not a perfect pinhole. Radial distortion makes the picture look inflated or deflated. With k₁ &lt; 0 you get barrel distortion: points near the edge are pulled towards the centre, so a straight line that does not pass through the centre has its ends pulled in while its middle barely moves, and it bulges outwards. This is common in wide-angle lenses. With k₁ &gt; 0 you get pincushion distortion, and straight lines bend inwards. These coefficients (in OpenCV’s order: k₁, k₂, p₁, p₂, k₃) are also part of the intrinsics; they just don’t live inside K.</span></p>
+<p class="ex"><span class="zh" lang="zh-CN">k₁ = −0.2，其他系数为 0。画面边缘附近一个点 x′ = 0.5、y′ = 0：r² = 0.25，1 + k₁r² = 0.95，x″ = 0.475，被往中心拉了 5%。中心附近的点 r ≈ 0，几乎不动。</span><span class="en" lang="en">k₁ = −0.2, all other coefficients 0. A point near the edge of the image at x′ = 0.5, y′ = 0: r² = 0.25, 1 + k₁r² = 0.95, x″ = 0.475, pulled 5% towards the centre. Points near the centre have r ≈ 0 and barely move.</span></p>
+<p class="why"><span class="zh" lang="zh-CN">反投影（像素 → 三维）之前要先去畸变。有的相机输出的图已经去过畸变，系数全是 0；有的没有。用之前先看一眼畸变系数。</span><span class="en" lang="en">Undistort before back-projecting (pixels → 3D). Some cameras output images that are already undistorted, with all coefficients 0; others don’t. Check the distortion coefficients before you use them.</span></p></div></div>
+<h3><span class="zh" lang="zh-CN">内参从哪来</span><span class="en" lang="en">Where intrinsics come from</span></h3>
+<p><span class="zh" lang="zh-CN">靠标定。拍十几张不同角度的棋盘格照片：每个角点在棋盘上的位置是已知的（格子尺寸量得出来），在图上的位置能自动检测出来，于是能把 K 和畸变系数一起解出来。这就是张正友标定法，OpenCV 里的 calibrateCamera。RealSense 这类相机出厂时已经标定好，SDK 里直接能读到 fx、fy、ppx、ppy（也就是 c<sub>x</sub>、c<sub>y</sub>）和畸变系数。</span><span class="en" lang="en">From calibration. Take a dozen or so photos of a checkerboard at different angles. The position of each corner on the board is known (you can measure the squares) and its position in the image can be detected automatically, so K and the distortion coefficients can be solved for together. This is Zhang’s calibration method, OpenCV’s calibrateCamera. Cameras like the RealSense are calibrated at the factory, and the SDK gives you fx, fy, ppx, ppy (that is, c<sub>x</sub>, c<sub>y</sub>) and the distortion coefficients directly.</span></p>
+</section>
+<section id="s-rt">
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 3 步 · 外参</span><span class="en" lang="en">Step 3 · Extrinsics</span></p>
+<h2><span class="zh" lang="zh-CN">外参 [R | t]：相机放在哪、朝哪</span><span class="en" lang="en">Extrinsics [R | t]: where the camera is and which way it faces</span></h2>
+<p><span class="zh" lang="zh-CN">外参描述世界坐标系和相机坐标系之间的关系，也就是相机在世界里的位置和朝向。它和相机本身无关：同一台相机换个地方放，内参不变，外参变。</span><span class="en" lang="en">The extrinsics describe the relationship between the world frame and the camera frame: where the camera is in the world and which way it points. They have nothing to do with the camera itself: move the same camera somewhere else and the intrinsics stay the same while the extrinsics change.</span></p>
+<div class="fk"><div class="eq"><span class="r">X<sub>c</sub> = R X<sub>w</sub> + t</span><span class="r">[R | t] = <span class="mat c4"><span>r<sub>11</sub></span><span>r<sub>12</sub></span><span>r<sub>13</sub></span><span>t<sub>x</sub></span><span>r<sub>21</sub></span><span>r<sub>22</sub></span><span>r<sub>23</sub></span><span>t<sub>y</sub></span><span>r<sub>31</sub></span><span>r<sub>32</sub></span><span>r<sub>33</sub></span><span>t<sub>z</sub></span></span></span></div><div class="fb">
+<dl class="sym">
+<dt>X<sub>w</sub></dt><dd><span class="zh" lang="zh-CN">点在世界坐标系里的坐标</span><span class="en" lang="en">a point’s coordinates in the world frame</span></dd>
+<dt>X<sub>c</sub></dt><dd><span class="zh" lang="zh-CN">同一个点在相机坐标系里的坐标</span><span class="en" lang="en">the same point’s coordinates in the camera frame</span></dd>
+<dt>R</dt><dd><span class="zh" lang="zh-CN">3×3 旋转矩阵（上一篇讲的那种）</span><span class="en" lang="en">a 3×3 rotation matrix (the kind from the previous page)</span></dd>
+<dt>t</dt><dd><span class="zh" lang="zh-CN">平移向量，3 个数</span><span class="en" lang="en">translation vector, 3 numbers</span></dd>
+<dt>[R | t]</dt><dd><span class="zh" lang="zh-CN">把 R 和 t 并排写成一个 3×4 矩阵。乘上齐次坐标 (X<sub>w</sub>, 1)，结果正好是 R X<sub>w</sub> + t</span><span class="en" lang="en">R and t written side by side as one 3×4 matrix. Multiplied by the homogeneous coordinates (X<sub>w</sub>, 1), it gives exactly R X<sub>w</sub> + t</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">外参是一个"世界 → 相机"的换算。R 的三行分别是相机的 x、y、z 轴在世界坐标系里的方向；t 是世界原点在相机坐标系里的位置（把 X<sub>w</sub> = 0 代进去，X<sub>c</sub> 就等于 t）。</span><span class="en" lang="en">The extrinsics are a “world → camera” conversion. The three rows of R are the directions of the camera’s x, y and z axes, expressed in the world frame; t is where the world origin sits in the camera frame (plug in X<sub>w</sub> = 0 and X<sub>c</sub> equals t).</span></p>
+<p class="ex"><span class="zh" lang="zh-CN">相机放在世界坐标 (0, 0, −0.6) 处，朝 +z 方向看，三根轴和世界的三根轴同向。那么 R = I，t = (0, 0, 0.6)：世界原点在相机正前方 0.6 m。</span><span class="en" lang="en">Put the camera at world coordinates (0, 0, −0.6), looking along +z, with its three axes aligned with the world’s. Then R = I and t = (0, 0, 0.6): the world origin is 0.6 m straight ahead of the camera.</span></p></div></div>
+<h3><span class="zh" lang="zh-CN">t 不是相机的位置</span><span class="en" lang="en">t is not the camera’s position</span></h3>
+<div class="fk"><div class="eq"><span class="r">C = −Rᵀ t</span><span class="r"><span class="zh" lang="zh-CN">T<sub>cam_world</sub> = <span class="mat c2"><span>R</span><span>t</span><span>0 0 0</span><span>1</span></span>，   T<sub>world_cam</sub> = <span class="mat c2"><span>Rᵀ</span><span>−Rᵀt</span><span>0 0 0</span><span>1</span></span></span><span class="en" lang="en">T<sub>cam_world</sub> = <span class="mat c2"><span>R</span><span>t</span><span>0 0 0</span><span>1</span></span>,   T<sub>world_cam</sub> = <span class="mat c2"><span>Rᵀ</span><span>−Rᵀt</span><span>0 0 0</span><span>1</span></span></span></span></div><div class="fb">
+<dl class="sym">
+<dt>C</dt><dd><span class="zh" lang="zh-CN">相机光心在世界坐标系里的位置</span><span class="en" lang="en">the position of the camera’s optical centre in the world frame</span></dd>
+<dt>T<sub>cam_world</sub></dt><dd><span class="zh" lang="zh-CN">外参写成 4×4 齐次矩阵：世界坐标系在相机坐标系里的位姿，把世界坐标换算成相机坐标</span><span class="en" lang="en">the extrinsics as a 4×4 homogeneous matrix: the pose of the world frame in the camera frame, converting world coordinates into camera coordinates</span></dd>
+<dt>T<sub>world_cam</sub></dt><dd><span class="zh" lang="zh-CN">反过来：相机在世界里的位姿，也就是机器人里常说的"相机位姿"。两者互为逆矩阵</span><span class="en" lang="en">the other way round: the pose of the camera in the world, which is what robotics people usually mean by “the camera pose”. The two are inverses of each other</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">这是最常见的混淆：外参的 t 是"世界原点在相机眼里的位置"，不是"相机在世界里的位置"。相机的位置要反过来算：C = −Rᵀt。OpenCV 的 solvePnP 返回的 rvec、tvec 就是外参（世界 → 相机）；机器人里说"相机位姿"，一般指 T<sub>world_cam</sub> 或 T<sub>base_cam</sub>（相机 → 世界或基座）。</span><span class="en" lang="en">This is the most common mix-up: the extrinsic t is “where the world origin is, as seen by the camera”, not “where the camera is in the world”. The camera’s position has to be worked out the other way: C = −Rᵀt. The rvec and tvec returned by OpenCV’s solvePnP are extrinsics (world → camera); when robotics people say “camera pose” they usually mean T<sub>world_cam</sub> or T<sub>base_cam</sub> (camera → world or base).</span></p>
+<p class="ex"><span class="zh" lang="zh-CN">相机还在 C = (0, 0, −0.6)，但向右转了 90°（绕 y 轴）。这时 R 的三行是 (0, 0, −1)、(0, 1, 0)、(1, 0, 0)，t = −R C = (−0.6, 0, 0)。t 和 C 看起来毫无关系：转过去以后，世界原点在相机左边 0.6 m，而相机 x 轴朝右，所以 t<sub>x</sub> = −0.6。反算 −Rᵀt = (0, 0, −0.6)，正好是 C。</span><span class="en" lang="en">The camera is still at C = (0, 0, −0.6), but turned 90° to the right (about the y axis). Now the rows of R are (0, 0, −1), (0, 1, 0) and (1, 0, 0), and t = −R C = (−0.6, 0, 0). t and C look completely unrelated: after the turn, the world origin is 0.6 m to the camera’s left, and the camera’s x axis points right, so t<sub>x</sub> = −0.6. Working back, −Rᵀt = (0, 0, −0.6), which is exactly C.</span></p>
+<p class="why"><span class="zh" lang="zh-CN">外参有 6 个自由度：R 有 3 个，t 有 3 个。</span><span class="en" lang="en">The extrinsics have 6 degrees of freedom: 3 in R and 3 in t.</span></p></div></div>
+<h3><span class="zh" lang="zh-CN">外参从哪来</span><span class="en" lang="en">Where extrinsics come from</span></h3>
+<ul>
+<li><span class="zh" lang="zh-CN">相机对着已知的物体：PnP（Perspective-n-Point）。知道几个点的世界坐标，以及它们在图上的像素，就能解出 R、t（OpenCV 的 solvePnP）。</span><span class="en" lang="en">A camera looking at a known object: PnP (Perspective-n-Point). Given the world coordinates of a few points and their pixels in the image, you can solve for R and t (OpenCV’s solvePnP).</span></li>
+<li><span class="zh" lang="zh-CN">相机装在机械臂上：手眼标定，下面细讲。</span><span class="en" lang="en">A camera mounted on a robot arm: hand-eye calibration, explained below.</span></li>
+<li><span class="zh" lang="zh-CN">两台相机之间：双目标定给出左右相机之间的 R、T，见第 5 步。</span><span class="en" lang="en">Between two cameras: stereo calibration gives the R and T between the left and right cameras; see step 5.</span></li>
+</ul>
+<div class="fk"><div class="eq"><span class="r">T<sub>base_cam</sub> = T<sub>base_flange</sub> · T<sub>flange_cam</sub></span><span class="r">A X = X B</span></div><div class="fb">
+<dl class="sym">
+<dt>T<sub>base_flange</sub></dt><dd><span class="zh" lang="zh-CN">法兰（机械臂末端）在基座里的位姿，由机械臂正运动学实时给出</span><span class="en" lang="en">the pose of the flange (the end of the robot arm) in the base frame, given in real time by the arm’s forward kinematics</span></dd>
+<dt>X</dt><dd><span class="zh" lang="zh-CN">就是 T<sub>flange_cam</sub>：相机在法兰上的位姿。相机固定在法兰上，所以它是个常数，要标定出来</span><span class="en" lang="en">this is T<sub>flange_cam</sub>: the pose of the camera on the flange. The camera is fixed to the flange, so this is a constant that has to be calibrated</span></dd>
+<dt>A</dt><dd><span class="zh" lang="zh-CN">机械臂从姿态 1 换到姿态 2 时，法兰的相对运动（由机械臂读数算出）</span><span class="en" lang="en">the relative motion of the flange when the arm moves from pose 1 to pose 2 (computed from the arm’s readings)</span></dd>
+<dt>B</dt><dd><span class="zh" lang="zh-CN">同一段时间里相机的相对运动（由相机看棋盘算出）</span><span class="en" lang="en">the relative motion of the camera over the same move (computed from the camera’s view of the checkerboard)</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">相机焊死在法兰上，所以"法兰动了多少"和"相机动了多少"是同一件事，只是表达在两个不同的坐标系里。X 就是把两者联系起来的那个固定变换。让机械臂换几个姿态拍同一块棋盘，就能解出 X（OpenCV 的 calibrateHandEye）。至少需要两次转轴不同的转动，解才唯一。</span><span class="en" lang="en">The camera is rigidly attached to the flange, so “how much the flange moved” and “how much the camera moved” are the same motion, just expressed in two different frames. X is the fixed transform linking the two. Move the arm through a few poses while photographing the same checkerboard and you can solve for X (OpenCV’s calibrateHandEye). You need at least two rotations about different axes for a unique solution.</span></p>
+<p class="why"><span class="zh" lang="zh-CN">手眼标定的误差会原样传到点云上：X 差 1 mm，基座坐标系里的整片点云就差 1 mm 左右。</span><span class="en" lang="en">Hand-eye calibration error goes straight into the point cloud: if X is off by 1 mm, the whole point cloud in the base frame is off by about 1 mm.</span></p></div></div>
+</section>
+<section id="s-p">
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 4 步 · 合在一起</span><span class="en" lang="en">Step 4 · Putting it together</span></p>
+<h2><span class="zh" lang="zh-CN">投影矩阵 P = K [R | t]</span><span class="en" lang="en">The projection matrix P = K [R | t]</span></h2>
+<div class="fk"><div class="eq"><span class="r">λ (u, v, 1)ᵀ = K [R | t] (X<sub>w</sub>, Y<sub>w</sub>, Z<sub>w</sub>, 1)ᵀ</span><span class="r"><span class="zh" lang="zh-CN">P = K [R | t]  （3×4）</span><span class="en" lang="en">P = K [R | t]  (3×4)</span></span></div><div class="fb">
+<dl class="sym">
+<dt>P</dt><dd><span class="zh" lang="zh-CN">投影矩阵，3×4。把世界点直接变成（齐次的）像素</span><span class="en" lang="en">projection matrix, 3×4. Turns a world point straight into (homogeneous) pixel coordinates</span></dd>
+<dt>λ</dt><dd><span class="zh" lang="zh-CN">一个数，等于这个点在相机坐标系里的深度 Z<sub>c</sub>，最后要除掉</span><span class="en" lang="en">a number equal to the point’s depth Z<sub>c</sub> in the camera frame; divided out at the end</span></dd>
+<dt>ᵀ</dt><dd><span class="zh" lang="zh-CN">转置。这里只是把一行数竖起来，写成一列</span><span class="en" lang="en">transpose. Here it just stands a row of numbers up as a column</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">先用外参换到相机坐标系，再用内参换成像素，两个矩阵乘起来就是 P。乘出来的是齐次坐标 (λu, λv, λ)，前两个数除以第三个，就得到像素 (u, v)。这里没写畸变：畸变不是矩阵乘法，要在"除以深度"之后单独算。</span><span class="en" lang="en">First the extrinsics take you into the camera frame, then the intrinsics turn that into pixels; multiply the two matrices together and you get P. The result is in homogeneous coordinates (λu, λv, λ): divide the first two numbers by the third and you have the pixel (u, v). Distortion is not included here: it is not a matrix multiplication, so it is applied separately after the “divide by depth” step.</span></p>
+<p class="ex"><span class="zh" lang="zh-CN">沿用外参的第一个例子（R = I，t = (0, 0, 0.6)），再设 f<sub>x</sub> = f<sub>y</sub> = 600、c<sub>x</sub> = 320、c<sub>y</sub> = 240。世界点 (0.06, −0.03, 0) 先变成相机坐标 (0.06, −0.03, 0.6)；乘 K 得到 (600×0.06 + 320×0.6, 600×(−0.03) + 240×0.6, 0.6) = (228, 126, 0.6)；除以 0.6，像素是 (380, 210)。</span><span class="en" lang="en">Continue the first extrinsics example (R = I, t = (0, 0, 0.6)) with f<sub>x</sub> = f<sub>y</sub> = 600, c<sub>x</sub> = 320, c<sub>y</sub> = 240. The world point (0.06, −0.03, 0) first becomes the camera point (0.06, −0.03, 0.6); multiplying by K gives (600×0.06 + 320×0.6, 600×(−0.03) + 240×0.6, 0.6) = (228, 126, 0.6); divide by 0.6 and the pixel is (380, 210).</span></p>
+<p class="why"><span class="zh" lang="zh-CN">P 有 12 个数，但整体乘一个常数，除完以后结果不变，所以只有 11 个自由度：内参 5 个（f<sub>x</sub>, f<sub>y</sub>, c<sub>x</sub>, c<sub>y</sub>, s）加外参 6 个。</span><span class="en" lang="en">P has 12 numbers, but multiplying all of them by a constant gives the same result after the division, so it has only 11 degrees of freedom: 5 intrinsic (f<sub>x</sub>, f<sub>y</sub>, c<sub>x</sub>, c<sub>y</sub>, s) plus 6 extrinsic.</span></p></div></div>
+<p><span class="zh" lang="zh-CN">下面这台相机可以随便调。左边是它拍到的画面，右边是从旁边看相机、视锥和棋盘。上面一组滑块是内参，下面一组是外参；三个矩阵和橙色角点的计算过程都会实时更新。</span><span class="en" lang="en">You can adjust the camera below however you like. On the left is what it sees; on the right, a side view of the camera, its viewing frustum and the checkerboard. The first group of sliders is intrinsics and the second is extrinsics; the three matrices and the step-by-step calculation for the orange corner update live.</span></p>
+<p class="try"><span class="zh" lang="zh-CN"><b>先猜：</b>把焦距调大，和把相机往前推，画面里的棋盘都会变大。两者有什么不同？试完再按"推拉变焦"。</span><span class="en" lang="en"><b>Guess first:</b> increasing the focal length and pushing the camera forward both make the checkerboard bigger in the picture. What is the difference? Try both, then press “Dolly zoom”.</span></p>
+<div class="wg" id="cm">
+<div class="views">
+<div><canvas aria-label="相机拍到的画面" data-al-en="What the camera sees" data-al-zh="相机拍到的画面" id="cm-img"></canvas><p class="hint"><span class="zh" lang="zh-CN">相机拍到的画面（640 × 480 像素）· 紫色十字是主点 (c<sub>x</sub>, c<sub>y</sub>)，灰色虚线十字是画面正中</span><span class="en" lang="en">What the camera sees (640 × 480 pixels) · the purple cross is the principal point (c<sub>x</sub>, c<sub>y</sub>), the grey dashed cross is the centre of the image</span></p></div>
+<div><canvas aria-label="从旁边看相机、视锥和棋盘" data-al-en="Side view of the camera, frustum and checkerboard" data-al-zh="从旁边看相机、视锥和棋盘" id="cm-3d" style="touch-action:none;cursor:grab"></canvas><p class="hint"><span class="zh" lang="zh-CN">从旁边看：相机、视锥和棋盘 · 棋盘中心的红绿蓝三根轴是世界坐标系 · 紫色虚线框是画面拍到的范围 · 拖动换角度</span><span class="en" lang="en">Side view: camera, frustum and checkerboard · the red, green and blue axes at the board’s centre are the world frame · the purple dashed frame is the area the picture covers · drag to change the view</span></p></div>
+</div>
+<div class="grp"><span class="zh" lang="zh-CN">内参：相机自己的属性</span><span class="en" lang="en">Intrinsics: properties of the camera itself</span></div>
+<div class="row"><label for="cm-fx"><span class="zh" lang="zh-CN">焦距 f<sub>x</sub></span><span class="en" lang="en">Focal f<sub>x</sub></span></label><input id="cm-fx" max="1200" min="200" step="10" type="range" value="600"/><span class="val" id="cm-fxv">600 px</span></div>
+<div class="row"><label for="cm-fy"><span class="zh" lang="zh-CN">焦距 f<sub>y</sub></span><span class="en" lang="en">Focal f<sub>y</sub></span></label><input id="cm-fy" max="1200" min="200" step="10" type="range" value="600"/><span class="val" id="cm-fyv">600 px</span></div>
+<div class="row"><label for="cm-cx"><span class="zh" lang="zh-CN">主点 c<sub>x</sub></span><span class="en" lang="en">Principal c<sub>x</sub></span></label><input id="cm-cx" max="480" min="160" step="5" type="range" value="320"/><span class="val" id="cm-cxv">320 px</span></div>
+<div class="row"><label for="cm-cy"><span class="zh" lang="zh-CN">主点 c<sub>y</sub></span><span class="en" lang="en">Principal c<sub>y</sub></span></label><input id="cm-cy" max="360" min="120" step="5" type="range" value="240"/><span class="val" id="cm-cyv">240 px</span></div>
+<div class="row"><label for="cm-k1"><span class="zh" lang="zh-CN">畸变 k₁</span><span class="en" lang="en">Distortion k₁</span></label><input id="cm-k1" max="0.4" min="-0.4" step="0.01" type="range" value="0"/><span class="val" id="cm-k1v">0.00</span></div>
+<div class="grp"><span class="zh" lang="zh-CN">外参：相机放在哪、朝哪</span><span class="en" lang="en">Extrinsics: where the camera is and which way it faces</span></div>
+<div class="row"><label for="cm-d"><span class="zh" lang="zh-CN">离棋盘</span><span class="en" lang="en">Distance</span></label><input id="cm-d" max="1.2" min="0.25" step="0.01" type="range" value="0.6"/><span class="val" id="cm-dv">0.60 m</span></div>
+<div class="row"><label for="cm-x"><span class="zh" lang="zh-CN">左右移</span><span class="en" lang="en">Move sideways</span></label><input id="cm-x" max="0.3" min="-0.3" step="0.01" type="range" value="0"/><span class="val" id="cm-xv">0.00 m</span></div>
+<div class="row"><label for="cm-y"><span class="zh" lang="zh-CN">上下移</span><span class="en" lang="en">Move up/down</span></label><input id="cm-y" max="0.3" min="-0.3" step="0.01" type="range" value="0"/><span class="val" id="cm-yv">0.00 m</span></div>
+<div class="row"><label for="cm-yaw"><span class="zh" lang="zh-CN">左右转</span><span class="en" lang="en">Pan</span></label><input id="cm-yaw" max="45" min="-45" step="1" type="range" value="0"/><span class="val" id="cm-yawv">0°</span></div>
+<div class="row"><label for="cm-pit"><span class="zh" lang="zh-CN">上下转</span><span class="en" lang="en">Tilt</span></label><input id="cm-pit" max="45" min="-45" step="1" type="range" value="0"/><span class="val" id="cm-pitv">0°</span></div>
+<div class="row"><label for="cm-rol"><span class="zh" lang="zh-CN">歪头</span><span class="en" lang="en">Roll</span></label><input id="cm-rol" max="90" min="-90" step="1" type="range" value="0"/><span class="val" id="cm-rolv">0°</span></div>
+<div class="btns"><button class="btn on" id="cm-lk"><span class="zh" lang="zh-CN">f<sub>x</sub> = f<sub>y</sub> 联动</span><span class="en" lang="en">Link f<sub>x</sub> = f<sub>y</sub></span></button><button class="btn" id="cm-dz"><span class="zh" lang="zh-CN">推拉变焦</span><span class="en" lang="en">Dolly zoom</span></button><button class="btn" id="cm-rs"><span class="zh" lang="zh-CN">复位</span><span class="en" lang="en">Reset</span></button></div>
+<div class="status" id="cm-st" role="status"></div>
+<div class="mxs">
+<div class="mx"><span class="nm">K =</span><div class="mat c3" id="cm-K"></div></div>
+<div class="mx"><span class="nm">[R | t] =</span><div class="mat c4" id="cm-Rt"></div></div>
+<div class="mx"><span class="nm">P =</span><div class="mat c4" id="cm-P"></div></div>
+<div class="mx"><div class="mono" id="cm-C"></div></div>
+</div>
+<div class="mono" id="cm-tr" style="margin-top:8px;background:var(--surface-2);border-radius:10px;padding:8px 10px"></div>
+</div>
+<script>
+(()=>{const X=RX,D=X.D,$=i=>document.getElementById(i);
+const IW=640,IH=480,BXN=8,BYN=6,SQ=.05;
+const DEF={fx:600,fy:600,cx:320,cy:240,k1:0,d:.6,x:0,y:0,yaw:0,pit:0,rol:0},IDS=Object.keys(DEF);
+let S=Object.assign({},DEF),lock=true,last='',anim=null,az=-122*D,el=24*D;
+const CB=[[.04,-.10],[.10,-.10],[.10,-.04],[.04,-.04]],CUBE=CB.map(([a,b])=>[a,b,0]).concat(CB.map(([a,b])=>[a,b,-.06]));
+const CE=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]],TRK=[.04,-.10,-.06];
+function pose(){const Rwc=X.mm(X.Ry(S.yaw*D),X.mm(X.Rx(S.pit*D),X.Rz(S.rol*D))),C=[S.x,-S.y,-S.d],R=[0,1,2].map(i=>[Rwc[0][i],Rwc[1][i],Rwc[2][i]]),t=X.scl(X.mv(R,C),-1);return{Rwc,R,t,C}}
+function proj(Xw,p){const Xc=X.add(X.mv(p.R,Xw),p.t);if(Xc[2]<.02)return null;const x=Xc[0]/Xc[2],y=Xc[1]/Xc[2],r2=x*x+y*y,f=1+S.k1*r2;return{u:S.fx*x*f+S.cx,v:S.fy*y*f+S.cy,Xc,x,y,f}}
+const ci=$('cm-img'),c3=$('cm-3d');let gi=null,g3=null,Wi=320,Hi=240,W3=320;
+function fit(){const r=window.devicePixelRatio||1;Wi=ci.clientWidth||320;Hi=Math.round(Wi*.75);ci.style.height=Hi+'px';ci.width=Math.round(Wi*r);ci.height=Math.round(Hi*r);gi=ci.getContext('2d');gi.setTransform(r,0,0,r,0,0);
+W3=c3.clientWidth||320;c3.style.height=Hi+'px';c3.width=Math.round(W3*r);c3.height=Math.round(Hi*r);g3=c3.getContext('2d');g3.setTransform(r,0,0,r,0,0)}
+function seg(a,b,n){const o=[];for(let i=0;i<=n;i++){const k=i/n;o.push([a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k,a[2]+(b[2]-a[2])*k])}return o}
+function drawImg(p){const g=gi;if(!g)return;const k=Wi/IW;g.clearRect(0,0,Wi,Hi);g.save();g.beginPath();g.rect(0,0,Wi,Hi);g.clip();g.fillStyle='#CBCBC6';g.fillRect(0,0,Wi,Hi);g.lineCap='round';g.lineJoin='round';
+const U=q=>[q.u*k,q.v*k];
+for(let j=0;j<BYN;j++)for(let i=0;i<BXN;i++){const x0=-.2+i*SQ,y0=-.15+j*SQ,c=[[x0,y0,0],[x0+SQ,y0,0],[x0+SQ,y0+SQ,0],[x0,y0+SQ,0]],pts=[];let ok=true;
+for(let e=0;e<4;e++){const s=seg(c[e],c[(e+1)%4],4);s.pop();for(const w of s){const q=proj(w,p);if(!q){ok=false;break}pts.push(U(q))}if(!ok)break}
+if(!ok)continue;g.beginPath();pts.forEach((q,n)=>n?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]));g.closePath();g.fillStyle=(i+j)%2?'#F3F3F0':'#262626';g.fill()}
+const poly=(pts,col,w,dash)=>{const q=pts.map(w3=>proj(w3,p));if(q.some(z=>!z))return;g.strokeStyle=col;g.lineWidth=w;g.setLineDash(dash||[]);g.beginPath();q.forEach((z,n)=>{const a=U(z);n?g.lineTo(a[0],a[1]):g.moveTo(a[0],a[1])});g.stroke();g.setLineDash([])};
+poly(seg([0,0,0],[.08,0,0],8),X.col('--x'),3);poly(seg([0,0,0],[0,.08,0],8),X.col('--y'),3);
+CE.forEach(([a,b])=>poly(seg(CUBE[a],CUBE[b],8),X.col('--k'),2.5));
+const tq=proj(TRK,p);if(tq){const a=U(tq);g.fillStyle=X.col('--amber');g.beginPath();g.arc(a[0],a[1],5,0,6.2832);g.fill()}
+const cross=(x,y,col,dash,len)=>{g.strokeStyle=col;g.lineWidth=1.5;g.setLineDash(dash||[]);g.beginPath();g.moveTo(x-len,y);g.lineTo(x+len,y);g.moveTo(x,y-len);g.lineTo(x,y+len);g.stroke();g.setLineDash([])};
+cross(320*k,240*k,'#6F6F6A',[4,4],Math.max(Wi,Hi));cross(S.cx*k,S.cy*k,X.col('--k'),[],12);
+g.restore();g.strokeStyle=X.col('--line');g.lineWidth=1;g.strokeRect(.5,.5,Wi-1,Hi-1)}
+function draw3(p){const g=g3;if(!g)return;const W=W3,H=Hi;g.clearRect(0,0,W,H);g.lineCap='round';g.lineJoin='round';g.font=X.font(12);
+const V=X.view(az,el),toD=q=>[q[0],q[2],-q[1]],mid=toD(X.scl(p.C,.5));
+const raw=q=>{const w=toD(q),d=[w[0]-mid[0],w[1]-mid[1],w[2]-mid[2]],zc=X.dot(d,V.C),f=2.4/(2.4-zc);return[X.dot(d,V.R)*f,-X.dot(d,V.U)*f]};
+const near=zf=>[[0,0],[IW,0],[IW,IH],[0,IH]].map(([u,v])=>X.add(p.C,X.mv(p.Rwc,[(u-S.cx)/S.fx*zf,(v-S.cy)/S.fy*zf,zf])));
+const cn=near(.08),fp=[[0,0],[IW,0],[IW,IH],[0,IH]].map(([u,v])=>{const dw=X.mv(p.Rwc,[(u-S.cx)/S.fx,(v-S.cy)/S.fy,1]);if(dw[2]<=1e-6)return null;const s2=-p.C[2]/dw[2];return s2>4?null:X.add(p.C,X.scl(dw,s2))}),key=[[-.2,-.15,0],[.2,-.15,0],[.2,.15,0],[-.2,.15,0],p.C].concat(cn,fp.filter(z=>z&&Math.hypot(z[0],z[1])<.8));
+let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;key.forEach(q=>{const r=raw(q);x0=Math.min(x0,r[0]);x1=Math.max(x1,r[0]);y0=Math.min(y0,r[1]);y1=Math.max(y1,r[1])});
+const m=30,s=Math.min((W-2*m)/Math.max(x1-x0,1e-3),(H-2*m)/Math.max(y1-y0,1e-3)),ox=W/2-s*(x0+x1)/2,oy=H/2-s*(y0+y1)/2;
+const P3=q=>{const r=raw(q);return[ox+s*r[0],oy+s*r[1]]};
+const line=(a,b,col,w,dash)=>{const A=P3(a),B=P3(b);g.strokeStyle=col;g.lineWidth=w;g.setLineDash(dash||[]);g.beginPath();g.moveTo(A[0],A[1]);g.lineTo(B[0],B[1]);g.stroke();g.setLineDash([])};
+for(let j=0;j<BYN;j++)for(let i=0;i<BXN;i++){const x0=-.2+i*SQ,y0=-.15+j*SQ,q=[[x0,y0,0],[x0+SQ,y0,0],[x0+SQ,y0+SQ,0],[x0,y0+SQ,0]].map(P3);g.beginPath();q.forEach((z,n)=>n?g.lineTo(z[0],z[1]):g.moveTo(z[0],z[1]));g.closePath();g.fillStyle=(i+j)%2?'#E8E8E4':'#3A3A3A';g.fill()}
+const PU=X.col('--k'),fg=X.col('--fg');
+if(fp.every(z=>z)){g.globalAlpha=.55;fp.forEach(z=>line(p.C,z,PU,1,[3,4]));g.globalAlpha=1;const q=fp.map(P3);g.strokeStyle=PU;g.lineWidth=2;g.setLineDash([6,4]);g.beginPath();q.forEach((z,n)=>n?g.lineTo(z[0],z[1]):g.moveTo(z[0],z[1]));g.closePath();g.stroke();g.setLineDash([])}
+CE.forEach(([a,b])=>line(CUBE[a],CUBE[b],PU,2));
+line([0,0,0],[.1,0,0],X.col('--x'),2.5);line([0,0,0],[0,.1,0],X.col('--y'),2.5);line([0,0,0],[0,0,.1],X.col('--z'),2.5);
+cn.forEach(c=>line(p.C,c,fg,1));for(let i=0;i<4;i++)line(cn[i],cn[(i+1)%4],fg,1.2);
+const ax=(i,col)=>line(p.C,X.add(p.C,X.scl([p.Rwc[0][i],p.Rwc[1][i],p.Rwc[2][i]],.06)),col,2.5);ax(0,X.col('--x'));ax(1,X.col('--y'));ax(2,X.col('--z'));
+line(p.C,TRK,X.col('--amber'),1.5,[4,4]);const T=P3(TRK);g.fillStyle=X.col('--amber');g.beginPath();g.arc(T[0],T[1],4.5,0,6.2832);g.fill();
+const Cp=P3(p.C);g.fillStyle=fg;g.beginPath();g.arc(Cp[0],Cp[1],3.5,0,6.2832);g.fill();g.fillText(X.t('相机','camera'),Cp[0]+8,Cp[1]+18)}
+function mat(el,M,dec,tc){el.innerHTML=M.map(r=>r.map((v,j)=>'<span'+(tc&&j===3?' class="tc"':'')+'>'+X.fm(v,dec)+'</span>').join('')).join('')}
+function status(){const st=$('cm-st');let m;
+if(anim||last==='dz')m=X.t('推拉变焦：相机往前走，同时焦距按比例变小，让棋盘在画面里一样大。棋盘几乎没变，立方体的透视却越来越夸张。焦距和距离都能让东西变大，但只有距离会改变透视。','Dolly zoom: the camera moves forward while the focal length shrinks in proportion, so the board stays the same size in the picture. The board barely changes, but the cube’s perspective gets more and more extreme. Focal length and distance can both make things bigger, but only distance changes perspective.');
+else if(last==='fx'||last==='fy')m=S.fx!==S.fy?X.t('f<sub>x</sub> ≠ f<sub>y</sub>：像素不是正方形，画面被横向或纵向拉伸，正方形的格子变成了长方形。','f<sub>x</sub> ≠ f<sub>y</sub>: the pixels are not square, so the picture is stretched sideways or vertically and the square cells become rectangles.'):X.t('改的是焦距（内参）：视野变宽或变窄，棋盘跟着缩放。相机本身没有动，右边只有视锥的张角在变。','You changed the focal length (an intrinsic): the field of view widens or narrows and the board scales with it. The camera itself has not moved; on the right, only the opening angle of the frustum changes.');
+else if(last==='cx'||last==='cy')m=X.t('改的是主点（内参）：整幅画面跟着平移，相机的位置和朝向都没变。右边的视锥歪了：光轴不再穿过画面正中。','You changed the principal point (an intrinsic): the whole picture shifts, while the camera’s position and orientation stay the same. On the right the frustum is skewed: the optical axis no longer passes through the centre of the picture.');
+else if(last==='k1')m=S.k1<0?X.t('k₁ &lt; 0：桶形畸变，棋盘的直线往外鼓，越靠边越弯。','k₁ &lt; 0: barrel distortion. The board’s straight lines bulge outwards, more and more towards the edges.'):S.k1>0?X.t('k₁ &gt; 0：枕形畸变，直线往里凹，越靠边越弯。','k₁ &gt; 0: pincushion distortion. Straight lines bend inwards, more and more towards the edges.'):X.t('k₁ = 0：没有畸变，直线还是直线。','k₁ = 0: no distortion, so straight lines stay straight.');
+else if(last)m=X.t('改的是外参：相机在世界里挪动或转动，K 一个数都不变。看 [R | t] 的最后一列和下面的相机位置 C：t 是世界原点在相机坐标系里的位置，转动相机以后，它和 C 就完全对不上了。','You changed the extrinsics: the camera moves or turns in the world, and not a single number in K changes. Compare the last column of [R | t] with the camera position C below: t is where the world origin sits in the camera frame, and once the camera turns it no longer resembles C at all.');
+else m=X.t('拖动下面的滑块：上面一组是内参，下面一组是外参。','Drag the sliders below: the first group is intrinsics, the second is extrinsics.');
+st.innerHTML=m}
+function render(){const p=pose();drawImg(p);draw3(p);
+const fmt={fx:v=>v+' px',fy:v=>v+' px',cx:v=>v+' px',cy:v=>v+' px',k1:v=>X.fm(v,2),d:v=>X.fm(v,2)+' m',x:v=>X.fm(v,2)+' m',y:v=>X.fm(v,2)+' m',yaw:v=>Math.round(v)+'°',pit:v=>Math.round(v)+'°',rol:v=>Math.round(v)+'°'};
+IDS.forEach(k=>{$('cm-'+k+'v').textContent=fmt[k](S[k])});
+const K=[[S.fx,0,S.cx],[0,S.fy,S.cy],[0,0,1]],Rt=p.R.map((r,i)=>r.concat([p.t[i]])),Pm=K.map(r=>[0,1,2,3].map(j=>r[0]*Rt[0][j]+r[1]*Rt[1][j]+r[2]*Rt[2][j]));
+mat($('cm-K'),K,0);mat($('cm-Rt'),Rt,3,true);mat($('cm-P'),Pm,1,true);
+$('cm-C').textContent=X.t('相机位置','Camera position')+' C = −Rᵀt\n= ('+p.C.map(v=>X.fm(v,3)).join(', ')+') m';
+const q=proj(TRK,p),f3=v=>X.fm(v,3),L=[X.t('橙色角点 X_w','Orange corner X_w'),'   = ('+TRK.map(f3).join(', ')+') m'];
+if(!q)L.push(X.t('它在相机后面，拍不到。','It is behind the camera, so it is not in the picture.'));
+else{L.push('① '+X.t('外参','extrinsics')+': X_c = R·X_w + t');L.push('   = ('+q.Xc.map(f3).join(', ')+') m');L.push('② '+X.t('除以深度','divide by depth')+': x′ = '+f3(q.x)+', y′ = '+f3(q.y));L.push('③ '+X.t('畸变','distortion')+': 1 + k₁r² = '+f3(q.f));L.push('④ '+X.t('内参','intrinsics')+': u = fx·x″ + cx = '+X.fm(q.u,1));L.push('   v = fy·y″ + cy = '+X.fm(q.v,1))}
+$('cm-tr').textContent=L.join('\n');$('cm-lk').classList.toggle('on',lock);$('cm-dz').textContent=anim?X.t('停','Stop'):X.t('推拉变焦','Dolly zoom');status()}
+function sync(){IDS.forEach(k=>{$('cm-'+k).value=S[k]})}
+function stopAnim(){if(anim){cancelAnimationFrame(anim.id);anim=null}}
+IDS.forEach(k=>{const e=$('cm-'+k);e.addEventListener('input',()=>{stopAnim();S[k]=+e.value;if(lock&&(k==='fx'||k==='fy')){S.fx=S.fy=S[k];sync()}last=k;render()})});
+$('cm-lk').addEventListener('click',()=>{lock=!lock;if(lock){S.fy=S.fx;sync()}last='fx';render()});
+$('cm-rs').addEventListener('click',()=>{stopAnim();S=Object.assign({},DEF);lock=true;last='';az=-122*D;el=24*D;sync();render()});
+$('cm-dz').addEventListener('click',()=>{if(anim){stopAnim();last='d';render();return}lock=true;const go=k=>{S.d=1.1+(.3-1.1)*k;S.fx=S.fy=Math.round(1000*S.d/10)*10;sync()};
+if(X.reduced){go(1);last='dz';render();return}anim={t0:performance.now(),id:0};const step=now=>{if(!anim)return;const k=Math.min(1,(now-anim.t0)/3600),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;go(e);render();if(k<1)anim.id=requestAnimationFrame(step);else{anim=null;last='dz';render()}};anim.id=requestAnimationFrame(step);render()});
+X.drag(c3,(dx,dy)=>{az-=dx*.01;el=Math.max(-.2,Math.min(1.35,el+dy*.01));draw3(pose())});
+X.onTheme(render);X.onLang(render);
+if(window.ResizeObserver){let lw=0;new ResizeObserver(()=>{if(ci.clientWidth&&ci.clientWidth!==lw){lw=ci.clientWidth;fit();render()}}).observe(ci)}else addEventListener('resize',()=>{fit();render()});
+fit();render();})();
+</script>
+<p><span class="zh" lang="zh-CN">几个值得注意的现象：</span><span class="en" lang="en">A few things worth noticing:</span></p>
+<ul>
+<li><span class="zh" lang="zh-CN">调内参时，右边的相机一动不动，只有视锥变宽变窄或者歪掉；调外参时，K 一个数都不变。</span><span class="en" lang="en">When you adjust the intrinsics, the camera on the right does not move at all; only the frustum widens, narrows or skews. When you adjust the extrinsics, not a single number in K changes.</span></li>
+<li><span class="zh" lang="zh-CN">焦距和距离都能让棋盘变大，但只有距离会改变透视。"推拉变焦"让相机往前走、同时把焦距调小，棋盘大小几乎不变，立方体却越来越"夸张"。电影里的希区柯克变焦就是这个原理。</span><span class="en" lang="en">Focal length and distance can both make the board bigger, but only distance changes perspective. “Dolly zoom” moves the camera forward while reducing the focal length, so the board stays about the same size while the cube looks more and more “exaggerated”. This is the Hitchcock zoom used in films.</span></li>
+<li><span class="zh" lang="zh-CN">主点 c<sub>x</sub>、c<sub>y</sub> 一动，整幅画面跟着平移。</span><span class="en" lang="en">Move the principal point c<sub>x</sub>, c<sub>y</sub> and the whole picture shifts.</span></li>
+<li><span class="zh" lang="zh-CN">先关掉"f<sub>x</sub> = f<sub>y</sub> 联动"，只动 f<sub>x</sub>：正方形的格子变成长方形，这就是像素不是正方形的效果。</span><span class="en" lang="en">Turn off “Link f<sub>x</sub> = f<sub>y</sub>” and move only f<sub>x</sub>: the square cells become rectangles. That is what non-square pixels look like.</span></li>
+<li><span class="zh" lang="zh-CN">k₁ 调成负数，棋盘的直线往外鼓（桶形）；调成正数，往里凹（枕形）。越靠画面边缘弯得越厉害，所以把相机拉近、让棋盘撑满画面，效果更明显。</span><span class="en" lang="en">Make k₁ negative and the board’s straight lines bulge outwards (barrel); make it positive and they bend inwards (pincushion). The bending is strongest near the edges of the picture, so move the camera closer to fill the frame with the board and the effect is clearer.</span></li>
+<li><span class="zh" lang="zh-CN">转动相机以后，外参最后一列的 t 和下面算出的相机位置 C 就完全对不上了。</span><span class="en" lang="en">Once you turn the camera, the t in the last column of the extrinsics and the camera position C computed below no longer match at all.</span></li>
+</ul>
+</section>
+<section id="s-st">
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 5 步 · 双目测深度</span><span class="en" lang="en">Step 5 · Stereo depth</span></p>
+<h2><span class="zh" lang="zh-CN">深度、双目和立体匹配</span><span class="en" lang="en">Depth, stereo and stereo matching</span></h2>
+<p><span class="zh" lang="zh-CN">普通照片的每个像素记的是颜色，深度图的每个像素记的是"那里离相机多远"。很多深度相机输出的就是这样一张图：每个像素一个整数，单位是毫米，0 表示没测到。</span><span class="en" lang="en">Each pixel of an ordinary photo records a colour; each pixel of a depth image records “how far away that is from the camera”. Many depth cameras output exactly such an image: one integer per pixel, in millimetres, with 0 meaning “not measured”.</span></p>
+<p><span class="zh" lang="zh-CN">这里的"多远"指的是沿相机正前方（光轴方向）的距离 Z，也就是相机坐标里的第三个数，不是镜头到那个点的直线距离。比如相机正对一面墙，墙上每一点的深度都一样，虽然墙角离镜头的直线距离更远。</span><span class="en" lang="en">“How far” here means the distance Z straight ahead of the camera (along the optical axis), the third number of the camera coordinates, not the straight-line distance from the lens to the point. For example, if the camera faces a wall head-on, every point on the wall has the same depth, even though the corners are farther from the lens in a straight line.</span></p>
+<p><span class="zh" lang="zh-CN">测深度主要有三种办法：</span><span class="en" lang="en">There are three main ways to measure depth:</span></p>
+<ul>
+<li><span class="zh" lang="zh-CN">双目：两台相机，像人的两只眼睛，靠"同一个点在两张图里差了多少"算距离；</span><span class="en" lang="en">stereo: two cameras, like a pair of eyes, measuring distance from “how far apart the same point is in the two images”;</span></li>
+<li><span class="zh" lang="zh-CN">结构光：投一个已知的图案，看它落在物体上怎么变形；</span><span class="en" lang="en">structured light: project a known pattern and see how it deforms on the object;</span></li>
+<li><span class="zh" lang="zh-CN">飞行时间（ToF）：测光打出去再弹回来用了多久。</span><span class="en" lang="en">time of flight (ToF): measure how long light takes to go out and bounce back.</span></li>
+</ul>
+<h3><span class="zh" lang="zh-CN">两台相机之间的外参</span><span class="en" lang="en">Extrinsics between the two cameras</span></h3>
+<div class="fk"><div class="eq"><span class="r">X<sub>r</sub> = R X<sub>l</sub> + T</span><span class="r"><span class="zh" lang="zh-CN">校正以后：R = I，T = (−B, 0, 0)</span><span class="en" lang="en">after rectification: R = I, T = (−B, 0, 0)</span></span></div><div class="fb">
+<dl class="sym">
+<dt>X<sub>l</sub>, X<sub>r</sub></dt><dd><span class="zh" lang="zh-CN">同一个点在左相机、右相机坐标系里的坐标</span><span class="en" lang="en">the same point’s coordinates in the left and right camera frames</span></dd>
+<dt>R, T</dt><dd><span class="zh" lang="zh-CN">双目标定得到的左右相机之间的旋转和平移，也就是"右相机眼里的左相机"</span><span class="en" lang="en">the rotation and translation between the left and right cameras from stereo calibration, i.e. “the left camera as seen by the right camera”</span></dd>
+<dt>B</dt><dd><span class="zh" lang="zh-CN">基线：两个光心之间的距离</span><span class="en" lang="en">baseline: the distance between the two optical centres</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">双目相机就是两台相机，再加一组描述它们相对位置的外参。校正（rectification）会把两张图各自"转"一下，让两台相机看起来像完全平行地并排放着：R 变成 I，T 只剩横向的 −B。右相机在左相机右边 B 处，所以同一个点在右相机看来，要往左挪 B。</span><span class="en" lang="en">A stereo camera is just two cameras plus a set of extrinsics describing their relative position. Rectification “turns” each of the two images a little so that the cameras look as if they sit side by side, perfectly parallel: R becomes I and T is left with only the sideways −B. The right camera is B to the right of the left one, so to the right camera the same point appears shifted left by B.</span></p>
+<p class="ex"><span class="zh" lang="zh-CN">B = 5 cm。左相机坐标系里的点 (0.1, 0, 0.5)，在右相机里是 (0.05, 0, 0.5)。设 f = 600：左图 u<sub>l</sub> = 600 × 0.2 + c<sub>x</sub>，右图 u<sub>r</sub> = 600 × 0.1 + c<sub>x</sub>，两者差 60 像素。这个差就是下面要讲的视差。</span><span class="en" lang="en">B = 5 cm. The point (0.1, 0, 0.5) in the left camera frame is (0.05, 0, 0.5) in the right camera frame. With f = 600: in the left image u<sub>l</sub> = 600 × 0.2 + c<sub>x</sub>, in the right image u<sub>r</sub> = 600 × 0.1 + c<sub>x</sub>, a difference of 60 pixels. That difference is the disparity, explained below.</span></p></div></div>
+<h3><span class="zh" lang="zh-CN">对极几何：为什么只在同一行里找</span><span class="en" lang="en">Epipolar geometry: why we only search along one row</span></h3>
+<div class="fk"><div class="eq"><span class="r"><span class="zh" lang="zh-CN">x<sub>r</sub>ᵀ E x<sub>l</sub> = 0，   E = [T]<sub>×</sub> R</span><span class="en" lang="en">x<sub>r</sub>ᵀ E x<sub>l</sub> = 0,   E = [T]<sub>×</sub> R</span></span><span class="r"><span class="zh" lang="zh-CN">p<sub>r</sub>ᵀ F p<sub>l</sub> = 0，   F = K<sub>r</sub>⁻ᵀ E K<sub>l</sub>⁻¹</span><span class="en" lang="en">p<sub>r</sub>ᵀ F p<sub>l</sub> = 0,   F = K<sub>r</sub>⁻ᵀ E K<sub>l</sub>⁻¹</span></span></div><div class="fb">
+<dl class="sym">
+<dt>x<sub>l</sub>, x<sub>r</sub></dt><dd><span class="zh" lang="zh-CN">同一个点在左右两张图里的归一化坐标，写成齐次形式 (x′, y′, 1)</span><span class="en" lang="en">the same point’s normalized coordinates in the left and right images, in homogeneous form (x′, y′, 1)</span></dd>
+<dt>p<sub>l</sub>, p<sub>r</sub></dt><dd><span class="zh" lang="zh-CN">同一个点在左右两张图里的像素坐标，齐次形式 (u, v, 1)</span><span class="en" lang="en">the same point’s pixel coordinates in the left and right images, in homogeneous form (u, v, 1)</span></dd>
+<dt>E</dt><dd><span class="zh" lang="zh-CN">本质矩阵（essential matrix），3×3，只和两台相机之间的 R、T 有关</span><span class="en" lang="en">essential matrix, 3×3, which depends only on the R and T between the two cameras</span></dd>
+<dt>F</dt><dd><span class="zh" lang="zh-CN">基础矩阵（fundamental matrix），3×3，把内参也算进去，直接作用在像素上</span><span class="en" lang="en">fundamental matrix, 3×3, which also folds in the intrinsics and works directly on pixels</span></dd>
+<dt>[T]<sub>×</sub></dt><dd><span class="zh" lang="zh-CN">T 的叉乘矩阵（上一篇讲过）</span><span class="en" lang="en">the cross-product matrix of T (from the previous page)</span></dd>
+<dt>K⁻ᵀ</dt><dd><span class="zh" lang="zh-CN">K 的逆矩阵再转置</span><span class="en" lang="en">the inverse of K, transposed</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">左图上的一个点，对应三维空间里的一条射线：方向知道，深度不知道。这条射线投到右图上是一条线，叫对极线，真正的匹配点一定在这条线上。E 和 F 就是"把左图的一个点，变成右图上的一条线"的矩阵：F p<sub>l</sub> 算出来三个数 (a, b, c)，正好是右图上直线 a u + b v + c = 0 的系数。所以匹配只要沿一条线找，不用找整张图。</span><span class="en" lang="en">A point in the left image corresponds to a ray in 3D: its direction is known, its depth is not. Projected into the right image, that ray becomes a line, called the epipolar line, and the true match must lie on it. E and F are the matrices that “turn a point in the left image into a line in the right image”: F p<sub>l</sub> gives three numbers (a, b, c), which are exactly the coefficients of the line a u + b v + c = 0 in the right image. So matching only needs to search along one line, not the whole image.</span></p>
+<p class="ex"><span class="zh" lang="zh-CN">校正以后 R = I、T = (−B, 0, 0)，E = [T]<sub>×</sub> 的三行是 (0, 0, 0)、(0, 0, B)、(0, −B, 0)。代进去：x<sub>r</sub>ᵀ E x<sub>l</sub> = B (y<sub>r</sub> − y<sub>l</sub>) = 0，也就是 y<sub>r</sub> = y<sub>l</sub>：同一个点在两张图里一定在同一行。这正是校正的目的。</span><span class="en" lang="en">After rectification R = I and T = (−B, 0, 0), so the rows of E = [T]<sub>×</sub> are (0, 0, 0), (0, 0, B) and (0, −B, 0). Plugging in: x<sub>r</sub>ᵀ E x<sub>l</sub> = B (y<sub>r</sub> − y<sub>l</sub>) = 0, i.e. y<sub>r</sub> = y<sub>l</sub>: the same point is always on the same row in both images. That is exactly what rectification is for.</span></p></div></div>
+<h3><span class="zh" lang="zh-CN">视差和深度</span><span class="en" lang="en">Disparity and depth</span></h3>
+<p><span class="zh" lang="zh-CN">伸出一根手指放在眼前，轮流闭左眼、闭右眼，手指会左右跳。手指越近，跳得越厉害；远处的东西几乎不动。这个跳动量就是视差（disparity）。</span><span class="en" lang="en">Hold a finger in front of your face and close each eye in turn: the finger jumps from side to side. The closer the finger, the bigger the jump; distant things barely move. That jump is the disparity.</span></p>
+<div class="fk"><div class="eq">Z = f × B ÷ d</div><div class="fb">
+<dl class="sym">
+<dt>Z</dt><dd><span class="zh" lang="zh-CN">深度，单位米</span><span class="en" lang="en">depth, in metres</span></dd>
+<dt>f</dt><dd><span class="zh" lang="zh-CN">焦距（像素），就是内参里的 f<sub>x</sub></span><span class="en" lang="en">focal length (pixels), the f<sub>x</sub> from the intrinsics</span></dd>
+<dt>B</dt><dd><span class="zh" lang="zh-CN">基线（米）</span><span class="en" lang="en">baseline (metres)</span></dd>
+<dt>d</dt><dd><span class="zh" lang="zh-CN">视差：同一个点在左图和右图里横坐标的差，d = u<sub>l</sub> − u<sub>r</sub>，单位像素</span><span class="en" lang="en">disparity: the difference in horizontal position of the same point between the left and right images, d = u<sub>l</sub> − u<sub>r</sub>, in pixels</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">还是相似三角形。f 和 B 是相机自己定死的，所以视差 d 和深度 Z 成反比：越近视差越大，越远视差越小。</span><span class="en" lang="en">Similar triangles again. f and B are fixed by the camera, so disparity d is inversely proportional to depth Z: the nearer, the larger the disparity; the farther, the smaller.</span></p>
+<p class="ex"><span class="zh" lang="zh-CN">f = 640 像素，B = 5 cm。头皮在 40 cm 处，d = 640 × 0.05 ÷ 0.4 = 80 像素；退到 160 cm，d 只剩 20 像素。</span><span class="en" lang="en">f = 640 pixels, B = 5 cm. With the scalp at 40 cm, d = 640 × 0.05 ÷ 0.4 = 80 pixels; back off to 160 cm and d is only 20 pixels.</span></p></div></div>
+<div class="fk"><div class="eq">ΔZ ≈ Z² ÷ (f × B) × Δd</div><div class="fb">
+<dl class="sym">
+<dt>Δd</dt><dd><span class="zh" lang="zh-CN">视差测错了多少像素。Δ 读作"德尔塔"，表示一小点误差</span><span class="en" lang="en">how many pixels the disparity is off by. Δ (delta) means “a small error”</span></dd>
+<dt>ΔZ</dt><dd><span class="zh" lang="zh-CN">由此造成的深度误差</span><span class="en" lang="en">the resulting depth error</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">对 Z = fB/d 求导就得到这个式子。精度随距离变差得很快：距离翻倍，误差变成 4 倍。</span><span class="en" lang="en">Differentiate Z = fB/d and you get this formula. Accuracy falls off quickly with distance: double the distance and the error becomes four times larger.</span></p>
+<p class="ex"><span class="zh" lang="zh-CN">还是这台相机（f × B = 32）。在 40 cm 处，视差错 1 个像素，深度差 0.4² ÷ 32 = 0.005 m，也就是 5 mm；在 160 cm 处变成 80 mm。</span><span class="en" lang="en">Same camera (f × B = 32). At 40 cm, a 1-pixel disparity error gives a depth error of 0.4² ÷ 32 = 0.005 m, i.e. 5 mm; at 160 cm it becomes 80 mm.</span></p>
+<p class="why"><span class="zh" lang="zh-CN">深度相机要尽量靠近被测物体，但不能近过它的最小工作距离。实际的立体匹配能精确到零点几个像素，误差会比上面小好几倍。</span><span class="en" lang="en">Keep a depth camera as close to the subject as you can, but not closer than its minimum working distance. Real stereo matching is accurate to a fraction of a pixel, so the real errors are several times smaller than above.</span></p></div></div>
+<h3><span class="zh" lang="zh-CN">立体匹配：在另一张图里找同一个点</span><span class="en" lang="en">Stereo matching: finding the same point in the other image</span></h3>
+<p><span class="zh" lang="zh-CN">对左图的每个像素，沿右图的同一行找"同一个点"在哪。做法是在左图里取以这个像素为中心的一小块（比如 7×7），在右图同一行上一格一格滑过去，每个位置算一个差异分数，分数最低的位置就是匹配。最常用的分数叫 SAD：</span><span class="en" lang="en">For each pixel in the left image, search along the same row of the right image for “the same point”. Take a small patch centred on the pixel in the left image (say 7×7), slide it one pixel at a time along the same row of the right image, and compute a difference score at each position; the lowest score is the match. The most common score is SAD:</span></p>
+<div class="fk"><div class="eq">SAD(d) = Σ | I<sub>L</sub>(u+i, v+j) − I<sub>R</sub>(u−d+i, v+j) |</div><div class="fb">
+<dl class="sym">
+<dt>I<sub>L</sub>, I<sub>R</sub></dt><dd><span class="zh" lang="zh-CN">左图、右图在某个像素上的亮度（0 到 255）</span><span class="en" lang="en">brightness of the left and right images at a given pixel (0 to 255)</span></dd>
+<dt>(u, v)</dt><dd><span class="zh" lang="zh-CN">要匹配的像素：u 是第几列，v 是第几行</span><span class="en" lang="en">the pixel being matched: u is the column, v is the row</span></dd>
+<dt>d</dt><dd><span class="zh" lang="zh-CN">正在尝试的视差。右相机在右边，同一个点在右图里会往左挪 d 格，所以写 u − d</span><span class="en" lang="en">the disparity being tried. The right camera is on the right, so the same point appears d pixels further left in the right image, hence u − d</span></dd>
+<dt>i, j</dt><dd><span class="zh" lang="zh-CN">在小方块里挨个走一遍</span><span class="en" lang="en">step through every pixel in the small patch</span></dd>
+<dt>Σ, | |</dt><dd><span class="zh" lang="zh-CN">把方块里每个像素的差的绝对值加起来</span><span class="en" lang="en">add up the absolute values of the differences over the patch</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">两块越像，SAD 越小。把所有可能的 d 都试一遍，挑 SAD 最小的那个。</span><span class="en" lang="en">The more alike the two patches, the smaller the SAD. Try every possible d and pick the one with the smallest SAD.</span></p>
+<p class="why"><span class="zh" lang="zh-CN">立体匹配最怕"哪里都差不多"：光滑无纹理的表面（皮肤、白墙）每一小块都长一样；条纹这类重复图案，好几个位置都很像；只有一个相机看得到的地方（遮挡）根本没有答案；反光、透明的表面亮度会骗人；头发又黑又细，常常测出空洞和噪点。所以 RealSense D435 这类"主动双目"相机会投射一片红外散斑，人为给光滑表面加上纹理。</span><span class="en" lang="en">Stereo matching hates “everything looks the same”: on smooth, textureless surfaces (skin, white walls) every patch looks alike; with repeating patterns such as stripes, several positions match well; where only one camera can see (occlusion) there is no answer at all; reflective or transparent surfaces fool the brightness; and hair, dark and fine, often produces holes and noise. That is why “active stereo” cameras like the RealSense D435 project an infrared speckle pattern, adding texture to smooth surfaces artificially.</span></p></div></div>
+<p class="try"><span class="zh" lang="zh-CN"><b>试试：</b>拖动距离，看同一个点在右图里挪了多少；再换成"光滑皮肤"，按几次"重拍一张"。</span><span class="en" lang="en"><b>Try it:</b> drag the distance and watch how far the same point shifts in the right image; then switch to “Smooth skin” and press “Take another shot” a few times.</span></p>
+<div class="wg" id="sm">
+<canvas aria-label="俯视图：两台相机和被测点 P" data-al-en="Top view: two cameras and the measured point P" data-al-zh="俯视图：两台相机和被测点 P" id="sm-geo"></canvas>
+<div class="row"><label for="sm-z"><span class="zh" lang="zh-CN">物体距离 Z</span><span class="en" lang="en">Distance Z</span></label><input id="sm-z" max="1.5" min="0.25" step="0.01" type="range" value="0.5"/><span class="val" id="sm-zv">0.50 m</span></div>
+<div class="btns"><button class="btn on" data-t="0"><span class="zh" lang="zh-CN">有纹理</span><span class="en" lang="en">Textured</span></button><button class="btn" data-t="1"><span class="zh" lang="zh-CN">光滑皮肤</span><span class="en" lang="en">Smooth skin</span></button><button class="btn" data-t="2"><span class="zh" lang="zh-CN">光滑 + 红外散斑</span><span class="en" lang="en">Smooth + IR speckle</span></button><button class="btn" id="sm-re"><span class="zh" lang="zh-CN">重拍一张</span><span class="en" lang="en">Take another shot</span></button></div>
+<canvas aria-label="左图和右图的同一行像素，紫框是匹配窗口" data-al-en="The same row of pixels in the left and right images; the purple boxes are the matching windows" data-al-zh="左图和右图的同一行像素，紫框是匹配窗口" id="sm-rows"></canvas>
+<canvas aria-label="匹配代价随尝试视差的变化" data-al-en="Matching cost against the trial disparity" data-al-zh="匹配代价随尝试视差的变化" id="sm-cost" style="margin-top:6px"></canvas>
+<div class="met">
+<div><small><span class="zh" lang="zh-CN">真实视差</span><span class="en" lang="en">True disparity</span></small><b id="sm-d"></b></div>
+<div><small><span class="zh" lang="zh-CN">匹配到的视差</span><span class="en" lang="en">Matched disparity</span></small><b id="sm-dh"></b></div>
+<div><small><span class="zh" lang="zh-CN">真实深度</span><span class="en" lang="en">True depth</span></small><b id="sm-zt"></b></div>
+<div><small><span class="zh" lang="zh-CN">算出来的深度</span><span class="en" lang="en">Computed depth</span></small><b id="sm-ze"></b></div>
+</div>
+<div class="status" id="sm-st" role="status"></div>
+<p class="hint"><span class="zh" lang="zh-CN">玩具相机：焦距 f = 140 像素，基线 B = 5 cm，匹配窗口 7 像素宽</span><span class="en" lang="en">Toy camera: focal length f = 140 pixels, baseline B = 5 cm, matching window 7 pixels wide</span></p>
+</div>
+<script>
+(()=>{const X=RX,$=i=>document.getElementById(i);
+const FB=7,N=64,U0=40,HW=3,DM=32,CMAX=820;
+const mk=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const gauss=r=>{let u=0;while(u===0)u=r();return Math.sqrt(-2*Math.log(u))*Math.cos(6.2832*r())};
+const R0=mk(20261027),ph=[0,1,2,3].map(()=>R0()*6.2832),sp=[];for(let x=-6;x<N+DM+6;x++){if(R0()<.3)sp.push([x+R0(),60+R0()*80])}
+let Z=.5,tex=0,seed=7,IL=[],IR=[],C=[],kh=0,d=0;
+function T(x){if(tex===0)return 128+48*Math.sin(.55*x+ph[0])+30*Math.sin(1.37*x+ph[1])+22*Math.sin(.23*x+ph[2])+14*Math.sin(2.9*x+ph[3]);if(tex===1)return 168+6*Math.sin(.07*x+ph[0]);let v=105+6*Math.sin(.07*x+ph[0]);for(const[c,a]of sp){const e=x-c;if(e>-2.5&&e<2.5)v+=a*Math.exp(-e*e/.4)}return v}
+const cl=v=>Math.max(0,Math.min(255,v));
+function compute(){d=FB/Z;const r=mk(seed);IL=[];IR=[];for(let u=0;u<N;u++){IL.push(cl(T(u)+3*gauss(r)));IR.push(cl(T(u+d)+3*gauss(r)))}C=[];for(let k=0;k<=DM;k++){let s=0;for(let i=-HW;i<=HW;i++)s+=Math.abs(IL[U0+i]-IR[U0+i-k]);C.push(s)}kh=0;for(let k=1;k<=DM;k++)if(C[k]<C[kh])kh=k}
+const G=X.stage($('sm-geo'),170,()=>drawGeo()),Rw=X.stage($('sm-rows'),98,()=>drawRows()),Cs=X.stage($('sm-cost'),140,()=>drawCost());
+function drawGeo(){const g=G.g,W=G.w,H=170;if(!g)return;g.clearRect(0,0,W,H);const fg=X.col('--fg'),se=X.col('--muted'),mu=X.col('--faint'),PU=X.col('--k');g.font=X.font(12);g.lineCap='round';g.lineJoin='round';
+const cx=W/2,yc=H-34,bd=Math.min(130,W*.36),xs=[cx-bd/2,cx+bd/2],fd=24,zd=46+(Z-.25)/1.25*(H-34-46-14),py=yc-zd;
+xs.forEach(x=>{g.strokeStyle=mu;g.lineWidth=1;g.beginPath();g.moveTo(cx,py);g.lineTo(x,yc);g.stroke()});g.strokeStyle=mu;g.setLineDash([3,4]);g.beginPath();g.moveTo(cx,py+6);g.lineTo(cx,yc);g.stroke();g.setLineDash([]);
+xs.forEach(x=>{g.strokeStyle=fg;g.lineWidth=2;g.beginPath();g.moveTo(x-34,yc-fd);g.lineTo(x+34,yc-fd);g.stroke();g.strokeStyle=mu;g.lineWidth=1;g.beginPath();g.moveTo(x,yc-fd-6);g.lineTo(x,yc-fd+6);g.stroke();const hx=x+(cx-x)*fd/zd;g.fillStyle=PU;g.beginPath();g.arc(hx,yc-fd,4.5,0,6.2832);g.fill();g.fillStyle=se;g.beginPath();g.moveTo(x-9,yc+10);g.lineTo(x+9,yc+10);g.lineTo(x,yc);g.closePath();g.fill();g.fillRect(x-13,yc+10,26,9)});
+g.fillStyle=fg;g.beginPath();g.arc(cx,py,4.5,0,6.2832);g.fill();g.fillText(X.t('P（深度 ','P (depth ')+Z.toFixed(2)+X.t(' m）',' m)'),cx+10,py+4);
+g.fillStyle=se;g.textAlign='right';const il=X.t('成像面','image plane'),ii=il.lastIndexOf(' ');if(g.measureText(il).width>xs[0]-42&&ii>0){g.fillText(il.slice(0,ii),xs[0]-40,yc-fd-3);g.fillText(il.slice(ii+1),xs[0]-40,yc-fd+11)}else g.fillText(il,xs[0]-40,yc-fd+4);g.textAlign='center';g.fillText(X.t('左相机','left camera'),xs[0],H-3);g.fillText(X.t('右相机','right camera'),xs[1],H-3);g.fillText(X.t('基线 B','baseline B'),cx,yc+16);g.textAlign='left'}
+function drawRows(){const g=Rw.g,W=Rw.w;if(!g)return;g.clearRect(0,0,W,98);const x0=40,cw=(W-x0-4)/N,y1=6,y2=48,h=24,se=X.col('--muted'),mu=X.col('--faint'),PU=X.col('--k'),GN=X.col('--teal');
+g.font=X.font(12);g.fillStyle=se;g.fillText(X.t('左图','left'),0,y1+16);g.fillText(X.t('右图','right'),0,y2+16);
+for(let u=0;u<N;u++){const a=Math.round(IL[u]),b=Math.round(IR[u]);g.fillStyle='rgb('+a+','+a+','+a+')';g.fillRect(x0+u*cw,y1,cw+.6,h);g.fillStyle='rgb('+b+','+b+','+b+')';g.fillRect(x0+u*cw,y2,cw+.6,h)}
+const xc=x0+(U0+.5)*cw;g.strokeStyle=mu;g.lineWidth=1;g.setLineDash([3,3]);g.beginPath();g.moveTo(xc,y1-4);g.lineTo(xc,y2+h+4);g.stroke();g.setLineDash([]);
+const box=(u,y,c,dash)=>{g.strokeStyle=c;g.lineWidth=2;g.setLineDash(dash||[]);g.strokeRect(x0+(u-HW)*cw,y-2,(2*HW+1)*cw,h+4);g.setLineDash([])};
+box(U0,y1,PU);const dt=Math.round(d);if(dt!==kh)box(U0-dt,y2,GN,[4,3]);box(U0-kh,y2,PU);
+const ya=y2+h+14,xa=x0+(U0-kh+.5)*cw;g.strokeStyle=PU;g.fillStyle=PU;g.lineWidth=1.5;g.beginPath();g.moveTo(xc,ya);g.lineTo(xa,ya);g.stroke();if(kh>0){g.beginPath();g.moveTo(xa,ya);g.lineTo(xa+6,ya-4);g.lineTo(xa+6,ya+4);g.closePath();g.fill()}
+g.fillText(X.t('挪了 '+kh+' 像素','shifted '+kh+' px'),Math.min(xc+6,W-84),ya+4)}
+function drawCost(){const g=Cs.g,W=Cs.w,H=140;if(!g)return;g.clearRect(0,0,W,H);const L=12,Rm=8,Tp=22,Bm=30,Xf=k=>L+(W-L-Rm)*k/DM,Y=c=>Tp+(H-Tp-Bm)*(1-Math.min(c,CMAX)/CMAX),se=X.col('--muted'),bd=X.col('--line'),PU=X.col('--k'),GN=X.col('--teal');
+g.font=X.font(11);g.strokeStyle=bd;g.lineWidth=1;g.beginPath();g.moveTo(L,Tp);g.lineTo(L,H-Bm);g.lineTo(W-Rm,H-Bm);g.stroke();
+g.fillStyle=se;g.fillText(X.t('差异分数 SAD（越低越像）','Difference score SAD (lower = more alike)'),L+4,12);g.textAlign='center';[0,8,16,24,32].forEach(k=>g.fillText(String(k),Xf(k),H-Bm+13));g.fillText(X.t('尝试的视差 d（像素）','Trial disparity d (pixels)'),(L+W-Rm)/2,H-3);
+g.strokeStyle=GN;g.setLineDash([4,3]);g.beginPath();g.moveTo(Xf(d),Tp-4);g.lineTo(Xf(d),H-Bm);g.stroke();g.setLineDash([]);g.fillStyle=GN;const rt=Xf(d)>W-60;g.textAlign=rt?'right':'left';g.fillText(X.t('真实','true'),Xf(d)+(rt?-4:4),Tp+6);g.textAlign='left';
+g.strokeStyle=PU;g.lineWidth=2;g.lineJoin='round';g.beginPath();C.forEach((c,k)=>{k?g.lineTo(Xf(k),Y(c)):g.moveTo(Xf(k),Y(c))});g.stroke();g.fillStyle=PU;g.beginPath();g.arc(Xf(kh),Y(C[kh]),4.5,0,6.2832);g.fill()}
+function ui(){const px=X.t(' 像素',' px');$('sm-zv').textContent=Z.toFixed(2)+' m';$('sm-d').textContent=d.toFixed(1)+px;$('sm-dh').textContent=kh+px;$('sm-zt').textContent=Z.toFixed(2)+' m';
+const ze=kh>0?FB/kh:Infinity;$('sm-ze').textContent=kh>0?ze.toFixed(2)+' m':X.t('无穷远','infinity');
+const per=Math.round(Z*Z/FB*1000),st=$('sm-st'),ok=Math.abs(kh-d)<=1;
+if(ok){const diff=Math.round(Math.abs(ze-Z)*1000);st.className='status ok';st.textContent=diff<1?X.t('匹配对了：代价曲线在真实视差处有一个清楚的最低点。这里真实视差刚好是整数，所以深度算得正好；但视差只能取整数像素，在这个距离，视差每差 1 像素，深度就差约 '+per+' mm。拖一下距离看看。','Matched: the cost curve has a clear minimum at the true disparity. Here the true disparity happens to be a whole number, so the depth comes out exact; but disparity is only found to a whole pixel, and at this distance every pixel of disparity error costs about '+per+' mm of depth. Drag the distance and watch.'):X.t('匹配对了：代价曲线在真实视差处有一个清楚的最低点。视差只取到整数像素，所以深度还差 '+diff+' mm；在这个距离，视差每差 1 像素，深度就差约 '+per+' mm。','Matched: the cost curve has a clear minimum at the true disparity. Disparity is only found to a whole pixel, so the depth is still off by '+diff+' mm; at this distance, every pixel of disparity error costs about '+per+' mm of depth.')}
+else{st.className='status bad';st.textContent=tex===1?X.t('匹配错了：光滑皮肤上每一小块都差不多，曲线几乎是平的，最低点只取决于噪声。按"重拍一张"，它还会乱跳。','Wrong match: every patch of smooth skin looks about the same, so the curve is almost flat and the minimum is decided by noise. Press “Take another shot” and it jumps around.'):X.t('匹配错了：好几个位置都很像，噪声让错的那个赢了。按"重拍一张"再试试。','Wrong match: several positions look alike and noise let the wrong one win. Press “Take another shot” and try again.')}
+drawGeo();drawRows();drawCost()}
+function all(){compute();ui()}
+$('sm-z').addEventListener('input',e=>{Z=+e.target.value;all()});
+document.querySelectorAll('#sm [data-t]').forEach(b=>b.addEventListener('click',()=>{tex=+b.dataset.t;document.querySelectorAll('#sm [data-t]').forEach(x=>x.classList.toggle('on',x===b));all()}));
+$('sm-re').addEventListener('click',()=>{seed++;all()});X.onLang(ui);all();})();
+</script>
+<p><span class="zh" lang="zh-CN">交互里能看到：距离越近，同一个点在右图里挪得越多；有纹理或打了散斑时，SAD 曲线在真实视差处有一个尖尖的最低点；光滑皮肤的曲线几乎是平的，"重拍一张"它就乱跳。把距离拉到 1.5 m，真实视差只有 4.7 像素，取整成 5，算出的深度就差了 10 cm。</span><span class="en" lang="en">What the interactive shows: the closer the object, the further the same point shifts in the right image; with texture or speckle, the SAD curve has a sharp minimum at the true disparity; on smooth skin the curve is almost flat and “Take another shot” makes the match jump around. Pull the distance out to 1.5 m and the true disparity is only 4.7 pixels; rounded to 5, the computed depth is off by 10 cm.</span></p>
+<h3><span class="zh" lang="zh-CN">一步从视差到三维点：Q 矩阵</span><span class="en" lang="en">From disparity to a 3D point in one step: the Q matrix</span></h3>
+<div class="fk"><div class="eq"><span class="r">(X, Y, Z, W)ᵀ = Q (u, v, d, 1)ᵀ</span><span class="r">Q = <span class="mat c4"><span>1</span><span>0</span><span>0</span><span>−c<sub>x</sub></span><span>0</span><span>1</span><span>0</span><span>−c<sub>y</sub></span><span>0</span><span>0</span><span>0</span><span>f</span><span>0</span><span>0</span><span>1/B</span><span>0</span></span></span></div><div class="fb">
+<dl class="sym">
+<dt>(u, v)</dt><dd><span class="zh" lang="zh-CN">左图里的像素</span><span class="en" lang="en">a pixel in the left image</span></dd>
+<dt>d</dt><dd><span class="zh" lang="zh-CN">这个像素的视差</span><span class="en" lang="en">the disparity at that pixel</span></dd>
+<dt>Q</dt><dd><span class="zh" lang="zh-CN">4×4 重投影矩阵，校正时由 OpenCV 的 stereoRectify 一起给出</span><span class="en" lang="en">4×4 reprojection matrix, produced by OpenCV’s stereoRectify during rectification</span></dd>
+<dt>(X, Y, Z, W)</dt><dd><span class="zh" lang="zh-CN">齐次坐标，三维点是 (X/W, Y/W, Z/W)</span><span class="en" lang="en">homogeneous coordinates; the 3D point is (X/W, Y/W, Z/W)</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">它把"视差 → 深度"和后面要讲的"反投影"合进一个矩阵：乘出来 W = d ÷ B，于是 Z/W = f B ÷ d 正是深度，X/W = (u − c<sub>x</sub>) B ÷ d = (u − c<sub>x</sub>) Z ÷ f 正是反投影公式。</span><span class="en" lang="en">It merges “disparity → depth” with the back-projection explained next into one matrix: the product has W = d ÷ B, so Z/W = f B ÷ d is exactly the depth, and X/W = (u − c<sub>x</sub>) B ÷ d = (u − c<sub>x</sub>) Z ÷ f is exactly the back-projection formula.</span></p>
+<p class="ex"><span class="zh" lang="zh-CN">f = 600、c<sub>x</sub> = 320、c<sub>y</sub> = 240、B = 0.05 m。像素 (380, 210) 的视差 d = 60：Q 乘出来是 (60, −30, 600, 1200)，三维点 = (60, −30, 600) ÷ 1200 = (0.05, −0.025, 0.5) m。</span><span class="en" lang="en">f = 600, c<sub>x</sub> = 320, c<sub>y</sub> = 240, B = 0.05 m. Pixel (380, 210) has disparity d = 60: Q gives (60, −30, 600, 1200), so the 3D point is (60, −30, 600) ÷ 1200 = (0.05, −0.025, 0.5) m.</span></p>
+<p class="why"><span class="zh" lang="zh-CN">OpenCV 文档里 Q 的最后一行写成 (0, 0, −1/T<sub>x</sub>, (c<sub>x</sub> − c<sub>x</sub>′)/T<sub>x</sub>)，其中 T<sub>x</sub> = −B；左右主点相同时，就是上面的样子。</span><span class="en" lang="en">The OpenCV documentation writes the last row of Q as (0, 0, −1/T<sub>x</sub>, (c<sub>x</sub> − c<sub>x</sub>′)/T<sub>x</sub>), with T<sub>x</sub> = −B; when the left and right principal points coincide, it reduces to the form above.</span></p></div></div>
+</section>
+<section id="s-pc">
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 6 步 · 点云</span><span class="en" lang="en">Step 6 · Point clouds</span></p>
+<h2><span class="zh" lang="zh-CN">反投影：深度图变成点云</span><span class="en" lang="en">Back-projection: the depth image becomes a point cloud</span></h2>
+<p><span class="zh" lang="zh-CN">点云就是一堆三维点的清单，每个点是一组 (x, y, z)，有时还带颜色或法向量。点和点之间没有连线，这是它和网格（mesh，由许多小三角面拼成）的区别。深度相机直接给出的点云通常是"有序的"：每个点还记得自己来自哪个像素，找邻居很快；经过裁剪、拼接以后，就变成"无序点云"。</span><span class="en" lang="en">A point cloud is simply a list of 3D points, each an (x, y, z), sometimes with a colour or a normal. The points are not connected to each other, which is the difference from a mesh (made of many small triangles). Point clouds straight from a depth camera are usually “organized”: each point still remembers which pixel it came from, so finding neighbours is fast. After cropping and merging they become “unorganized”.</span></p>
+<div class="fk"><div class="eq"><span class="r">X<sub>c</sub> = Z · K⁻¹ (u, v, 1)ᵀ</span><span class="r"><span class="zh" lang="zh-CN">K⁻¹ = <span class="mat c3"><span>1/f<sub>x</sub></span><span>0</span><span>−c<sub>x</sub>/f<sub>x</sub></span><span>0</span><span>1/f<sub>y</sub></span><span>−c<sub>y</sub>/f<sub>y</sub></span><span>0</span><span>0</span><span>1</span></span>  （s = 0 时）</span><span class="en" lang="en">K⁻¹ = <span class="mat c3"><span>1/f<sub>x</sub></span><span>0</span><span>−c<sub>x</sub>/f<sub>x</sub></span><span>0</span><span>1/f<sub>y</sub></span><span>−c<sub>y</sub>/f<sub>y</sub></span><span>0</span><span>0</span><span>1</span></span>  (when s = 0)</span></span></div><div class="fb">
+<dl class="sym">
+<dt>(u, v)</dt><dd><span class="zh" lang="zh-CN">像素位置</span><span class="en" lang="en">pixel position</span></dd>
+<dt>Z</dt><dd><span class="zh" lang="zh-CN">这个像素的深度</span><span class="en" lang="en">the depth at that pixel</span></dd>
+<dt>K⁻¹</dt><dd><span class="zh" lang="zh-CN">K 的逆矩阵：先减主点，再除以焦距</span><span class="en" lang="en">the inverse of K: subtract the principal point, then divide by the focal length</span></dd>
+<dt>X<sub>c</sub></dt><dd><span class="zh" lang="zh-CN">反投影得到的三维点，在相机坐标系里</span><span class="en" lang="en">the back-projected 3D point, in the camera frame</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">和投影正好反过来：K 把归一化坐标变成像素，K⁻¹ 把像素变回归一化坐标 (x′, y′, 1)，再乘上深度 Z，就回到了三维。展开就是 X = (u − c<sub>x</sub>) Z ÷ f<sub>x</sub>，Y = (v − c<sub>y</sub>) Z ÷ f<sub>y</sub>。光有像素不够，必须有深度：一个像素只告诉你方向，深度告诉你沿这个方向走多远。</span><span class="en" lang="en">This is projection run backwards: K turns normalized coordinates into pixels, K⁻¹ turns pixels back into normalized coordinates (x′, y′, 1), and multiplying by the depth Z brings you back to 3D. Written out: X = (u − c<sub>x</sub>) Z ÷ f<sub>x</sub>, Y = (v − c<sub>y</sub>) Z ÷ f<sub>y</sub>. A pixel alone is not enough; you need the depth: the pixel only gives a direction, and the depth says how far to go along it.</span></p>
+<p class="ex"><span class="zh" lang="zh-CN">f = 600、c<sub>x</sub> = 320。某个像素 u = 380（比中心偏右 60 格），深度 0.5 m：X = 60 × 0.5 ÷ 600 = 0.05 m，也就是在光轴右边 5 cm。</span><span class="en" lang="en">f = 600, c<sub>x</sub> = 320. A pixel at u = 380 (60 to the right of centre) with depth 0.5 m: X = 60 × 0.5 ÷ 600 = 0.05 m, i.e. 5 cm to the right of the optical axis.</span></p>
+<p class="why"><span class="zh" lang="zh-CN">内参错了，点云就会变形；有畸变的话要先去畸变再反投影。下面的交互可以故意把焦距调错试试。</span><span class="en" lang="en">Wrong intrinsics distort the point cloud; with lens distortion, undistort first and then back-project. In the interactive below you can deliberately set the wrong focal length.</span></p></div></div>
+<p class="try"><span class="zh" lang="zh-CN"><b>试试：</b>点深度图上任意一个像素，看它落到三维里的哪个点、公式里每个数是多少；拖动点云换角度；再把焦距调错。</span><span class="en" lang="en"><b>Try it:</b> tap any pixel of the depth image to see which 3D point it becomes and every number in the formula; drag the point cloud to change the view; then set the wrong focal length.</span></p>
+<div class="wg" id="pc">
+<canvas aria-label="玩具深度图，越亮越近" data-al-en="Toy depth image, brighter is nearer" data-al-zh="玩具深度图，越亮越近" id="pc-dep" style="margin:0 auto;cursor:crosshair;touch-action:manipulation;background:transparent"></canvas>
+<p class="hint"><span class="zh" lang="zh-CN">深度图：越亮越近 · 黑色是没测到的像素（比如头发） · 点一个像素试试</span><span class="en" lang="en">Depth image: brighter is nearer · black pixels have no measurement (hair, for example) · tap a pixel</span></p>
+<canvas aria-label="反投影得到的点云" data-al-en="Point cloud from back-projection" data-al-zh="反投影得到的点云" id="pc-3d" style="touch-action:none;cursor:grab"></canvas>
+<p class="hint"><span class="zh" lang="zh-CN">点云：拖动换角度 · 紫色是头，灰色是后面的墙，橙色是你选的像素</span><span class="en" lang="en">Point cloud: drag to change the view · purple is the head, grey is the wall behind, orange is the pixel you picked</span></p>
+<div class="row"><label for="pc-f"><span class="zh" lang="zh-CN">假设的焦距 f</span><span class="en" lang="en">Assumed focal f</span></label><input id="pc-f" max="80" min="20" step="1" type="range" value="40"/><span class="val" id="pc-fv">40 px</span></div>
+<div class="mono" id="pc-m" style="background:var(--surface-2);border-radius:10px;padding:8px 10px"></div>
+<div class="status" id="pc-s" role="status"></div>
+<p class="hint"><span class="zh" lang="zh-CN">玩具相机：32 × 24 像素，真实焦距 40 像素，主点 c<sub>x</sub> = 15.5、c<sub>y</sub> = 11.5</span><span class="en" lang="en">Toy camera: 32 × 24 pixels, true focal length 40 pixels, principal point c<sub>x</sub> = 15.5, c<sub>y</sub> = 11.5</span></p>
+</div>
+<script>
+(()=>{const X=RX,$=i=>document.getElementById(i);
+const NW=32,NH=24,F0=40,CX=15.5,CY=11.5;
+const mk=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const gauss=r=>{let u=0;while(u===0)u=r();return Math.sqrt(-2*Math.log(u))*Math.cos(6.2832*r())};
+const rr=mk(99),Dp=[],TG=[],Cc=[0,.01,.46],RR=.09;
+for(let v=0;v<NH;v++)for(let u=0;u<NW;u++){const dx=(u-CX)/F0,dy=(v-CY)/F0,dd=dx*dx+dy*dy+1,dc=dx*Cc[0]+dy*Cc[1]+Cc[2],cc=Cc[0]*Cc[0]+Cc[1]*Cc[1]+Cc[2]*Cc[2]-RR*RR,disc=dc*dc-dd*cc;let z,t;
+if(disc>0){const s=(dc-Math.sqrt(disc))/dd,Xh=s*dx,Yh=s*dy;z=s-.02*Math.exp(-(Xh*Xh+(Yh-.015)*(Yh-.015))/(2*.012*.012));t=1;if(Yh<-.042){z=0;t=2}}else{z=.62;t=0}
+if(z>0)z+=gauss(rr)*(t===1?.0012:.002);Dp.push(z);TG.push(t)}
+let fA=40,sel=[16,13],az=-125*X.D,el=18*X.D,cell=8;
+const dv=$('pc-dep'),c3=$('pc-3d');let g1=null,g3=null,W3=360;const H3=260;
+function fit(){const r=window.devicePixelRatio||1,w=(dv.parentElement&&dv.parentElement.clientWidth)||340;cell=Math.max(5,Math.min(9,Math.floor((w-4)/NW)));dv.style.width=NW*cell+'px';dv.style.height=NH*cell+'px';dv.width=Math.round(NW*cell*r);dv.height=Math.round(NH*cell*r);g1=dv.getContext('2d');g1.setTransform(r,0,0,r,0,0);
+W3=c3.clientWidth||340;c3.style.height=H3+'px';c3.width=Math.round(W3*r);c3.height=Math.round(H3*r);g3=c3.getContext('2d');g3.setTransform(r,0,0,r,0,0)}
+function drawDep(){if(!g1)return;for(let v=0;v<NH;v++)for(let u=0;u<NW;u++){const z=Dp[v*NW+u];let c;if(z<=0)c='#121212';else{const k=z>.55?45:Math.round(Math.max(110,Math.min(255,255-(z-.33)/.15*140)));c='rgb('+k+','+k+','+k+')'}g1.fillStyle=c;g1.fillRect(u*cell,v*cell,cell+.5,cell+.5)}
+g1.strokeStyle=X.col('--amber');g1.lineWidth=2;g1.strokeRect(sel[0]*cell+1,sel[1]*cell+1,cell-2,cell-2)}
+const bp=(u,v)=>{const z=Dp[v*NW+u];return z>0?[(u-CX)*z/fA,(v-CY)*z/fA,z]:null};
+const toD=p=>[p[0],p[2],-p[1]];
+function draw3(){if(!g3)return;const g=g3,W=W3,H=H3;g.clearRect(0,0,W,H);g.lineCap='round';g.lineJoin='round';g.font=X.font(12);
+const V=X.view(az,el),ctr=[0,.36,0],s=Math.min(W,H)*1.45;
+const P=q=>{const p=toD(q),w=[p[0]-ctr[0],p[1]-ctr[1],p[2]-ctr[2]],zc=X.dot(w,V.C),f=2/(2-zc);return[W/2+s*X.dot(w,V.R)*f,H/2-s*X.dot(w,V.U)*f,zc]};
+const mu=X.col('--faint'),fg=X.col('--fg'),PU=X.col('--k'),OR=X.col('--amber');
+const pts=[];for(let v=0;v<NH;v++)for(let u=0;u<NW;u++){const q=bp(u,v);if(q)pts.push([P(q),TG[v*NW+u]])}
+pts.sort((a,b)=>a[0][2]-b[0][2]);pts.forEach(([pr,t])=>{g.globalAlpha=t===1?.95:.5;g.fillStyle=t===1?PU:mu;g.beginPath();g.arc(pr[0],pr[1],t===1?2.3:1.4,0,6.2832);g.fill()});g.globalAlpha=1;
+const O=P([0,0,0]),cn=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>P([a*16/F0*.06,b*12/F0*.06,.06]));
+g.strokeStyle=fg;g.lineWidth=1;g.beginPath();cn.forEach(c=>{g.moveTo(O[0],O[1]);g.lineTo(c[0],c[1])});g.moveTo(cn[0][0],cn[0][1]);cn.forEach(c=>g.lineTo(c[0],c[1]));g.closePath();g.stroke();
+[[[.07,0,0],'--x','x'],[[0,.07,0],'--y','y'],[[0,0,.1],'--z','z']].forEach(([a,c,l])=>{const E=P(a),col=X.col(c);g.strokeStyle=col;g.lineWidth=2;g.beginPath();g.moveTo(O[0],O[1]);g.lineTo(E[0],E[1]);g.stroke();g.fillStyle=col;g.fillText(l,E[0]+3,E[1]+4)});
+g.fillStyle=fg;g.textAlign='right';g.fillText(X.t('相机','camera'),O[0]-8,O[1]+16);g.textAlign='left';
+const q=bp(sel[0],sel[1]);if(q){const E=P(q);g.strokeStyle=OR;g.lineWidth=1.5;g.setLineDash([4,4]);g.beginPath();g.moveTo(O[0],O[1]);g.lineTo(E[0],E[1]);g.stroke();g.setLineDash([]);g.fillStyle=OR;g.beginPath();g.arc(E[0],E[1],5,0,6.2832);g.fill()}}
+const f3=v=>X.fm(v,3);
+function ui(){$('pc-fv').textContent=fA+' px';const[u,v]=sel,z=Dp[v*NW+u],m=$('pc-m');
+if(z<=0)m.textContent=X.t('像素','Pixel')+' (u, v) = ('+u+', '+v+')\n'+X.t('这个像素没测到深度（Z = 0），\n反投影不出点。点云里这里是空洞。','No depth was measured here (Z = 0),\nso it cannot be back-projected.\nThis pixel is a hole in the point cloud.');
+else{const Xp=(u-CX)*z/fA,Yp=(v-CY)*z/fA;m.textContent=X.t('像素','Pixel')+' (u, v) = ('+u+', '+v+')\n'+X.t('深度','Depth')+' Z = '+z.toFixed(3)+' m\nX = (u − cx) × Z ÷ f\n  = ('+u+' − 15.5) × '+z.toFixed(3)+' ÷ '+fA+' = '+f3(Xp)+' m\nY = (v − cy) × Z ÷ f\n  = ('+v+' − 11.5) × '+z.toFixed(3)+' ÷ '+fA+' = '+f3(Yp)+' m\n'+X.t('三维点','3D point')+' = ('+f3(Xp)+', '+f3(Yp)+', '+z.toFixed(3)+') m'}
+const st=$('pc-s'),k=F0/fA;
+if(fA===F0){st.className='status ok';st.textContent=X.t('焦距对了：头是圆的，鼻子朝着相机凸出来。','Correct focal length: the head is round and the nose sticks out towards the camera.')}
+else if(fA>F0){st.className='status warn';st.textContent=X.t('假设的焦距偏大：X、Y 都只剩真实的 '+k.toFixed(2)+' 倍，Z 没变。头被挤成了左右窄、前后长的样子。','Assumed focal length too large: X and Y shrink to '+k.toFixed(2)+' times their true size while Z stays the same. The head is squeezed narrow and long.')}
+else{st.className='status warn';st.textContent=X.t('假设的焦距偏小：X、Y 被放大成真实的 '+k.toFixed(2)+' 倍，Z 没变。头被压成了左右宽、前后扁的样子。','Assumed focal length too small: X and Y grow to '+k.toFixed(2)+' times their true size while Z stays the same. The head is flattened wide and shallow.')}
+drawDep();draw3()}
+dv.addEventListener('pointerdown',e=>{const r=dv.getBoundingClientRect(),u=Math.floor((e.clientX-r.left)/cell),v=Math.floor((e.clientY-r.top)/cell);if(u>=0&&u<NW&&v>=0&&v<NH){sel=[u,v];ui()}});
+X.drag(c3,(dx,dy)=>{az-=dx*.01;el=Math.max(-1.2,Math.min(1.2,el+dy*.01));draw3()});
+$('pc-f').addEventListener('input',e=>{fA=+e.target.value;ui()});
+X.onTheme(()=>{drawDep();draw3()});X.onLang(ui);
+if(window.ResizeObserver){let lw=0;new ResizeObserver(()=>{if(c3.clientWidth&&c3.clientWidth!==lw){lw=c3.clientWidth;fit();drawDep();draw3()}}).observe(c3)}
+fit();ui();})();
+</script>
+<p><span class="zh" lang="zh-CN">点云里墙上有一块空白：那是被头挡住的部分，相机看不到，点云里就空了。点云永远只有相机看得到的那一面。</span><span class="en" lang="en">There is a blank patch on the wall in the point cloud: the part hidden behind the head, which the camera cannot see, so the cloud is empty there. A point cloud only ever contains the side the camera can see.</span></p>
+<h3><span class="zh" lang="zh-CN">换到机器人基座坐标系</span><span class="en" lang="en">Into the robot base frame</span></h3>
+<div class="fk"><div class="eq">p<sub>base</sub> = T<sub>base_flange</sub> · T<sub>flange_cam</sub> · p<sub>cam</sub></div><div class="fb">
+<dl class="sym">
+<dt>p<sub>cam</sub></dt><dd><span class="zh" lang="zh-CN">点在相机坐标系里的齐次坐标 (X, Y, Z, 1)</span><span class="en" lang="en">the point’s homogeneous coordinates in the camera frame (X, Y, Z, 1)</span></dd>
+<dt>T<sub>base_flange</sub></dt><dd><span class="zh" lang="zh-CN">法兰在基座里的位姿，机械臂正运动学实时给出</span><span class="en" lang="en">the pose of the flange in the base frame, given in real time by forward kinematics</span></dd>
+<dt>T<sub>flange_cam</sub></dt><dd><span class="zh" lang="zh-CN">相机在法兰上的位姿，手眼标定得到的常数（第 3 步）</span><span class="en" lang="en">the pose of the camera on the flange, a constant from hand-eye calibration (step 3)</span></dd>
+<dt>p<sub>base</sub></dt><dd><span class="zh" lang="zh-CN">同一个点在基座坐标系里的坐标</span><span class="en" lang="en">the same point’s coordinates in the base frame</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">下标像消消乐（上一篇讲过）：相邻的 flange、cam 依次消掉，最后剩下 base ← cam。点云从相机坐标系换到基座坐标系，机械臂才能直接拿来规划。</span><span class="en" lang="en">The subscripts cancel like dominoes (as on the previous page): the neighbouring flange and cam cancel in turn, leaving base ← cam. Once the point cloud is moved from the camera frame into the base frame, the robot arm can use it directly for planning.</span></p></div></div>
+<h3><span class="zh" lang="zh-CN">法向量：每个点的"朝向"</span><span class="en" lang="en">Normals: which way each point faces</span></h3>
+<div class="fk"><div class="eq"><span class="r">C = (1/k) Σ (p<sub>i</sub> − p̄)(p<sub>i</sub> − p̄)ᵀ</span><span class="r"><span class="zh" lang="zh-CN">C v₃ = λ₃ v₃，   λ₁ ≥ λ₂ ≥ λ₃ ≥ 0</span><span class="en" lang="en">C v₃ = λ₃ v₃,   λ₁ ≥ λ₂ ≥ λ₃ ≥ 0</span></span></div><div class="fb">
+<dl class="sym">
+<dt>p<sub>i</sub></dt><dd><span class="zh" lang="zh-CN">某个点附近的 k 个邻居</span><span class="en" lang="en">the k neighbours around a point</span></dd>
+<dt>p̄</dt><dd><span class="zh" lang="zh-CN">这些邻居的平均位置</span><span class="en" lang="en">the average position of those neighbours</span></dd>
+<dt>C</dt><dd><span class="zh" lang="zh-CN">3×3 协方差矩阵，描述这团邻居在各个方向上散开多少</span><span class="en" lang="en">3×3 covariance matrix describing how much the neighbours spread out in each direction</span></dd>
+<dt>λ, v</dt><dd><span class="zh" lang="zh-CN">C 的特征值和特征向量：v 是一个方向，λ 是这团点在这个方向上散开的程度（方差）</span><span class="en" lang="en">eigenvalues and eigenvectors of C: v is a direction, λ is how much the points spread along it (the variance)</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">局部看，一块光滑表面就是一小片平面。邻居们在平面内的两个方向散得开，在垂直于平面的方向几乎不散。散得最少的方向，也就是最小特征值 λ₃ 对应的 v₃，就是法向量。λ₃ ÷ (λ₁ + λ₂ + λ₃) 可以当作"弯曲程度"，完全平坦时是 0。</span><span class="en" lang="en">Seen up close, a smooth surface is a small piece of plane. The neighbours spread out along two directions within the plane and hardly at all perpendicular to it. The direction of least spread, the eigenvector v₃ of the smallest eigenvalue λ₃, is the normal. λ₃ ÷ (λ₁ + λ₂ + λ₃) works as a measure of curvature: 0 for a perfectly flat patch.</span></p>
+<p class="ex"><span class="zh" lang="zh-CN">四个邻居 (±1, 0, 0) cm 和 (0, ±1, 0) cm，都在 z = 0 的平面上。平均位置是原点，C 是对角矩阵，对角线是 (0.5, 0.5, 0) cm²。最小特征值是 0，对应方向 (0, 0, 1)：法向量朝 z。</span><span class="en" lang="en">Four neighbours at (±1, 0, 0) cm and (0, ±1, 0) cm, all in the plane z = 0. Their average is the origin, and C is diagonal with (0.5, 0.5, 0) cm² on the diagonal. The smallest eigenvalue is 0, with direction (0, 0, 1): the normal points along z.</span></p>
+<p class="why"><span class="zh" lang="zh-CN">法向量有正反两个方向，一般统一成"朝着相机"。下一步的点到面 ICP 要用到它。</span><span class="en" lang="en">A normal has two possible directions; usually they are all flipped to point towards the camera. Point-to-plane ICP in the next steps needs them.</span></p></div></div>
+</section>
+<section id="s-reg">
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 7 步 · 配准</span><span class="en" lang="en">Step 7 · Registration</span></p>
+<h2><span class="zh" lang="zh-CN">配准：把两份数据对齐</span><span class="en" lang="en">Registration: aligning two sets of data</span></h2>
+<p><span class="zh" lang="zh-CN">配准就是：两份数据描述的是同一个东西，但各自在不同的坐标系里，要找一个变换，把其中一份挪过去和另一份对齐。</span><span class="en" lang="en">Registration means: two sets of data describe the same thing but each lives in its own coordinate frame, and you want the transform that moves one onto the other.</span></p>
+<p><span class="zh" lang="zh-CN">拿头皮来说：相机拍到的头皮点云在相机坐标系里，术前 MRI 里分割出来的头皮表面在 MRI 的坐标系里。要求的是一个 T，让相机点云挪过去以后正好贴在 MRI 头皮上。求出来以后，MRI 里规划好的靶点就能一路换算到相机、再到机器人基座，机械臂才知道换能器该往哪放。</span><span class="en" lang="en">For the scalp: the point cloud from the camera is in the camera frame, while the scalp surface segmented from the pre-operative MRI is in the MRI frame. We want a T such that the camera point cloud, once moved, sits exactly on the MRI scalp. With that, the target planned in the MRI can be converted all the way to the camera and then to the robot base, and the arm knows where to put the transducer.</span></p>
+<p><span class="zh" lang="zh-CN">被挪动的那份叫 source（源），不动的那份叫 target（目标）。头和头骨可以当成刚体，所以 T 只包含旋转 R 和平移 t，一共 6 个未知数：3 个管转动，3 个管平移。</span><span class="en" lang="en">The set being moved is called the source; the one that stays put is the target. The head and skull can be treated as rigid, so T contains only a rotation R and a translation t: 6 unknowns, 3 for rotation and 3 for translation.</span></p>
+<div class="fk"><div class="eq">E(R, t) = Σ ‖ R p<sub>i</sub> + t − q<sub>i</sub> ‖²</div><div class="fb">
+<dl class="sym">
+<dt>p<sub>i</sub></dt><dd><span class="zh" lang="zh-CN">源点云里的第 i 个点</span><span class="en" lang="en">the i-th point of the source cloud</span></dd>
+<dt>q<sub>i</sub></dt><dd><span class="zh" lang="zh-CN">目标上和它对应的点</span><span class="en" lang="en">the point on the target that corresponds to it</span></dd>
+<dt>R p<sub>i</sub> + t</dt><dd><span class="zh" lang="zh-CN">把 p<sub>i</sub> 先转、再移</span><span class="en" lang="en">rotate p<sub>i</sub>, then translate it</span></dd>
+<dt>‖ ‖</dt><dd><span class="zh" lang="zh-CN">两点之间的距离</span><span class="en" lang="en">distance between two points</span></dd>
+<dt>Σ</dt><dd><span class="zh" lang="zh-CN">对所有对应点求和</span><span class="en" lang="en">sum over all corresponding pairs</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">E 是所有对应点之间距离的平方和，越小对得越好。取平方以后，偏得多的点罚得更重，数学上也好求解。</span><span class="en" lang="en">E is the sum of squared distances between corresponding points; the smaller, the better the alignment. Squaring punishes large deviations more and makes the maths easy to solve.</span></p></div></div>
+<h3><span class="zh" lang="zh-CN">已经知道谁对应谁：一步算出 R、t</span><span class="en" lang="en">When correspondences are known: R and t in one step</span></h3>
+<p><span class="zh" lang="zh-CN">如果知道哪个点对应哪个点（比如头上贴了几个标记点，两边都认得出来），这个问题有一步到位的最优解，叫 Kabsch 算法（带缩放的版本叫 Umeyama）。</span><span class="en" lang="en">If you know which point corresponds to which (for example a few markers stuck on the head that can be identified in both), the problem has an exact one-step optimal solution, the Kabsch algorithm (the version with scaling is called Umeyama).</span></p>
+<div class="fk"><div class="eq sm"><span class="r"><span class="zh" lang="zh-CN">p̄ = (1/N) Σ p<sub>i</sub>，   q̄ = (1/N) Σ q<sub>i</sub></span><span class="en" lang="en">p̄ = (1/N) Σ p<sub>i</sub>,   q̄ = (1/N) Σ q<sub>i</sub></span></span><span class="r">H = Σ (p<sub>i</sub> − p̄)(q<sub>i</sub> − q̄)ᵀ</span><span class="r">H = U Σ Vᵀ</span><span class="r"><span class="zh" lang="zh-CN">R = V D Uᵀ，   D = diag(1, 1, det(V Uᵀ))</span><span class="en" lang="en">R = V D Uᵀ,   D = diag(1, 1, det(V Uᵀ))</span></span><span class="r">t = q̄ − R p̄</span></div><div class="fb">
+<dl class="sym">
+<dt>p̄, q̄</dt><dd><span class="zh" lang="zh-CN">两组点各自的重心（所有点坐标的平均）</span><span class="en" lang="en">the centroid of each set (the average of all the coordinates)</span></dd>
+<dt>H</dt><dd><span class="zh" lang="zh-CN">3×3 交叉协方差矩阵：把每一对"减过重心的点"乘起来再相加，记录了两团点朝向之间的关系</span><span class="en" lang="en">3×3 cross-covariance matrix: multiply each pair of “centroid-subtracted points” and add them up; it records how the orientations of the two sets relate</span></dd>
+<dt>U, Σ, V</dt><dd><span class="zh" lang="zh-CN">H 的 SVD 分解。任何矩阵都能拆成"旋转 · 拉伸 · 旋转"（上一篇讲过）：U、V 是旋转（或镜像），Σ 的对角线是三个拉伸倍数。注意这里的 Σ 是一个矩阵，不是求和号</span><span class="en" lang="en">the SVD of H. Any matrix can be split into “rotation · stretch · rotation” (from the previous page): U and V are rotations (or reflections) and the diagonal of Σ holds the three stretch factors. Note that this Σ is a matrix, not a summation sign</span></dd>
+<dt>D</dt><dd><span class="zh" lang="zh-CN">修正镜像用的对角矩阵，正常情况下就是单位矩阵 I</span><span class="en" lang="en">diagonal matrix that fixes reflections; normally it is just the identity I</span></dd>
+<dt>det</dt><dd><span class="zh" lang="zh-CN">行列式，等于 −1 时表示镜像</span><span class="en" lang="en">determinant; −1 means a reflection</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">平移只负责把两团点的重心对上，所以先把重心都减掉，只剩下"朝向"的差别。H 把这种差别压缩进一个 3×3 矩阵，SVD 再从里面读出最贴合的那个旋转。点很少、共面或者噪声很大时，SVD 可能给出一个镜像解（det = −1），D 就是用来把它掰回真正的旋转。最后转好了，再用 t 把重心对上。</span><span class="en" lang="en">Translation only has to line up the two centroids, so subtract them first and only the difference in “orientation” remains. H compresses that difference into a 3×3 matrix, and the SVD reads off the best-fitting rotation from it. With few points, coplanar points or heavy noise, the SVD may return a reflection (det = −1), and D bends it back into a proper rotation. Once the rotation is right, t lines up the centroids.</span></p>
+<p class="ex"><span class="zh" lang="zh-CN">二维的情况更直观，最佳转角 θ = atan2(Σ p′ × q′, Σ p′ · q′)，p′、q′ 是减过重心的点。源点 (1, 0)、(−1, 0)，目标点 (0, 1)、(0, −1)，重心都是原点。叉积之和 = 1×1 − 0×0 + (−1)×(−1) − 0×0 = 2，点积之和 = 0，θ = atan2(2, 0) = 90°：确实是把横线转成竖线。t = q̄ − R p̄ = 0。</span><span class="en" lang="en">The 2D case is more intuitive: the best angle is θ = atan2(Σ p′ × q′, Σ p′ · q′), where p′ and q′ are the centroid-subtracted points. Source points (1, 0), (−1, 0); target points (0, 1), (0, −1); both centroids are at the origin. Sum of cross products = 1×1 − 0×0 + (−1)×(−1) − 0×0 = 2, sum of dot products = 0, θ = atan2(2, 0) = 90°: indeed it turns a horizontal line into a vertical one. t = q̄ − R p̄ = 0.</span></p>
+<p class="why"><span class="zh" lang="zh-CN">需要至少 3 个不共线的点。临床上用标记点、或者手动点选鼻根、耳屏这类解剖标志，走的就是这条路，它常用来给 ICP 一个初始位置。</span><span class="en" lang="en">You need at least 3 points that are not on one line. Clinically, markers or manually picked anatomical landmarks (nasion, tragus) follow exactly this route, and it is often used to give ICP its starting position.</span></p></div></div>
+<p><span class="zh" lang="zh-CN">麻烦在于：相机点云和 MRI 表面上的点没有编号，不知道谁对应谁。这就要靠 ICP。</span><span class="en" lang="en">The catch: the points in the camera cloud and on the MRI surface are not numbered, so we don’t know which corresponds to which. That is where ICP comes in.</span></p>
+</section>
+<section id="s-icp">
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 8 步 · ICP</span><span class="en" lang="en">Step 8 · ICP</span></p>
+<h2><span class="zh" lang="zh-CN">ICP：边猜对应，边求位姿</span><span class="en" lang="en">ICP: guess the correspondences, solve the pose, repeat</span></h2>
+<p><span class="zh" lang="zh-CN">ICP 是 Iterative Closest Point（迭代最近点）的缩写。这是个先有鸡还是先有蛋的问题：知道位姿，就能找到谁对应谁；知道谁对应谁，就能用上面的方法算出位姿。ICP 的办法是两步轮流来：</span><span class="en" lang="en">ICP stands for Iterative Closest Point. It is a chicken-and-egg problem: if you knew the pose, you could find the correspondences; if you knew the correspondences, you could compute the pose with the method above. ICP alternates between the two:</span></p>
+<ol>
+<li><span class="zh" lang="zh-CN">找最近点：对源点云里的每个点，在目标表面上找离它最近的点，先假装它们就是对应点。</span><span class="en" lang="en">Find the closest points: for each point of the source cloud, find the nearest point on the target surface and pretend that is its correspondence.</span></li>
+<li><span class="zh" lang="zh-CN">求 R、t：按这批"假装的对应"，用上面的方法一步算出最好的 R、t，把整个源点云挪过去。</span><span class="en" lang="en">Solve R and t: using these “pretend correspondences”, compute the best R and t in one step with the method above, and move the whole source cloud.</span></li>
+<li><span class="zh" lang="zh-CN">回到第 1 步。挪过以后最近点会变，对应关系一般也更准了。一直重复，直到误差不再下降。</span><span class="en" lang="en">Go back to step 1. After the move the closest points change, and the correspondences are usually better. Repeat until the error stops decreasing.</span></li>
+</ol>
+<p><span class="zh" lang="zh-CN">几个关键性质：</span><span class="en" lang="en">Key properties:</span></p>
+<ul>
+<li><span class="zh" lang="zh-CN">标准的点到点 ICP，每一轮误差只会变小或不变，所以一定会停下来。但它停在"附近最低的坑"（局部最优），不保证是正确答案；初始位置偏得太远，它会很笃定地停在错的地方。所以实际流程是"粗配准 + 精配准"：先用标记点、特征匹配或者机械臂自己的位姿给一个大概位置，再用 ICP 精修。</span><span class="en" lang="en">In standard point-to-point ICP the error never increases from one round to the next, so it always stops. But it stops in “the nearest low spot” (a local minimum), which is not guaranteed to be the right answer; start too far off and it will stop confidently in the wrong place. That is why the real workflow is “coarse registration + fine registration”: markers, feature matching or the robot arm’s own pose give a rough position first, then ICP refines it.</span></li>
+<li><span class="zh" lang="zh-CN">对应关系不要求一一对应：好几个源点完全可以对到同一个目标点。</span><span class="en" lang="en">Correspondences need not be one-to-one: several source points may well match the same target point.</span></li>
+<li><span class="zh" lang="zh-CN">离群点会把结果拉偏。头发、衣领、背景这些 MRI 头皮上没有的点，也会硬找一个"最近点"。常见做法是把距离明显偏大的配对扔掉（trimmed ICP）。</span><span class="en" lang="en">Outliers pull the result off. Hair, collars, background, anything not on the MRI scalp, still grabs a “closest point”. The usual fix is to throw away pairs whose distance is clearly too large (trimmed ICP).</span></li>
+<li><span class="zh" lang="zh-CN">方向要选对。相机只拍到一小块头皮，MRI 有整个头，应该让"一小块"到整个头上找最近点，也就是小的当 source。反过来的话，MRI 上没被拍到的部分会被硬拉去配对。</span><span class="en" lang="en">Get the direction right. The camera sees only a small patch of scalp, while the MRI has the whole head, so the small patch should look for closest points on the whole head, i.e. the small one is the source. Do it the other way round and the parts of the MRI the camera never saw get forced into pairs.</span></li>
+<li><span class="zh" lang="zh-CN">光滑的弧面会"滑"。如果只拍到一小块光滑、接近球面的头皮，整块点云沿着球面转一点，到 MRI 表面的距离几乎不变。这时误差可以非常小，位置却是错的。下面用矩阵解释为什么。</span><span class="en" lang="en">Smooth curved surfaces “slide”. If the camera only sees a small, smooth, nearly spherical patch of scalp, rotating the whole patch a little along the sphere barely changes its distance to the MRI surface. The error can then be tiny while the position is wrong. The matrices below explain why.</span></li>
+</ul>
+<h3><span class="zh" lang="zh-CN">点到面：每一轮解一个 6×6 方程</span><span class="en" lang="en">Point-to-plane: a 6×6 system each round</span></h3>
+<div class="fk"><div class="eq sm"><span class="r">r<sub>i</sub> = n<sub>i</sub>ᵀ (R p<sub>i</sub> + t − q<sub>i</sub>)</span><span class="r">R ≈ I + [ω]<sub>×</sub>  ⟹  r<sub>i</sub> ≈ n<sub>i</sub>ᵀ(p<sub>i</sub> − q<sub>i</sub>) + (p<sub>i</sub> × n<sub>i</sub>)ᵀ ω + n<sub>i</sub>ᵀ t</span><span class="r"><span class="zh" lang="zh-CN">(AᵀA) x = Aᵀ b，   x = (ω, t)</span><span class="en" lang="en">(AᵀA) x = Aᵀ b,   x = (ω, t)</span></span></div><div class="fb">
+<dl class="sym">
+<dt>n<sub>i</sub></dt><dd><span class="zh" lang="zh-CN">目标点 q<sub>i</sub> 处的法向量（第 6 步）</span><span class="en" lang="en">the normal at the target point q<sub>i</sub> (step 6)</span></dd>
+<dt>r<sub>i</sub></dt><dd><span class="zh" lang="zh-CN">点到目标表面切平面的距离（带正负号）</span><span class="en" lang="en">the signed distance from the point to the tangent plane of the target surface</span></dd>
+<dt>ω</dt><dd><span class="zh" lang="zh-CN">这一轮要转的一个小旋转向量。上一篇讲过 R = exp([ω]<sub>×</sub>)，转得很小时约等于 I + [ω]<sub>×</sub></span><span class="en" lang="en">a small rotation vector for this round. As the previous page showed, R = exp([ω]<sub>×</sub>), which is approximately I + [ω]<sub>×</sub> for small rotations</span></dd>
+<dt>A</dt><dd><span class="zh" lang="zh-CN">N×6 矩阵，第 i 行是 [(p<sub>i</sub> × n<sub>i</sub>)ᵀ, n<sub>i</sub>ᵀ]</span><span class="en" lang="en">N×6 matrix whose i-th row is [(p<sub>i</sub> × n<sub>i</sub>)ᵀ, n<sub>i</sub>ᵀ]</span></dd>
+<dt>b</dt><dd><span class="zh" lang="zh-CN">N 个数，第 i 个是 −n<sub>i</sub>ᵀ(p<sub>i</sub> − q<sub>i</sub>)</span><span class="en" lang="en">N numbers; the i-th is −n<sub>i</sub>ᵀ(p<sub>i</sub> − q<sub>i</sub>)</span></dd>
+<dt>AᵀA</dt><dd><span class="zh" lang="zh-CN">6×6 矩阵，ICP 每一轮解的就是这个线性方程</span><span class="en" lang="en">6×6 matrix; this linear system is what ICP solves each round</span></dd>
+</dl>
+<p class="pl"><span class="zh" lang="zh-CN">点到面用"点到目标表面切平面的距离"，允许点沿着表面滑，通常几轮就收敛，比点到点快很多。每一轮假设这一步转得很小，把旋转近似成 I + [ω]<sub>×</sub>，残差就变成 6 个未知数的线性函数，最小二乘一步解出来，再用 exp 把 ω 贴回真正的旋转（上一篇"李群"一节的套路）。</span><span class="en" lang="en">Point-to-plane uses “the distance from the point to the tangent plane of the target surface”, which lets points slide along the surface; it usually converges in a few rounds, much faster than point-to-point. Each round assumes the step is a small rotation and approximates it as I + [ω]<sub>×</sub>, so the residuals become linear in 6 unknowns, solved in one least-squares step; then exp turns ω back into a true rotation (the recipe from the “Lie groups” section of the previous page).</span></p>
+<p class="why"><span class="zh" lang="zh-CN">AᵀA 的特征值告诉你哪些方向约束得住。如果某个特征值接近 0，对应的特征向量就是一种"挪了也不改变任何残差"的运动，也就是会滑的方向。比如一块完美的球面：每个点的法向量都穿过球心，绕球心转一点，所有点到球面的距离都不变，AᵀA 就有 3 个接近 0 的特征值。实际系统里可以算最小和最大特征值之比，太小就说明这次配准靠不住，需要拍到鼻子、眉骨、耳朵这类有起伏的区域，或者用别的信息（机械臂位姿、多个视角）补上。</span><span class="en" lang="en">The eigenvalues of AᵀA tell you which directions are pinned down. If one eigenvalue is close to 0, its eigenvector is a motion that “moves without changing any residual”, a direction the cloud can slide in. For a perfect sphere, for example, every normal passes through the centre, so a small rotation about the centre leaves every point’s distance to the sphere unchanged, and AᵀA has 3 eigenvalues near 0. In a real system you can compute the ratio of the smallest to the largest eigenvalue: if it is too small, the registration cannot be trusted, and you need to capture contoured areas such as the nose, brow ridge or ears, or bring in other information (the arm’s pose, multiple viewpoints).</span></p></div></div>
+<p><span class="zh" lang="zh-CN">下面是一个二维的 ICP。灰线是 MRI 里的头（俯视，右边凸出的是鼻子），紫色点是相机点云，绿色小点是它们本该在的位置（ICP 看不到）。可以一步一步按，看清"找最近点"和"求 R、t"这两步。下方的曲线同时画出两个误差：RMSE 是 ICP 看得到的，等于每个点到最近点距离的均方根（先平方、再平均、再开根号），可以理解成"平均距离"；真实误差 ICP 看不到，只有知道正确答案才能算。</span><span class="en" lang="en">Below is ICP in 2D. The grey line is the head from the MRI (seen from above, with the nose bump on the right), the purple points are the camera point cloud, and the small green points are where they really belong (which ICP cannot see). Step through it to see the two steps, “find the closest points” and “solve R, t”, separately. The curves below show two errors at once: RMSE, which ICP can see, is the root mean square of each point’s distance to its closest point (square, average, square root), think of it as the “average distance”; the true error is hidden from ICP and can only be computed when you know the right answer.</span></p>
+<div class="wg" id="ic">
+<canvas aria-label="头部轮廓和相机点云" data-al-en="Head outline and camera point cloud" data-al-zh="头部轮廓和相机点云" id="ic-cv"></canvas>
+<p class="hint"><span class="zh" lang="zh-CN">灰线：MRI 里的头（俯视，右边凸起是鼻子） · 紫点：相机点云，空心的是离群点 · 绿点：点云本来该在的位置（ICP 看不到）</span><span class="en" lang="en">Grey line: head from the MRI (seen from above, nose bump on the right) · purple points: camera point cloud, hollow ones are outliers · green points: where the cloud really belongs (hidden from ICP)</span></p>
+<div class="btns"><button class="btn on" data-s="0"><span class="zh" lang="zh-CN">拍到脸</span><span class="en" lang="en">Face in view</span></button><button class="btn" data-s="1"><span class="zh" lang="zh-CN">只拍到后脑勺</span><span class="en" lang="en">Back of head only</span></button></div>
+<div class="row"><label for="ic-a"><span class="zh" lang="zh-CN">初始转角</span><span class="en" lang="en">Initial angle</span></label><input id="ic-a" max="90" min="-90" step="5" type="range" value="30"/><span class="val" id="ic-av">30°</span></div>
+<div class="btns"><button class="btn" data-o="out"><span class="zh" lang="zh-CN">加离群点</span><span class="en" lang="en">Add outliers</span></button><button class="btn" data-o="rej"><span class="zh" lang="zh-CN">剔除远点</span><span class="en" lang="en">Reject far pairs</span></button><button class="btn" data-o="pl"><span class="zh" lang="zh-CN">点到面</span><span class="en" lang="en">Point-to-plane</span></button></div>
+<div class="btns"><button class="btn" id="ic-step"><span class="zh" lang="zh-CN">下一步：找最近点</span><span class="en" lang="en">Next: find closest points</span></button><button class="btn" id="ic-run"><span class="zh" lang="zh-CN">自动跑完</span><span class="en" lang="en">Run to the end</span></button><button class="btn" id="ic-rs"><span class="zh" lang="zh-CN">重来</span><span class="en" lang="en">Restart</span></button></div>
+<canvas aria-label="误差随迭代次数的变化" data-al-en="Error against iteration number" data-al-zh="误差随迭代次数的变化" id="ic-ch"></canvas>
+<div class="met">
+<div><small><span class="zh" lang="zh-CN">已迭代</span><span class="en" lang="en">Iterations</span></small><b id="ic-it"></b></div>
+<div><small><span class="zh" lang="zh-CN">RMSE（ICP 看得到）</span><span class="en" lang="en">RMSE (visible to ICP)</span></small><b id="ic-rm"></b></div>
+<div><small><span class="zh" lang="zh-CN">真实位置误差</span><span class="en" lang="en">True position error</span></small><b id="ic-tr"></b></div>
+<div><small><span class="zh" lang="zh-CN">真实转角误差</span><span class="en" lang="en">True angle error</span></small><b id="ic-ro"></b></div>
+</div>
+<div class="status" id="ic-st" role="status"></div>
+</div>
+<script>
+(()=>{const X=RX,$=i=>document.getElementById(i);const MM=90,MAXIT=60;
+const mk=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const gauss=r=>{let u=0;while(u===0)u=r();return Math.sqrt(-2*Math.log(u))*Math.cos(6.2832*r())};
+function rOf(p){p=Math.atan2(Math.sin(p),Math.cos(p));const a=1.15,b=.9;let r=Math.cos(p)>0?a*b/Math.sqrt((b*Math.cos(p))**2+(a*Math.sin(p))**2):b;return r+.16*Math.exp(-p*p/(2*.11*.11))}
+const NT=1440,TP=[],TN=[];for(let i=0;i<NT;i++){const p=-Math.PI+2*Math.PI*i/NT,r=rOf(p);TP.push([r*Math.cos(p),r*Math.sin(p)])}
+for(let i=0;i<NT;i++){const a=TP[(i+NT-1)%NT],b=TP[(i+1)%NT],tx=b[0]-a[0],ty=b[1]-a[1],n=Math.hypot(tx,ty);TN.push([ty/n,-tx/n])}
+let shape=0,ang=30,useOut=false,rej=false,pl=false,S=[],Xs=[],th=0,phase=0,pairs=null,hist=[],it=0,done=false,running=false,timer=null;
+function nn(p){let bi=0,bd=1e9;for(let i=0;i<NT;i++){const dx=p[0]-TP[i][0],dy=p[1]-TP[i][1],d=dx*dx+dy*dy;if(d<bd){bd=d;bi=i}}return[bi,Math.sqrt(bd)]}
+function findPairs(){const P=Xs.map(p=>{const[j,d]=nn(p);return{j,d,keep:true}});if(rej){const ds=P.map(q=>q.d).sort((a,b)=>a-b),m=ds[Math.floor(ds.length/2)],lim=Math.max(2.5*m,.03);P.forEach(q=>{q.keep=q.d<=lim})}return P}
+function measure(){const P=findPairs();let s=0,n=0;P.forEach(q=>{if(q.keep){s+=q.d*q.d;n++}});let e=0;for(let i=0;i<S.length;i++){const dx=Xs[i][0]-S[i][0],dy=Xs[i][1]-S[i][1];e+=dx*dx+dy*dy}return{rm:Math.sqrt(s/Math.max(n,1))*MM,tr:Math.sqrt(e/S.length)*MM,ro:Math.atan2(Math.sin(th),Math.cos(th))*180/Math.PI}}
+function solve3(A,b){const M=A.map((r,i)=>r.concat([b[i]]));for(let c=0;c<3;c++){let p=c;for(let r=c+1;r<3;r++)if(Math.abs(M[r][c])>Math.abs(M[p][c]))p=r;[M[c],M[p]]=[M[p],M[c]];for(let r=0;r<3;r++){if(r===c)continue;const f=M[r][c]/M[c][c];for(let k=c;k<4;k++)M[r][k]-=f*M[c][k]}}return[0,1,2].map(i=>M[i][3]/M[i][i])}
+function solve(P){const K=[];P.forEach((q,i)=>{if(q.keep)K.push(i)});if(!K.length)return{a:0,t:[0,0]};
+if(!pl){let px=0,py=0,qx=0,qy=0;K.forEach(i=>{px+=Xs[i][0];py+=Xs[i][1];qx+=TP[P[i].j][0];qy+=TP[P[i].j][1]});px/=K.length;py/=K.length;qx/=K.length;qy/=K.length;let sc=0,sd=0;K.forEach(i=>{const ax=Xs[i][0]-px,ay=Xs[i][1]-py,q=TP[P[i].j],bx=q[0]-qx,by=q[1]-qy;sc+=ax*by-ay*bx;sd+=ax*bx+ay*by});const a=Math.atan2(sc,sd),c=Math.cos(a),s=Math.sin(a);return{a,t:[qx-(c*px-s*py),qy-(s*px+c*py)]}}
+const A=[[0,0,0],[0,0,0],[0,0,0]],g=[0,0,0];K.forEach(i=>{const p=Xs[i],q=TP[P[i].j],n=TN[P[i].j],r=[-p[1]*n[0]+p[0]*n[1],n[0],n[1]],b=-((p[0]-q[0])*n[0]+(p[1]-q[1])*n[1]);for(let u=0;u<3;u++){g[u]+=r[u]*b;for(let v=0;v<3;v++)A[u][v]+=r[u]*r[v]}});const lam=1e-3*(A[0][0]+A[1][1]+A[2][2])/3;for(let u=0;u<3;u++)A[u][u]+=lam;const x=solve3(A,g);return{a:x[0],t:[x[1],x[2]]}}
+function apply(r){const c=Math.cos(r.a),s=Math.sin(r.a);Xs=Xs.map(p=>[c*p[0]-s*p[1]+r.t[0],s*p[0]+c*p[1]+r.t[1]]);th+=r.a;return Math.abs(r.a)<1e-5&&Math.hypot(r.t[0],r.t[1])<1e-5}
+function setup(){stop();const r=mk(shape?11:7),[lo,hi,n]=shape?[135,225,30]:[-80,80,46];S=[];for(let i=0;i<n;i++){const p=(lo+(hi-lo)*i/(n-1))*Math.PI/180,q=rOf(p)+.012*gauss(r);S.push([q*Math.cos(p),q*Math.sin(p)])}
+const O=[];if(useOut){for(let i=0;i<10;i++){const p=(lo+20+(hi-lo-40)*r())*Math.PI/180,q=rOf(p)+.12+.18*r();O.push([q*Math.cos(p),q*Math.sin(p)])}}
+let cx=0,cy=0;S.forEach(p=>{cx+=p[0]/S.length;cy+=p[1]/S.length});const a=ang*Math.PI/180,c=Math.cos(a),s=Math.sin(a);Xs=S.concat(O).map(p=>{const x=p[0]-cx,y=p[1]-cy;return[c*x-s*y+cx+.18,s*x+c*y+cy-.12]});th=a;phase=0;pairs=null;it=0;done=false;hist=[measure()];ui()}
+function iterate(){if(done)return;if(phase===0){pairs=findPairs();phase=1}else{const conv=apply(solve(pairs));it++;hist.push(measure());pairs=null;phase=0;done=conv||it>=MAXIT}}
+function stop(){running=false;if(timer){clearTimeout(timer);timer=null}}
+function run(){if(running){stop();ui();return}if(done)return;running=true;if(X.reduced){while(!done)iterate();stop();ui();return}
+const tick=()=>{if(!running)return;iterate();ui();if(done){stop();ui();return}timer=setTimeout(tick,phase===1?60:40)};tick()}
+const MC=X.stage($('ic-cv'),290,()=>draw()),CH=X.stage($('ic-ch'),120,()=>drawCh());
+function draw(){const g=MC.g,W=MC.w,H=290;if(!g)return;g.clearRect(0,0,W,H);g.lineCap='round';g.lineJoin='round';g.font=X.font(12);
+const s=Math.min(W/3.9,H/3.1),cx=W/2-.42*s,cy=H/2,P=p=>[cx+s*p[0],cy-s*p[1]],se=X.col('--muted'),mu=X.col('--faint'),PU=X.col('--k'),GN=X.col('--teal'),RD=X.col('--bad');
+g.strokeStyle=se;g.lineWidth=2;g.beginPath();TP.forEach((p,i)=>{const q=P(p);i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1])});g.closePath();g.stroke();
+g.fillStyle=mu;const nz=P([1.36,0]);g.fillText(X.t('鼻子','nose'),nz[0]+6,nz[1]+4);const bk=P([-.9,0]),bl=X.t('后脑勺','back of head'),bi=bl.lastIndexOf(' ');g.textAlign='right';if(g.measureText(bl).width>bk[0]-8&&bi>0){g.fillText(bl.slice(0,bi),bk[0]-6,bk[1]-3);g.fillText(bl.slice(bi+1),bk[0]-6,bk[1]+11)}else g.fillText(bl,bk[0]-6,bk[1]+4);g.textAlign='left';
+g.fillStyle=GN;g.globalAlpha=.8;S.forEach(p=>{const q=P(p);g.beginPath();g.arc(q[0],q[1],2,0,6.2832);g.fill()});g.globalAlpha=1;
+if(pairs){pairs.forEach((q,i)=>{const a=P(Xs[i]),b=P(TP[q.j]);g.strokeStyle=q.keep?mu:RD;g.setLineDash(q.keep?[]:[3,3]);g.lineWidth=1;g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.stroke()});g.setLineDash([])}
+Xs.forEach((p,i)=>{const q=P(p),o=i>=S.length;g.globalAlpha=pairs&&!pairs[i].keep?.35:1;g.beginPath();g.arc(q[0],q[1],3.3,0,6.2832);if(o){g.strokeStyle=PU;g.lineWidth=1.6;g.stroke()}else{g.fillStyle=PU;g.fill()}g.globalAlpha=1})}
+function drawCh(){const g=CH.g,W=CH.w,H=120;if(!g)return;g.clearRect(0,0,W,H);const L=54,Rm=8,Tp=26,Bm=18,n=Math.max(10,hist.length-1),lo=Math.log10(.5),hi=Math.log10(300),Xf=i=>L+(W-L-Rm)*i/n,Yf=v=>Tp+(H-Tp-Bm)*(1-(Math.log10(Math.max(.5,Math.min(300,v)))-lo)/(hi-lo));
+const se=X.col('--muted'),bd=X.col('--line');g.font=X.font(11);
+[1,10,100].forEach(v=>{const y=Yf(v);g.strokeStyle=bd;g.lineWidth=1;g.beginPath();g.moveTo(L,y);g.lineTo(W-Rm,y);g.stroke();g.fillStyle=se;g.textAlign='right';g.fillText(v+' mm',L-4,y+4)});
+g.textAlign='left';g.fillText(X.t('迭代 0','iteration 0'),L,H-4);g.textAlign='right';g.fillText(String(n),W-Rm,H-4);g.textAlign='left';
+[['rm',X.col('--k'),X.t('RMSE（ICP 看得到）','RMSE (visible to ICP)')],['tr',X.col('--amber'),X.t('真实误差（ICP 看不到）','true error (hidden from ICP)')]].forEach(([k,c,l],j)=>{g.strokeStyle=c;g.lineWidth=2;g.beginPath();hist.forEach((h,i)=>{const x=Xf(i),y=Yf(h[k]);i?g.lineTo(x,y):g.moveTo(x,y)});g.stroke();const lx=8+j*Math.min(170,(W-8)/2);g.beginPath();g.moveTo(lx,10);g.lineTo(lx+14,10);g.stroke();g.fillStyle=se;g.fillText(l,lx+18,14)})}
+const f1=v=>v.toFixed(1),f0=v=>Math.round(v);
+function ui(){const h=hist[hist.length-1];$('ic-av').textContent=ang+'°';$('ic-it').textContent=it+X.t(' 轮','');$('ic-rm').textContent=f1(h.rm)+' mm';$('ic-tr').textContent=f1(h.tr)+' mm';$('ic-ro').textContent=f1(Math.abs(h.ro))+'°';
+$('ic-step').textContent=done?X.t('已经停下了','Stopped'):phase===0?X.t('下一步：找最近点','Next: find closest points'):X.t('下一步：求 R、t 并挪过去','Next: solve R, t and move');$('ic-run').textContent=running?X.t('停','Stop'):X.t('自动跑完','Run to the end');
+const st=$('ic-st');let c='status',m;
+if(!done){if(it===0&&phase===0)m=X.t('按"下一步"开始：先给每个紫点在 MRI 头上找离它最近的点。','Press “Next” to start: first, each purple point finds its closest point on the MRI head.');else if(phase===1)m=X.t('灰线连起了每一对"假装的对应点"，很多是错的。没关系：按这批配对算出最好的 R、t，挪过去，再重新找。','The grey lines join each pair of “pretend correspondences”, and many are wrong. That is fine: solve the best R, t for these pairs, move, then look again.')+(rej?X.t('红色虚线是距离太远、被扔掉的配对。',' Red dashed lines are pairs that were too far apart and got thrown away.'):'');else m=X.t('第 '+it+' 轮完成，RMSE '+f1(h.rm)+' mm。接着按"下一步"，重新找最近点。','Round '+it+' done, RMSE '+f1(h.rm)+' mm. Press “Next” again to find new closest points.')}
+else if(h.tr<3){c='status ok';m=X.t('对上了：'+it+' 轮后停下，真实误差 '+f1(h.tr)+' mm。','Aligned: stopped after '+it+' rounds with a true error of '+f1(h.tr)+' mm. ')+(pl?X.t('点到面几轮就收敛了。','Point-to-plane converged in a few rounds.'):X.t('试试打开"点到面"再跑一次，比比要几轮。','Turn on “Point-to-plane” and run again to compare the number of rounds.'))}
+else if(useOut&&!rej){c='status warn';m=X.t('被离群点拉偏了：真实误差 '+f1(h.tr)+' mm。离群点也硬找了最近点，把整团点往外拽。试试"剔除远点"。','Pulled off by outliers: true error '+f1(h.tr)+' mm. The outliers also grabbed a closest point and dragged the whole cloud outwards. Try “Reject far pairs”.')}
+else if(shape===1&&h.rm<2.5){c='status warn';m=X.t('RMSE 只有 '+f1(h.rm)+' mm，看起来贴得很好，但真实误差是 '+f0(h.tr)+' mm，转角差了 '+f0(Math.abs(h.ro))+'°：点云沿着圆弧滑到了错的位置，ICP 自己察觉不到。','RMSE is only '+f1(h.rm)+' mm and the fit looks great, but the true error is '+f0(h.tr)+' mm and the angle is off by '+f0(Math.abs(h.ro))+'°: the cloud slid along the arc to the wrong place, and ICP cannot tell.')}
+else if(h.rm<2.5){c='status warn';m=X.t('还没完全收敛：真实误差还有 '+f1(h.tr)+' mm。点到点每一轮只挪一点点，'+it+' 轮还没走完。试试打开"点到面"。','Not fully converged: the true error is still '+f1(h.tr)+' mm. Point-to-point only moves a little each round, and '+it+' rounds were not enough. Try “Point-to-plane”.')}
+else{c='status bad';m=X.t('卡在了局部最优：RMSE 还有 '+f1(h.rm)+' mm，真实误差 '+f0(h.tr)+' mm。初始转角太大，最近点把它带进了错的坑。','Stuck in a local minimum: RMSE is still '+f1(h.rm)+' mm and the true error '+f0(h.tr)+' mm. The initial angle was too large, and the closest points led it into the wrong basin.')}
+st.className=c;st.textContent=m;draw();drawCh()}
+$('ic-step').addEventListener('click',()=>{if(running)return;iterate();ui()});$('ic-run').addEventListener('click',run);$('ic-rs').addEventListener('click',setup);
+$('ic-a').addEventListener('input',e=>{ang=+e.target.value;setup()});
+document.querySelectorAll('#ic [data-s]').forEach(b=>b.addEventListener('click',()=>{shape=+b.dataset.s;document.querySelectorAll('#ic [data-s]').forEach(x=>x.classList.toggle('on',x===b));setup()}));
+document.querySelectorAll('#ic [data-o]').forEach(b=>b.addEventListener('click',()=>{const o=b.dataset.o;if(o==='out')useOut=!useOut;if(o==='rej')rej=!rej;if(o==='pl')pl=!pl;b.classList.toggle('on',o==='out'?useOut:o==='rej'?rej:pl);setup()}));
+X.onLang(ui);setup();})();
+</script>
+<p><span class="zh" lang="zh-CN">可以按这个顺序试：</span><span class="en" lang="en">Try these in order:</span></p>
+<ol>
+<li><span class="zh" lang="zh-CN">默认设置下按"自动跑完"，大约 60 轮才停。注意曲线：RMSE 很快就降到 1 mm 左右，真实误差却还在慢慢往下走。RMSE 不再下降，不代表已经对上了。</span><span class="en" lang="en">With the default settings, press “Run to the end”: it takes about 60 rounds to stop. Watch the curves: RMSE drops to about 1 mm quickly, but the true error keeps creeping down. RMSE no longer falling does not mean the clouds are aligned.</span></li>
+<li><span class="zh" lang="zh-CN">打开"点到面"再跑一次，7 轮左右就收敛。</span><span class="en" lang="en">Turn on “Point-to-plane” and run again: it converges in about 7 rounds.</span></li>
+<li><span class="zh" lang="zh-CN">关掉"点到面"，把初始转角拉到 80°：卡在局部最优，它很笃定地停在一个错的位置。</span><span class="en" lang="en">Turn “Point-to-plane” off and set the initial angle to 80°: it gets stuck in a local minimum, stopping confidently in the wrong place.</span></li>
+<li><span class="zh" lang="zh-CN">把转角拉回 30°，打开"加离群点"：结果被拉偏将近 1 cm。再打开"剔除远点"和"点到面"，误差回到 1 mm 以内。</span><span class="en" lang="en">Set the angle back to 30° and turn on “Add outliers”: the result is pulled off by nearly 1 cm. Then turn on “Reject far pairs” and “Point-to-plane”, and the error drops back below 1 mm.</span></li>
+<li><span class="zh" lang="zh-CN">把选项都关掉，切到"只拍到后脑勺"：RMSE 只有 1 mm，真实误差却有二十多毫米，这就是上面说的"滑"。二维里只有 1 个转动方向，这个方向在圆弧上完全没有约束。</span><span class="en" lang="en">Turn every option off and switch to “Back of head only”: RMSE is only 1 mm, yet the true error is over 20 mm. That is the “sliding” described above. In 2D there is only one rotation direction, and on a circular arc it is completely unconstrained.</span></li>
+</ol>
+</section>
+<section id="s-sum">
+<p class="eyebrow"><span class="zh" lang="zh-CN">总结</span><span class="en" lang="en">Summary</span></p>
+<h2><span class="zh" lang="zh-CN">矩阵速查、常见坑和一道检验题</span><span class="en" lang="en">Matrix cheat sheet, common pitfalls and a check question</span></h2>
+<div class="tbl"><table><thead><tr><th><span class="zh" lang="zh-CN">矩阵</span><span class="en" lang="en">Matrix</span></th><th><span class="zh" lang="zh-CN">大小</span><span class="en" lang="en">Size</span></th><th><span class="zh" lang="zh-CN">作用</span><span class="en" lang="en">What it does</span></th><th><span class="zh" lang="zh-CN">在哪出现</span><span class="en" lang="en">Where it appears</span></th></tr></thead><tbody>
+<tr><td><span class="zh" lang="zh-CN">内参 K</span><span class="en" lang="en">Intrinsics K</span></td><td>3×3</td><td><span class="zh" lang="zh-CN">归一化坐标 → 像素</span><span class="en" lang="en">normalized coordinates → pixels</span></td><td><span class="zh" lang="zh-CN">投影、反投影、标定</span><span class="en" lang="en">projection, back-projection, calibration</span></td></tr>
+<tr><td><span class="zh" lang="zh-CN">畸变系数 k₁ k₂ p₁ p₂ k₃</span><span class="en" lang="en">Distortion coefficients k₁ k₂ p₁ p₂ k₃</span></td><td><span class="zh" lang="zh-CN">5 个数</span><span class="en" lang="en">5 numbers</span></td><td><span class="zh" lang="zh-CN">模拟镜头把直线拍弯</span><span class="en" lang="en">models how the lens bends straight lines</span></td><td><span class="zh" lang="zh-CN">投影时加上，反投影前去掉</span><span class="en" lang="en">applied when projecting, removed before back-projecting</span></td></tr>
+<tr><td><span class="zh" lang="zh-CN">外参 [R | t]</span><span class="en" lang="en">Extrinsics [R | t]</span></td><td>3×4</td><td><span class="zh" lang="zh-CN">世界坐标 → 相机坐标</span><span class="en" lang="en">world coordinates → camera coordinates</span></td><td><span class="zh" lang="zh-CN">PnP、标定</span><span class="en" lang="en">PnP, calibration</span></td></tr>
+<tr><td><span class="zh" lang="zh-CN">T<sub>cam_world</sub>、T<sub>world_cam</sub></span><span class="en" lang="en">T<sub>cam_world</sub>, T<sub>world_cam</sub></span></td><td>4×4</td><td><span class="zh" lang="zh-CN">外参的齐次形式、相机位姿，两者互逆</span><span class="en" lang="en">homogeneous form of the extrinsics, and the camera pose; inverses of each other</span></td><td><span class="zh" lang="zh-CN">机器人坐标变换</span><span class="en" lang="en">robot coordinate transforms</span></td></tr>
+<tr><td><span class="zh" lang="zh-CN">投影矩阵 P = K [R | t]</span><span class="en" lang="en">Projection matrix P = K [R | t]</span></td><td>3×4</td><td><span class="zh" lang="zh-CN">世界坐标 → 像素</span><span class="en" lang="en">world coordinates → pixels</span></td><td><span class="zh" lang="zh-CN">投影</span><span class="en" lang="en">projection</span></td></tr>
+<tr><td>K⁻¹</td><td>3×3</td><td><span class="zh" lang="zh-CN">像素 → 归一化坐标，乘深度得三维点</span><span class="en" lang="en">pixels → normalized coordinates; times depth gives a 3D point</span></td><td><span class="zh" lang="zh-CN">反投影</span><span class="en" lang="en">back-projection</span></td></tr>
+<tr><td><span class="zh" lang="zh-CN">双目 R、T</span><span class="en" lang="en">Stereo R, T</span></td><td><span class="zh" lang="zh-CN">3×3、3×1</span><span class="en" lang="en">3×3, 3×1</span></td><td><span class="zh" lang="zh-CN">左相机坐标 → 右相机坐标</span><span class="en" lang="en">left camera coordinates → right camera coordinates</span></td><td><span class="zh" lang="zh-CN">双目标定、校正</span><span class="en" lang="en">stereo calibration, rectification</span></td></tr>
+<tr><td><span class="zh" lang="zh-CN">本质矩阵 E、基础矩阵 F</span><span class="en" lang="en">Essential matrix E, fundamental matrix F</span></td><td>3×3</td><td><span class="zh" lang="zh-CN">一张图上的点 → 另一张图上的对极线</span><span class="en" lang="en">a point in one image → its epipolar line in the other</span></td><td><span class="zh" lang="zh-CN">对极几何、校正</span><span class="en" lang="en">epipolar geometry, rectification</span></td></tr>
+<tr><td>Q</td><td>4×4</td><td><span class="zh" lang="zh-CN">(u, v, 视差) → 三维点</span><span class="en" lang="en">(u, v, disparity) → 3D point</span></td><td><span class="zh" lang="zh-CN">双目重投影</span><span class="en" lang="en">stereo reprojection</span></td></tr>
+<tr><td>T<sub>base_cam</sub> = T<sub>base_flange</sub> T<sub>flange_cam</sub></td><td>4×4</td><td><span class="zh" lang="zh-CN">相机坐标 → 基座坐标</span><span class="en" lang="en">camera coordinates → base coordinates</span></td><td><span class="zh" lang="zh-CN">手眼标定 A X = X B</span><span class="en" lang="en">hand-eye calibration A X = X B</span></td></tr>
+<tr><td><span class="zh" lang="zh-CN">协方差矩阵 C</span><span class="en" lang="en">Covariance matrix C</span></td><td>3×3</td><td><span class="zh" lang="zh-CN">邻居的散布，最小特征向量就是法向量</span><span class="en" lang="en">spread of the neighbours; the smallest eigenvector is the normal</span></td><td><span class="zh" lang="zh-CN">法向量估计</span><span class="en" lang="en">normal estimation</span></td></tr>
+<tr><td><span class="zh" lang="zh-CN">交叉协方差 H</span><span class="en" lang="en">Cross-covariance H</span></td><td>3×3</td><td><span class="zh" lang="zh-CN">两团点朝向的关系，SVD 后得到 R</span><span class="en" lang="en">relates the orientations of two point sets; its SVD gives R</span></td><td><span class="zh" lang="zh-CN">Kabsch，ICP 每一轮</span><span class="en" lang="en">Kabsch, every ICP round</span></td></tr>
+<tr><td>AᵀA</td><td>6×6</td><td><span class="zh" lang="zh-CN">点到面 ICP 每一轮的线性方程，特征值反映退化</span><span class="en" lang="en">the linear system of each point-to-plane ICP round; its eigenvalues reveal degeneracy</span></td><td>ICP</td></tr>
+</tbody></table></div>
+<h3><span class="zh" lang="zh-CN">常见坑</span><span class="en" lang="en">Common pitfalls</span></h3>
+<ol>
+<li><span class="zh" lang="zh-CN"><b>外参的方向。</b>OpenCV 的 rvec、tvec 是"世界 → 相机"（T<sub>cam_world</sub>），机器人里说的相机位姿通常是反过来的 T<sub>world_cam</sub>。tvec 不是相机的位置，相机位置是 C = −Rᵀt。</span><span class="en" lang="en"><b>Which way the extrinsics go.</b> OpenCV’s rvec and tvec are “world → camera” (T<sub>cam_world</sub>), while the camera pose in robotics is usually the reverse, T<sub>world_cam</sub>. tvec is not the camera’s position; the camera position is C = −Rᵀt.</span></li>
+<li><span class="zh" lang="zh-CN"><b>两套相机坐标系。</b>光学坐标系是 x 向右、y 向下、z 朝前（OpenCV、RealSense 的点云用这个）；ROS 的机体坐标系是 x 朝前、y 向左、z 向上。RealSense 的 ROS 驱动两套都发布（camera_link 和 *_optical_frame），点云在 optical frame 里，混用会差一个固定的旋转。</span><span class="en" lang="en"><b>Two camera frame conventions.</b> The optical frame has x right, y down, z forward (OpenCV and RealSense point clouds use it); the ROS body frame has x forward, y left, z up. The RealSense ROS driver publishes both (camera_link and *_optical_frame), and point clouds live in the optical frame; mixing them up costs you a fixed rotation.</span></li>
+<li><span class="zh" lang="zh-CN"><b>内参和分辨率绑定。</b>换了分辨率要用对应的内参，或者按比例缩放 f<sub>x</sub>、f<sub>y</sub>、c<sub>x</sub>、c<sub>y</sub>。</span><span class="en" lang="en"><b>Intrinsics belong to a resolution.</b> When the resolution changes, use the matching intrinsics or scale f<sub>x</sub>, f<sub>y</sub>, c<sub>x</sub>, c<sub>y</sub> proportionally.</span></li>
+<li><span class="zh" lang="zh-CN"><b>深度和彩色不是同一台相机。</b>它们各有内参，之间还有一组外参。要让深度和彩色逐像素对应，先用 SDK 的对齐（align）功能，把深度图变到彩色相机的视角。</span><span class="en" lang="en"><b>Depth and colour come from different cameras.</b> Each has its own intrinsics, with a set of extrinsics between them. To match depth and colour pixel by pixel, first use the SDK’s align function to warp the depth image into the colour camera’s view.</span></li>
+<li><span class="zh" lang="zh-CN"><b>单位。</b>深度原始值要乘 depth scale（常见 0.001）才是米。ICP 里毫米和米混用，剔除阈值和收敛判据会全部失效。</span><span class="en" lang="en"><b>Units.</b> Raw depth values must be multiplied by the depth scale (often 0.001) to get metres. Mixing millimetres and metres in ICP breaks every rejection threshold and convergence test.</span></li>
+<li><span class="zh" lang="zh-CN"><b>畸变。</b>反投影之前先看畸变系数：不是 0 就要先去畸变。</span><span class="en" lang="en"><b>Distortion.</b> Check the distortion coefficients before back-projecting: if they are not 0, undistort first.</span></li>
+</ol>
+<h3><span class="zh" lang="zh-CN">检验题</span><span class="en" lang="en">Check question</span></h3>
+<p><span class="zh" lang="zh-CN">如果相机的焦距标定错了 5%，配准时 ICP 能不能把这个误差一起"对"掉？为什么？</span><span class="en" lang="en">If the camera’s focal length is calibrated 5% wrong, can ICP “align away” that error during registration? Why or why not?</span></p>
+<details><summary><span class="zh" lang="zh-CN">提示</span><span class="en" lang="en">Hint</span></summary><p><span class="zh" lang="zh-CN">回到点云那个交互，把焦距调错，看点云的形状变了没有。再想想上一篇讲的：旋转和平移能改变什么、不能改变什么。</span><span class="en" lang="en">Go back to the point cloud interactive, set the wrong focal length and see whether the shape of the cloud changes. Then recall the previous page: what can rotation and translation change, and what can’t they?</span></p></details>
+<details><summary><span class="zh" lang="zh-CN">参考答案</span><span class="en" lang="en">Answer</span></summary><p><span class="zh" lang="zh-CN">不能。焦距错了，反投影出来的 X、Y 被整体缩放，Z 却不变，所以点云本身变了形：点和点之间的距离变了。旋转和平移不会改变任何两点之间的距离（这正是"什么是旋转"那三个条件里的一条），所以无论 R、t 取什么，都没法把变形的点云和 MRI 完全贴合。ICP 只会找一个"平均最好"的位置：残差变大，位姿也会被带偏。办法是把内参标定准；允许缩放的配准（相似变换）只能补偿均匀缩放，补偿不了"只缩 X、Y、不缩 Z"这种变形。</span><span class="en" lang="en">No. With the wrong focal length, the back-projected X and Y are scaled while Z is not, so the point cloud itself is deformed: the distances between points change. Rotation and translation never change the distance between two points (one of the three conditions in “what is a rotation”), so no choice of R and t can make the deformed cloud fit the MRI exactly. ICP will only find the position that fits “best on average”: the residuals grow and the pose is biased. The fix is accurate intrinsic calibration; registration that allows scaling (a similarity transform) can only compensate a uniform scale, not a deformation that “scales X and Y but not Z”.</span></p></details>
+<h3><span class="zh" lang="zh-CN">想继续深入</span><span class="en" lang="en">Further reading</span></h3>
+<ul>
+<li><span class="zh" lang="zh-CN"><a href="https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html" rel="noopener" target="_blank">OpenCV：Camera Calibration 教程</a>：内参、畸变和棋盘格标定的实际代码。</span><span class="en" lang="en"><a href="https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html" rel="noopener" target="_blank">OpenCV: Camera Calibration tutorial</a>: working code for intrinsics, distortion and checkerboard calibration.</span></li>
+<li><span class="zh" lang="zh-CN"><a href="https://docs.opencv.org/4.x/d9/d0c/group__calib3d.html" rel="noopener" target="_blank">OpenCV：calib3d 模块文档</a>：针孔模型、solvePnP、stereoRectify、Q 矩阵、calibrateHandEye 的定义和约定。</span><span class="en" lang="en"><a href="https://docs.opencv.org/4.x/d9/d0c/group__calib3d.html" rel="noopener" target="_blank">OpenCV: calib3d module documentation</a>: definitions and conventions for the pinhole model, solvePnP, stereoRectify, the Q matrix and calibrateHandEye.</span></li>
+<li><span class="zh" lang="zh-CN"><a href="https://www.robots.ox.ac.uk/~vgg/hzbook/" rel="noopener" target="_blank">Hartley 和 Zisserman，Multiple View Geometry in Computer Vision</a>：投影矩阵、对极几何的标准教材。</span><span class="en" lang="en"><a href="https://www.robots.ox.ac.uk/~vgg/hzbook/" rel="noopener" target="_blank">Hartley and Zisserman, Multiple View Geometry in Computer Vision</a>: the standard textbook on projection matrices and epipolar geometry.</span></li>
+<li><span class="zh" lang="zh-CN"><a href="https://doi.org/10.1109/34.888718" rel="noopener" target="_blank">Zhang，A Flexible New Technique for Camera Calibration（2000）</a>：棋盘格标定法的原始论文。</span><span class="en" lang="en"><a href="https://doi.org/10.1109/34.888718" rel="noopener" target="_blank">Zhang, A Flexible New Technique for Camera Calibration (2000)</a>: the original paper on checkerboard calibration.</span></li>
+<li><span class="zh" lang="zh-CN"><a href="https://doi.org/10.1109/34.121791" rel="noopener" target="_blank">Besl 和 McKay，A Method for Registration of 3-D Shapes（1992）</a>：ICP 的原始论文。</span><span class="en" lang="en"><a href="https://doi.org/10.1109/34.121791" rel="noopener" target="_blank">Besl and McKay, A Method for Registration of 3-D Shapes (1992)</a>: the original ICP paper.</span></li>
+<li><span class="zh" lang="zh-CN"><a href="https://www.cs.princeton.edu/~smr/papers/fasticp" rel="noopener" target="_blank">Rusinkiewicz 和 Levoy，Efficient Variants of the ICP Algorithm（2001）</a>：点到面、采样、剔除等各种 ICP 变体的比较。</span><span class="en" lang="en"><a href="https://www.cs.princeton.edu/~smr/papers/fasticp" rel="noopener" target="_blank">Rusinkiewicz and Levoy, Efficient Variants of the ICP Algorithm (2001)</a>: a comparison of ICP variants, including point-to-plane, sampling and rejection.</span></li>
+<li><span class="zh" lang="zh-CN"><a href="https://www.cs.princeton.edu/~smr/papers/stabicp" rel="noopener" target="_blank">Gelfand 等，Geometrically Stable Sampling for the ICP Algorithm（2003）</a>：用 AᵀA 的特征值判断配准会不会"滑"。</span><span class="en" lang="en"><a href="https://www.cs.princeton.edu/~smr/papers/stabicp" rel="noopener" target="_blank">Gelfand et al., Geometrically Stable Sampling for the ICP Algorithm (2003)</a>: using the eigenvalues of AᵀA to tell whether a registration will “slide”.</span></li>
+</ul>
+</section>
+<footer class="foot"><span class="zh" lang="zh-CN">本页约定：相机坐标系 x 向右、y 向下、z 朝前；外参 [R | t] 把世界坐标换算成相机坐标；四元数和旋转的约定同上一篇。</span><span class="en" lang="en">Conventions on this page: the camera frame has x right, y down, z forward; the extrinsics [R | t] convert world coordinates into camera coordinates; rotation conventions follow the previous page.</span></footer>
+<p class="foot" data-noi18n="" style="padding-top:0"><a href="https://huyicheng.github.io/rotation-representations/"><span class="zh" lang="zh-CN">← 上一篇：旋转的四种写法</span><span class="en" lang="en">← Previous: Four Ways to Write a Rotation</span></a></p>
+</main>
+</body>
+</html>
