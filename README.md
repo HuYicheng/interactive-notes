@@ -54,14 +54,16 @@ How a depth camera measures distance, how a depth image becomes a point cloud, a
 1. The pinhole camera and homogeneous coordinates
 2. Intrinsics `K` (fx, fy, cx, cy, skew), lens distortion, calibration
 3. Extrinsics `[R | t]`, the camera centre `C = −Rᵀt`, `T_cam_world` versus `T_world_cam`, PnP, hand-eye calibration `AX = XB`
-4. The projection matrix `P = K [R | t]`
+4. Putting it together: the projection matrix `P = K [R | t]` and the full camera playground
 5. Depth and stereo: stereo extrinsics, the essential and fundamental matrices `E` and `F`, rectification, `Z = f·B / d`, block matching, the `Q` matrix
 6. Back-projection with `K⁻¹`, moving the cloud into the robot base frame, normals from the covariance matrix
 7. Registration and the Kabsch / SVD solution
 8. ICP: point-to-point and point-to-plane, the 6×6 system `AᵀA` and how its eigenvalues reveal sliding
 9. Summary: matrix cheat sheet, common pitfalls, a check question
 
-Interactive demos: a camera playground (sliders for fx, fy, cx, cy, the distortion k1 and the camera pose, with `K`, `[R | t]` and `P` updating live, plus a dolly zoom), stereo block matching on a textured surface, on smooth skin and on smooth skin with an IR speckle pattern, depth image to point cloud with an adjustable focal length, and 2D ICP with outliers, pair rejection, point-to-plane and the sliding failure.
+Every matrix gets its own small interactive before its formula: dragging a point through a pinhole, the normalized grid that `K` stretches and shifts, lens distortion, the same scene drawn on world and camera grid paper (why `t` is not the camera position), hand-eye calibration with a deliberately wrong `X`, epipolar lines before and after rectification, the `Q` matrix with iso-disparity lines, normals from the covariance ellipse, the Kabsch vote dial, and the eigenvalues of `AᵀA` showing where ICP slides. A full camera playground then ties the intrinsics and extrinsics together (sliders for fx, fy, cx, cy, k1 and the camera pose, with `K`, `[R | t]` and `P` updating live, plus a dolly zoom), followed by stereo block matching, depth image to point cloud, and 2D ICP with outliers, pair rejection, point-to-plane and the sliding failure.
+
+每个矩阵都先配一个只动它自己的小交互，再看公式；相机部分最后用一台完整的相机做大综合。
 
 Conventions: the camera frame has x right, y down, z forward (the OpenCV and RealSense optical frame). The extrinsics `[R | t]` map world coordinates into camera coordinates, and `T_ab` is the pose of frame b in frame a.
 
