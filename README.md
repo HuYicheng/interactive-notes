@@ -17,6 +17,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 | 3 | From Demonstration to Trial and Error · 从示范到试错 | https://huyicheng.github.io/interactive-notes/robot-learning/ | `robot-learning/index.html` |
 | 4 | From Fully Connected to Attention · 从全连接到注意力 | https://huyicheng.github.io/interactive-notes/backbones/ | `backbones/index.html` |
 | 5 | Loops Within Loops · 环环相扣 | https://huyicheng.github.io/interactive-notes/loops/ | `loops/index.html` |
+| 6 | From PID to World Models · 从 PID 到世界模型 | https://huyicheng.github.io/interactive-notes/control/ | `control/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -31,6 +32,8 @@ perception/index.html      From Depth to Registration · 从深度到配准
 robot-learning/index.html  From Demonstration to Trial and Error · 从示范到试错
 backbones/index.html       From Fully Connected to Attention · 从全连接到注意力
 loops/index.html           Loops Within Loops · 环环相扣
+control/index.html         From PID to World Models · 从 PID 到世界模型
+toc.js                     the Contents panel shared by every page · 各篇共用的目录面板
 ```
 
 ## Open it · 打开方式
@@ -40,6 +43,7 @@ Open the live pages above in any browser, on a phone or a computer. There is no 
 直接打开上面的网址即可，手机和电脑都能用。页面不需要编译，下载对应的 `index.html` 后离线打开也行。
 
 - **Language / 语言**: the 中 / EN button at the top right switches language and keeps your place on the page, and the choice carries over between the home page and every explainer. 右上角的「中 / EN」按钮一键切换，并停留在你正在读的位置；选好的语言在首页和各篇之间通用。
+- **Contents / 目录**: the 目录 / Contents button in each page's top bar opens a list of every explainer and its sections; the current page is expanded. 每篇顶栏的「目录」按钮展开全部篇目和各篇的小节，当前这篇默认展开。
 - **Cross-links / 互相链接**: each explainer links to the previous and next one at the top and at the bottom. 每篇的开头和结尾都有到上一篇、下一篇的链接。
 
 ## 1. Four Ways to Write a Rotation · 旋转的四种写法
@@ -162,11 +166,38 @@ Conventions: r a loop's target, y its output, e its error, u its command; q join
 
 约定：r 是一个环的目标，y 是输出，e 是误差，u 是命令；q 关节角，τ 力矩，带星号的也是上一层给的目标；Hz 是每秒几次。
 
+## 6. From PID to World Models · 从 PID 到世界模型
+
+The whole spectrum of control methods, told on one motor-driven pendulum arm. Every controller is an approximate answer to the same problem (choose commands that minimise a cost, subject to the physics, noisy measurements and limits); methods differ in where the model comes from, when the work is done, how far ahead they look and how they handle uncertainty. The page places each method in the six functional layers and loop levels of page 5, answers why PID still dominates the fastest loops, where the model sits in model-based and model-free control, why reinforcement learning is what carried humanoid robots to where they are now, and what world models add.
+
+控制方法的全景，全篇用同一根电机带动的摆杆来讲。每种控制器都是在近似地解同一道题（在物理规律、带噪声的测量和各种限制之内，选出让代价最小的命令）；方法之间的区别在于模型从哪来、什么时候算、往前看多远、怎么对付不确定。还讲了每种方法坐在上一篇"六层、几级环"里的什么位置，PID 为什么至今统治着最快的那几级环，model-based 和 model-free 里的"模型"到底放在哪，为什么是强化学习把人形机器人带到了今天，以及世界模型带来了什么。
+
+0. Overview: the optimal control problem every controller attempts, four questions that tell methods apart, a map of 51 methods, where control sits among the layers and loop levels, and why methods merge layers but rarely levels
+1. PID: P, I and D as spring, memory and damper, steady-state error, integrator windup, derivative noise, feedforward; why PID is still king, and why PI for first-order plants and PD for second-order ones
+2. Frequency: open-loop frequency response, crossover and bandwidth, phase margin, how delay eats phase, the Smith predictor, the waterbed effect
+3. State space: the inverted pendulum's linear model, LQR as optimal state feedback (and as a PD law), the value function `xᵀPx`, the Kalman filter, LQG and the separation principle
+4. Nonlinear: gain scheduling, computed torque and feedback linearisation, energy-based (Lyapunov) swing-up, switching to LQR in a verified catch region
+5. Uncertainty: sliding mode and H∞ (overpower it), disturbance observers, ADRC and adaptive control (estimate it), iterative learning control (learn it)
+6. Contact: impedance, admittance and force control; whole-body control as a quadratic program
+7. Looking ahead: model predictive control, receding horizon and constraints, iLQR versus MPPI, open-loop plans versus re-planning, MPC in industry and legged robots
+8. Learning: reinforcement learning as approximate dynamic programming, random search finding the LQR gains, domain randomisation, what deep networks do in control, imitation learning, safety filters with control barrier functions
+9. Models: the five places a model can sit, what model-based and model-free each buy and need, world models for planning, imagination and data
+10. Humanoids: eight waves from static walking to world models, why reinforcement learning won, the current VLA-plus-RL stack, the role of world models
+11. Summary: a lineage table, answers to the opening questions, check questions, further reading
+
+Interactive demos: a map of 51 control methods by model source and timing, colourable by era, look-ahead, uncertainty handling and loop level, with each method's relatives; on-off, P, PI, PD and PID holding the arm against gravity, with anti-windup, feedforward, sensor noise and derivative filtering; Bode plots and step responses with delay; LQR balancing with cost-to-go ellipses, poles, and velocity from differencing versus a Kalman filter; energy swing-up with an LQR catch region; sliding mode versus PD under model error, with chattering and a boundary layer; PD, PID, adaptive control and ADRC when a payload is attached; position, impedance, admittance and force control against walls of different stiffness; MPC swing-up with iLQR or MPPI, horizon, torque limit, model error and open-loop playback; random search learning the balancing gains on a cost landscape, with domain randomisation; a safety filter in front of an aggressive or noisy controller; learning a model from data and planning with it; and a table of humanoid control waves showing which layers were hand-written, optimised online or learned.
+
+交互：按"模型从哪来"和"什么时候算"排开的 51 种控制方法地图，可以按年代、往前看多远、怎么对付不确定、常在哪一级环上色，并查看每种方法的"亲戚"；托着重物的摆杆，比较开关、P、PI、PD、PID，带抗积分饱和、重力前馈、测量噪声和微分滤波；带延迟的伯德图和阶跃响应；倒立摆的 LQR，画出剩余代价的椭圆、极点，以及差分和卡尔曼滤波估出的速度；能量泵摆起加 LQR 接住区；模型有误差时的滑模和 PD，颤振和边界层；突然挂上负载时的 PD、PID、自适应控制和 ADRC；位置、阻抗、导纳、力控碰到不同硬度的墙；用 iLQR 或 MPPI 做摆起的 MPC，可以调预测时长、力矩上限、模型误差，或者只规划一次；在代价地图上用随机搜索学平衡增益，加上域随机化；挡在激进或抖动的控制器前面的安全滤波；从数据里学模型再用它做 MPC；以及人形机器人一波又一波的控制，每一层是人写的、在线优化的还是学出来的。
+
+Conventions: θ is the arm's angle (0 hanging, 180° upright), φ the angle from upright, ω the angular velocity, τ or u the motor torque; x state, r target, e error, J total cost, V(x) the value function.
+
+约定：θ 是摆杆的角度（0 垂下，180° 竖直），φ 是偏离竖直的角度，ω 是角速度，τ 或 u 是电机力矩；x 是状态，r 是目标，e 是误差，J 是总代价，V(x) 是价值函数。
+
 ## Adding a page · 新加一篇
 
-Put each new explainer in its own folder as `name/index.html`, link to other pages with relative paths such as `../rotation/`, and add a card for it on the home page.
+Put each new explainer in its own folder as `name/index.html`, link to other pages with relative paths such as `../rotation/`, add a card for it on the home page, load `../toc.js` with its `data-page` set to the folder name, and add the page to the list at the top of `toc.js`.
 
-每篇新的讲解放进自己的文件夹，写成 `name/index.html`；链接别的篇目用相对路径，比如 `../rotation/`；再在首页加一张卡片。
+每篇新的讲解放进自己的文件夹，写成 `name/index.html`；链接别的篇目用相对路径，比如 `../rotation/`；在首页加一张卡片；页面里加载 `../toc.js`（`data-page` 写文件夹名），再把这一篇加进 `toc.js` 开头的列表。
 
 ## Publishing · 发布
 

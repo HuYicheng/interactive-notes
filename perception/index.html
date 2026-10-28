@@ -211,7 +211,7 @@ root.setAttribute('data-lang',lang);
 const langFns=[],onLang=f=>langFns.push(f),t=(zh,en)=>lang==='en'?en:zh,TITLE={zh:'从深度到配准',en:'From Depth to Registration'};
 function applyLang(){root.setAttribute('data-lang',lang);root.lang=lang==='en'?'en':'zh-CN';document.title=TITLE[lang];document.querySelectorAll('[data-al-en]').forEach(e=>e.setAttribute('aria-label',lang==='en'?e.dataset.alEn:e.dataset.alZh));const b=document.getElementById('langBtn');if(b)b.setAttribute('aria-pressed',lang==='en'?'true':'false')}
 function navBottom(){const n=document.querySelector('.nav');return n?Math.max(0,n.getBoundingClientRect().bottom):0}
-function anchor(){const nb=navBottom()+2,els=document.querySelectorAll('h1,h2,h3,p,li,dt,dd,.eq,.wg,table,.tier,.arrows,summary,.howto>div,footer');for(const e of els){if(e.closest('.nav'))continue;const r=e.getBoundingClientRect();if(r.height>0&&r.bottom>nb)return{e,nb,top:r.top,frac:r.top<nb?(nb-r.top)/r.height:-1}}return null}
+function anchor(){const nb=navBottom()+2,els=document.querySelectorAll('h1,h2,h3,p,li,dt,dd,.eq,.wg,table,.tier,.arrows,summary,.howto>div,footer');for(const e of els){if(e.closest('.nav')||e.closest('details:not([open])>:not(summary)'))continue;const r=e.getBoundingClientRect();if(r.height>0&&r.bottom>nb)return{e,nb,top:r.top,frac:r.top<nb?(nb-r.top)/r.height:-1}}return null}
 function restore(a){if(!a||!a.e.isConnected)return;const r=a.e.getBoundingClientRect(),target=a.frac>=0?a.nb-a.frac*r.height:a.top,d=r.top-target;if(Math.abs(d)>.5){const sb=root.style.scrollBehavior;root.style.scrollBehavior='auto';window.scrollBy(0,d);root.style.scrollBehavior=sb}}
 let hold=null;['wheel','touchstart','keydown'].forEach(n=>addEventListener(n,()=>{hold=null},{passive:true}));
 function setLang(l){const a=anchor();lang=l==='en'?'en':'zh';try{localStorage.setItem('rot-lang',lang)}catch(e){}applyLang();langFns.forEach(f=>{try{f()}catch(e){}});fire();restore(a);hold=a;requestAnimationFrame(()=>{if(hold===a)restore(a)});try{document.fonts.ready.then(()=>{if(hold===a)restore(a)})}catch(e){}}
@@ -1370,5 +1370,6 @@ X.onLang(ui);setup();})();
 <footer class="foot"><span class="zh" lang="zh-CN">本页约定：相机坐标系 x 向右、y 向下、z 朝前；外参 [R | t] 把世界坐标换算成相机坐标；四元数和旋转的约定同上一篇。</span><span class="en" lang="en">Conventions on this page: the camera frame has x right, y down, z forward; the extrinsics [R | t] convert world coordinates into camera coordinates; rotation conventions follow the previous page.</span></footer>
 <p class="foot" data-noi18n="" style="padding-top:0"><a href="../rotation/"><span class="zh" lang="zh-CN">← 上一篇：旋转的四种写法</span><span class="en" lang="en">← Previous: Four Ways to Write a Rotation</span></a><span aria-hidden="true" style="color:var(--faint)"> · </span><a href="../robot-learning/"><span class="zh" lang="zh-CN">下一篇：从示范到试错 →</span><span class="en" lang="en">Next: From Demonstration to Trial and Error →</span></a></p>
 </main>
+<script src="../toc.js" data-page="perception" defer></script>
 </body>
 </html>

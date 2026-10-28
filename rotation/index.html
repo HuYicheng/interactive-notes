@@ -183,7 +183,7 @@ root.setAttribute('data-lang',lang);
 const langFns=[],onLang=f=>langFns.push(f),t=(zh,en)=>lang==='en'?en:zh,TITLE={zh:'旋转的四种写法',en:'Four Ways to Write a Rotation'};
 function applyLang(){root.setAttribute('data-lang',lang);root.lang=lang==='en'?'en':'zh-CN';document.title=TITLE[lang];document.querySelectorAll('[data-al-en]').forEach(e=>e.setAttribute('aria-label',lang==='en'?e.dataset.alEn:e.dataset.alZh));const b=document.getElementById('langBtn');if(b)b.setAttribute('aria-pressed',lang==='en'?'true':'false')}
 function navBottom(){const n=document.querySelector('.nav');return n?Math.max(0,n.getBoundingClientRect().bottom):0}
-function anchor(){const nb=navBottom()+2,els=document.querySelectorAll('h1,h2,h3,p,li,dt,dd,.eq,.wg,table,.tier,.arrows,summary,.howto>div,footer');for(const e of els){if(e.closest('.nav'))continue;const r=e.getBoundingClientRect();if(r.height>0&&r.bottom>nb)return{e,nb,top:r.top,frac:r.top<nb?(nb-r.top)/r.height:-1}}return null}
+function anchor(){const nb=navBottom()+2,els=document.querySelectorAll('h1,h2,h3,p,li,dt,dd,.eq,.wg,table,.tier,.arrows,summary,.howto>div,footer');for(const e of els){if(e.closest('.nav')||e.closest('details:not([open])>:not(summary)'))continue;const r=e.getBoundingClientRect();if(r.height>0&&r.bottom>nb)return{e,nb,top:r.top,frac:r.top<nb?(nb-r.top)/r.height:-1}}return null}
 function restore(a){if(!a||!a.e.isConnected)return;const r=a.e.getBoundingClientRect(),target=a.frac>=0?a.nb-a.frac*r.height:a.top,d=r.top-target;if(Math.abs(d)>.5){const sb=root.style.scrollBehavior;root.style.scrollBehavior='auto';window.scrollBy(0,d);root.style.scrollBehavior=sb}}
 let hold=null;['wheel','touchstart','keydown'].forEach(n=>addEventListener(n,()=>{hold=null},{passive:true}));
 function setLang(l){const a=anchor();lang=l==='en'?'en':'zh';try{localStorage.setItem('rot-lang',lang)}catch(e){}applyLang();langFns.forEach(f=>{try{f()}catch(e){}});fire();restore(a);hold=a;requestAnimationFrame(()=>{if(hold===a)restore(a)});try{document.fonts.ready.then(()=>{if(hold===a)restore(a)})}catch(e){}}
@@ -852,5 +852,6 @@ setEx(EX[0][0],EX[0][1]);})();
 <footer class="foot"><span class="zh" lang="zh-CN">本页约定：矩阵作用方式是 v′ = R · v，R 的三列是物体三根轴在世界系里的方向；四元数按 Hamilton 约定，写成 (w, x, y, z)。</span><span class="en" lang="en">Conventions on this page: matrices act as v′ = R · v, and the three columns of R are the body’s three axes expressed in the world frame; quaternions follow the Hamilton convention, written (w, x, y, z).</span></footer>
 <p class="foot" data-noi18n="" style="padding-top:0"><a href="../perception/"><span class="zh" lang="zh-CN">下一篇：从深度到配准 →</span><span class="en" lang="en">Next: From Depth to Registration →</span></a></p>
 </main>
+<script src="../toc.js" data-page="rotation" defer></script>
 </body>
 </html>

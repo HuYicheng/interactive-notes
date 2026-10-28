@@ -1,0 +1,54 @@
+/* Site-wide table of contents for Interactive Notes: a "Contents" button in each page's nav bar opens a panel listing every page and its sections. */
+(function(){
+var PAGES=[{"slug":"rotation","zh":"旋转的四种写法","en":"Four Ways to Write a Rotation","s":[["s-basics","0 基础","0 Basics"],["s-core","核心逻辑","Core idea"],["s-mat","① 矩阵","① Matrix"],["s-euler","② 欧拉角","② Euler angles"],["s-aa","③ 轴角","③ Axis-angle"],["s-quat","④ 四元数","④ Quaternion"],["s-lie","李群","Lie groups"],["s-conv","转换","Conversions"],["s-interp","插值","Interpolation"],["s-sum","总结","Summary"]]},{"slug":"perception","zh":"从深度到配准","en":"From Depth to Registration","s":[["s-map","0 总览","0 Overview"],["s-pin","① 针孔模型","① Pinhole model"],["s-k","② 内参","② Intrinsics"],["s-rt","③ 外参","③ Extrinsics"],["s-p","④ 大综合","④ Putting it together"],["s-st","⑤ 双目","⑤ Stereo"],["s-pc","⑥ 点云","⑥ Point clouds"],["s-reg","⑦ 配准","⑦ Registration"],["s-icp","⑧ ICP","⑧ ICP"],["s-sum","总结","Summary"]]},{"slug":"robot-learning","zh":"从示范到试错","en":"From Demonstration to Trial and Error","s":[["s-map","0 总览","0 Overview"],["s-mdp","① 基本概念","① Basics"],["s-il","② 模仿学习","② Imitation learning"],["s-var","③ 示范的变体","③ Variants of demos"],["s-rl","④ 强化学习","④ Reinforcement learning"],["s-rw","⑤ 奖励","⑤ Rewards"],["s-sim","⑥ 仿真到现实","⑥ Sim to real"],["s-wm","⑦ 世界模型","⑦ World models"],["s-mix","⑧ 组合","⑧ Combinations"],["s-sum","总结","Summary"]]},{"slug":"backbones","zh":"从全连接到注意力","en":"From Fully Connected to Attention","s":[["s-map","0 总览","0 Overview"],["s-mlp","① 一层","① One layer"],["s-cnn","② 卷积","② Convolution"],["s-rnn","③ 循环","③ Recurrence"],["s-unet","④ U-Net","④ U-Net"],["s-attn","⑤ 注意力","⑤ Attention"],["s-diff","⑥ 扩散","⑥ Diffusion"],["s-mix","⑦ 拼起来","⑦ Putting it together"],["s-sum","总结","Summary"]]},{"slug":"loops","zh":"环环相扣","en":"Loops Within Loops","s":[["s-map","0 总览","0 Overview"],["s-loop","① 一个环","① One loop"],["s-rate","② 多快","② How fast"],["s-cas","③ 环套环","③ Loops in loops"],["s-cur","④ 电流","④ Current"],["s-stack","⑤ 一台机器人","⑤ One robot"],["s-kinds","⑥ 五种机器人","⑥ Five robots"],["s-wire","⑦ 连线","⑦ Wiring"],["s-sum","总结","Summary"]]},{"slug":"control","zh":"从 PID 到世界模型","en":"From PID to World Models","s":[["k-map","0 总览","0 Overview"],["k-pid","① PID","① PID"],["k-freq","② 频率","② Frequency"],["k-ss","③ 状态空间","③ State space"],["k-nl","④ 非线性","④ Nonlinearity"],["k-unc","⑤ 不确定","⑤ Uncertainty"],["k-con","⑥ 接触","⑥ Contact"],["k-mpc","⑦ 往前看","⑦ Looking ahead"],["k-learn","⑧ 学出来","⑧ Learning it"],["k-model","⑨ 模型","⑨ Models"],["k-hum","⑩ 人形","⑩ Humanoids"],["k-sum","总结","Summary"]]}];
+var me=document.currentScript,cur=(me&&me.getAttribute('data-page'))||'';
+var SITE='https://huyicheng.github.io/interactive-notes/';
+var onSite=/(^|\.)github\.io$/.test(location.hostname)||location.protocol==='file:';
+function href(slug,sec){if(slug===cur)return sec?'#'+sec:'#';return (onSite?'../'+slug+'/':SITE+slug+'/')+(sec?'#'+sec:'')}
+function bi(zh,en){return '<span class="zh" lang="zh-CN">'+zh+'</span><span class="en" lang="en">'+en+'</span>'}
+var CSS='.tocb{flex:none;display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:999px;background:var(--surface);padding:6px 11px 6px 9px;cursor:pointer;font:600 12.5px/1 var(--f-body);color:var(--muted);min-height:32px}'
++'.tocb:hover,.tocb[aria-expanded="true"]{border-color:var(--accent);color:var(--accent-fg)}.tocb svg{display:block}'
++'.nav .bar{position:relative}'
++'.tocp{position:absolute;right:16px;top:calc(100% + 1px);width:min(420px,calc(100vw - 16px));max-height:calc(100vh - 64px);max-height:calc(100dvh - 64px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 40px -22px rgba(20,25,34,.55);padding:10px 8px 12px;z-index:30;font:14.5px/1.45 var(--f-body);color:var(--fg);text-align:left}'
++'.tocp[hidden]{display:none}'
++'.toct{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:2px 8px 8px;border-bottom:1px solid var(--line);margin-bottom:6px;font-size:12.5px;color:var(--muted);font-weight:600}'
++'.nav .tocp a{flex:initial;border:0;background:transparent;line-height:1.45;white-space:normal}.nav .tocp a:hover{border:0}'
++'.nav .toct a{color:var(--accent-fg);font-weight:600;text-decoration:none;font-size:12.5px;padding:4px 6px;border-radius:6px}.nav .toct a:hover{text-decoration:underline}'
++'.tocg{border-radius:9px;margin:2px 0}.tocg.cur{background:var(--surface-2)}'
++'.toch{display:flex;align-items:center;gap:4px}'
++'.nav .toch a{flex:1;min-width:0;display:flex;gap:8px;align-items:baseline;padding:8px 6px 8px 8px;color:var(--fg);text-decoration:none;font-weight:600;font-size:14.5px;border-radius:8px}'
++'.nav .toch a:hover{color:var(--accent-fg)}.toch a i{font:600 11.5px/1 var(--f-mono);color:var(--accent-fg);font-style:normal;min-width:1.4em}'
++'.tocx{flex:none;width:34px;height:34px;border:0;background:none;border-radius:8px;cursor:pointer;color:var(--muted);display:grid;place-items:center}'
++'.tocx:hover{background:var(--surface);color:var(--accent-fg)}.tocx svg{transition:transform .15s}.tocx[aria-expanded="true"] svg{transform:rotate(90deg)}'
++'.tocs{list-style:none;margin:0 0 6px;padding:0 6px 0 30px}.tocs[hidden]{display:none}'
++'.nav .tocs a{display:block;padding:6px 8px;border-radius:7px;color:var(--muted);text-decoration:none;font-size:13.5px}'
++'.nav .tocs a:hover{color:var(--accent-fg);background:var(--surface)}.nav .tocs a.on{color:var(--accent-fg);font-weight:600;background:var(--accent-soft)}'
++'@media (max-width:480px){.tocp{left:8px;right:8px;width:auto}.tocb .tl{display:none}.tocb{padding:6px 8px}}'
++'@media (prefers-reduced-motion:reduce){.tocx svg{transition:none}}';
+function init(){
+var bar=document.querySelector('.nav .bar');if(!bar||document.getElementById('tocBtn'))return;
+var st=document.createElement('style');st.id='toc-css';st.textContent=CSS;document.head.appendChild(st);
+var b=document.createElement('button');b.type='button';b.className='tocb';b.id='tocBtn';b.setAttribute('aria-expanded','false');b.setAttribute('aria-controls','tocP');b.setAttribute('data-noi18n','');
+b.innerHTML='<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3.5h12M2 8h12M2 12.5h8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" fill="none"/></svg><span class="tl">'+bi('目录','Contents')+'</span>';
+b.setAttribute('aria-label','目录 / Contents');
+var lb=document.getElementById('langBtn');if(lb&&lb.parentNode===bar)bar.insertBefore(b,lb);else bar.appendChild(b);
+var p=document.createElement('div');p.className='tocp';p.id='tocP';p.hidden=true;p.setAttribute('data-noi18n','');
+var h='<div class="toct"><span>'+bi('全部笔记','All notes')+'</span><a href="'+(onSite?'../':SITE)+'">'+bi('首页','Home')+'</a></div>';
+PAGES.forEach(function(pg,i){var c=pg.slug===cur;h+='<div class="tocg'+(c?' cur':'')+'"><div class="toch"><a href="'+href(pg.slug)+'"'+(c?' aria-current="page"':'')+'><i>'+(i+1)+'</i><span>'+bi(pg.zh,pg.en)+'</span></a>'
++'<button type="button" class="tocx" aria-expanded="'+(c?'true':'false')+'" aria-controls="tocs'+i+'" aria-label="'+pg.zh+'：章节 / '+pg.en+': sections"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>'
++'<ol class="tocs" id="tocs'+i+'"'+(c?'':' hidden')+'>'+pg.s.map(function(s){return '<li><a href="'+href(pg.slug,s[0])+'" data-sec="'+(c?s[0]:'')+'">'+bi(s[1],s[2])+'</a></li>'}).join('')+'</ol></div>'});
+p.innerHTML=h;bar.appendChild(p);
+if(!onSite)p.querySelectorAll('a').forEach(function(a){if(!/^#/.test(a.getAttribute('href'))){a.target='_blank';a.rel='noopener'}});
+p.querySelectorAll('.tocx').forEach(function(x){x.addEventListener('click',function(){var o=document.getElementById(x.getAttribute('aria-controls')),on=x.getAttribute('aria-expanded')!=='true';x.setAttribute('aria-expanded',on?'true':'false');o.hidden=!on})});
+var secs=[];PAGES.forEach(function(pg){if(pg.slug===cur)secs=pg.s.map(function(s){return s[0]})});
+function mark(){var nb=bar.getBoundingClientRect().bottom+12,on='';secs.forEach(function(id){var e=document.getElementById(id);if(e&&e.getBoundingClientRect().top<=nb)on=id});p.querySelectorAll('a[data-sec]').forEach(function(a){var m=a.getAttribute('data-sec')&&a.getAttribute('data-sec')===on;a.classList.toggle('on',!!m);if(m)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current')})}
+function open(){p.hidden=false;b.setAttribute('aria-expanded','true');mark();var a=p.querySelector('a.on')||p.querySelector('.tocg.cur a');if(a&&a.scrollIntoView)try{a.scrollIntoView({block:'nearest'})}catch(e){}}
+function close(f){if(p.hidden)return;p.hidden=true;b.setAttribute('aria-expanded','false');if(f)b.focus()}
+b.addEventListener('click',function(e){e.stopPropagation();if(p.hidden)open();else close()});
+document.addEventListener('click',function(e){if(!p.hidden&&!p.contains(e.target)&&e.target!==b)close()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!p.hidden)close(true)});
+p.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a');if(a)close()});
+var raf=0;addEventListener('scroll',function(){if(p.hidden||raf)return;raf=requestAnimationFrame(function(){raf=0;mark()})},{passive:true});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
