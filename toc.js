@@ -71,7 +71,36 @@ links.forEach(function(a,i){a.addEventListener('click',function(){if(moved)retur
 var raf=0;addEventListener('scroll',function(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;act()})},{passive:true});act();
 try{new MutationObserver(function(){requestAnimationFrame(function(){upd();var i=ids.indexOf(cur);if(i>=0){goal=null;show(links[i])}})}).observe(document.documentElement,{attributes:true,attributeFilter:['data-lang']})}catch(e){}
 }
+/* Sharp canvases at any zoom. Each widget sizes its canvas bitmap as CSS size x devicePixelRatio, rounded. At scales
+   such as 110%, 125% or 150% that leaves the bitmap a fraction of a pixel off the box the browser paints it into, and the
+   browser resamples it, which looks blurry. Nudge the canvas's CSS size (by under one screen pixel) so the bitmap maps
+   1:1 onto screen pixels; canvases that fill their container stay fluid (calc(100% + d)). When the zoom or the screen
+   changes, briefly narrow each canvas's container so every widget re-fits at the new scale. */
+function sharpCanvas(){
+if(window.__sharpCv)return;window.__sharpCv=1;window.__sharpCvN=0;
+var pro=window.ResizeObserver?new ResizeObserver(function(es){es.forEach(function(e){[].forEach.call(e.target.children,function(c){if(c.tagName==='CANVAS')adj(c,1)})})}):null;
+function adj(c,force){var bw=c.width,bh=c.height,d=window.devicePixelRatio||1;if(!bw||!bh||!c.isConnected)return;
+if(!force&&c.__bw===bw&&c.__bh===bh&&c.__d===d&&c.style.width===c.__sw&&c.style.height===c.__sh)return;
+var r=c.getBoundingClientRect();if(!r.width||!r.height)return;
+var own=c.style.width!==''&&!c.__fl,base=r.width-(c.__fl?(c.__dw||0):0),ew=base*d,eh=r.height*d;
+if(Math.abs(r.width*d-bw)>2.5||Math.abs(eh-bh)>2.5)return;
+if(own){if(Math.abs(ew-bw)>0.01)c.style.width=(bw/d)+'px'}
+else{var dw=bw/d-base;if(Math.abs(dw)<0.002){if(c.__fl){c.style.width='';c.__fl=0;c.__dw=0}}else{if(!c.__fl&&pro&&c.parentElement)pro.observe(c.parentElement);c.__fl=1;c.__dw=dw;c.style.width='calc(100% + '+dw.toFixed(6)+'px)'}}
+if(Math.abs(eh-bh)>0.01&&c.style.height!=='')c.style.height=(bh/d)+'px';
+c.__bw=bw;c.__bh=bh;c.__d=d;c.__sw=c.style.width;c.__sh=c.style.height}
+function all(){[].forEach.call(document.querySelectorAll('canvas'),function(c){adj(c,1)})}
+try{new MutationObserver(function(ms){ms.forEach(function(m){var t=m.target;if(m.type==='attributes'){if(t.tagName==='CANVAS')adj(t)}else m.addedNodes.forEach(function(n){if(n.nodeType!==1)return;if(n.tagName==='CANVAS')adj(n);else if(n.querySelectorAll)[].forEach.call(n.querySelectorAll('canvas'),adj)})})})
+.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['width','height']})}catch(e){}
+all();addEventListener('load',all);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(all);
+var mq=null;function arm(){try{if(mq)mq.removeEventListener('change',onDpr);mq=matchMedia('(resolution: '+(window.devicePixelRatio||1)+'dppx)');mq.addEventListener('change',onDpr)}catch(e){}}
+function onDpr(){arm();window.__sharpCvN++;var ps=[];[].forEach.call(document.querySelectorAll('canvas'),function(c){var p=c.parentElement;if(c.offsetParent&&p&&p.clientWidth>2&&ps.indexOf(p)<0)ps.push(p)});
+var keep=ps.map(function(p){return p.style.maxWidth});ps.forEach(function(p){p.style.maxWidth=(p.clientWidth-1)+'px'});
+dispatchEvent(new Event('resize'));
+requestAnimationFrame(function(){requestAnimationFrame(function(){ps.forEach(function(p,i){p.style.maxWidth=keep[i]});dispatchEvent(new Event('resize'));setTimeout(all,80)})})}
+arm();
+}
 function init(){
+try{sharpCanvas()}catch(e){}
 try{navScroll()}catch(e){}
 var bar=document.querySelector('.nav .bar');if(!bar||document.getElementById('tocBtn'))return;
 var st=document.createElement('style');st.id='toc-css';st.textContent=CSS;document.head.appendChild(st);
