@@ -18,6 +18,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 | 4 | From Fully Connected to Attention · 从全连接到注意力 | https://huyicheng.github.io/interactive-notes/backbones/ | `backbones/index.html` |
 | 5 | Loops Within Loops · 环环相扣 | https://huyicheng.github.io/interactive-notes/loops/ | `loops/index.html` |
 | 6 | From PID to World Models · 从 PID 到世界模型 | https://huyicheng.github.io/interactive-notes/control/ | `control/index.html` |
+| 7 | From Noise to Samples · 从噪声到样本 | https://huyicheng.github.io/interactive-notes/generative/ | `generative/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -33,6 +34,7 @@ robot-learning/index.html  From Demonstration to Trial and Error · 从示范到
 backbones/index.html       From Fully Connected to Attention · 从全连接到注意力
 loops/index.html           Loops Within Loops · 环环相扣
 control/index.html         From PID to World Models · 从 PID 到世界模型
+generative/index.html      From Noise to Samples · 从噪声到样本
 toc.js                     the Contents panel shared by every page · 各篇共用的目录面板
 ```
 
@@ -192,6 +194,35 @@ Interactive demos: a map of 51 control methods by model source and timing, colou
 Conventions: θ is the arm's angle (0 hanging, 180° upright), φ the angle from upright, ω the angular velocity, τ or u the motor torque; x state, r target, e error, J total cost, V(x) the value function.
 
 约定：θ 是摆杆的角度（0 垂下，180° 竖直），φ 是偏离竖直的角度，ω 是角速度，τ 或 u 是电机力矩；x 是状态，r 是目标，e 是误差，J 是总代价，V(x) 是价值函数。
+
+## 7. From Noise to Samples · 从噪声到样本
+
+The whole spectrum of generative models, told on one small example: an eight-petal "flower" of points in the plane. Every generative model answers the same question (how to turn a handful of random numbers into a new sample that looks like the data without copying it), and each step starts from the problem the previous method ran into. The page then takes the questions that cut across all methods: what a generative model actually learns, why sampling almost always starts from a Gaussian and whether it has to, how to make generation fast and controllable, and how robots use generative models for actions, rewards, planning and world models.
+
+生成模型的全景，全篇只用一个小例子：平面上一朵由点组成的八瓣"花"。所有生成模型都在回答同一个问题（怎样把一把随机数，变成一个像数据、又不是照抄的新样本），每一步都从上一种方法撞上的毛病讲起。走完一圈，再回答几个横跨所有方法的问题：生成模型到底学了什么，为什么总从高斯出发、是不是非它不可，怎样让生成又快又听话，以及机器人怎样用生成模型来出动作、给奖励、做规划、当世界模型。
+
+0. What generation is: looking right, varied and new at once; how copying, scattering at random and averaging each fall short; why "the average" keeps coming back
+1. The simplest models: one Gaussian, Gaussian mixtures fitted by EM, maximum likelihood, kernel density estimation and memorising, training versus test scores
+2. Flows: matching by rank in one dimension (change of variables), invertible layers in two (normalizing flows), and the bridge they cannot cut between petals
+3. VAE: encoder, decoder and the evidence lower bound, the KL weight β, blurry samples and posterior collapse
+4. GAN: a generator against a discriminator, trained live, mode collapse and oscillation
+5. Autoregression: one coordinate at a time, numbers as tokens, temperature
+6. Energy and score: unnormalised densities, the score, Langevin dynamics, annealing over noise levels
+7. Diffusion: adding noise, the best denoising guess (Tweedie), DDPM and DDIM sampling, why a single step lands on the average
+8. Flow matching: straight-line pairs, the learned velocity field, why the paths still bend, reflow
+9. Why a Gaussian: randomness has to come from somewhere, what makes the Gaussian convenient, the soap-bubble shape of high-dimensional noise, and the alternatives (uniform noise, masks, a single point with randomness along the way, a rough answer close to the data, non-Gaussian noise)
+10. Fast, and on request: better solvers, straighter paths, distillation and one-step models, latent spaces, conditions and classifier-free guidance
+11. Robots: demonstrations with several right answers, regression versus generative policies, action chunks, VLAs, imitation and style rewards, planning, grasps, inverse kinematics and world models
+12. The spectrum: a map of 64 methods, grouped by what is learned, whether the probability can be computed, steps to generate, training, era and use in robots
+13. Summary: what a generative model learns, a comparison table of the families, how they relate, answers to the opening questions, a quiz, further reading
+
+Interactive demos: four kinds of "generation" on the flower (draw new points, copy, scatter, average) with readouts for realistic, diverse and new; one Gaussian, a Gaussian mixture fitted by EM and a small Gaussian on every point, with training and test scores; a one-dimensional change of variables from a Gaussian to the three-peaked shadow of the flower; a ten-layer normalizing flow played layer by layer at three stages of training; a VAE with its code space and the KL weight β; a GAN trained live in the browser, with matched or mismatched learning rates and a discriminator that looks at pairs; autoregressive sampling one coordinate at a time, with temperature; score fields and Langevin sampling at one or many noise levels; adding noise and the best denoising guess with petal probabilities; diffusion sampling with DDPM or DDIM and different numbers of steps; flow matching with its training pairs, curved paths, reflow and a diffusion overlay; flow matching from different starting points; conditional generation with classifier-free guidance; a small robot going round an obstacle with a regression policy, a generative policy redrawn every step and one that generates a chunk at a time; and a map of 64 generative models with each method's relatives.
+
+交互：在花上比较四种"生成"（抽新的、照抄、乱撒、取平均），读出像不像、多不多样、新不新；一个高斯、用 EM 拟合的混合高斯和每个点一个小高斯，比较训练分和测试分；从高斯到花在横轴上的三峰影子的一维变形；十层标准化流一层层播放，看三个训练阶段；VAE 和它的编码空间、KL 权重 β；在浏览器里现场训练的 GAN，比较两种学习速度的搭配和一次看两个样本的判别器；自回归一次抽一个坐标，带温度；单一噪声级别和多个噪声级别下的分数场与朗之万采样；加噪和最好的去噪猜测，以及来自每片花瓣的概率；DDPM 或 DDIM 的扩散采样，不同步数；Flow Matching 的训练配对、弯曲的路线、Reflow 和扩散路线的对照；从不同起点出发的 Flow Matching；无分类器引导的条件生成；绕障碍物的小机器人，比较回归策略、每步重新抽样的生成策略和一次生成一段的生成策略；以及 64 种生成模型的地图和每种方法的"亲戚"。
+
+Conventions: x is a data point, z and ε are noise, σ is the size of the noise, and in flow matching t runs from 0 (noise) to 1 (data); p(x) is a probability density, s(x) = ∇ log p(x) the score, v(x, t) a velocity.
+
+约定：x 是数据点，z、ε 是噪声，σ 是噪声的大小，t 在 Flow Matching 里从 0（噪声）走到 1（数据）；p(x) 是概率密度，s(x) = ∇ log p(x) 是分数，v(x, t) 是速度。
 
 ## Adding a page · 新加一篇
 
