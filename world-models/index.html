@@ -477,22 +477,12 @@ window.P8M={"dyn":{"1000":{"s":[10,64,64,4],"a":"tanh","W":[[1.57781,"+wkzFlb6cx
 <div><span class="zh" lang="zh-CN"><span class="lab l-why">要点</span>最容易出错、最关键的地方</span><span class="en" lang="en"><span class="lab l-why">Key point</span>The crucial, easily missed part</span></div>
 <div><span class="zh" lang="zh-CN"><span class="lab l-ref">速查</span>忘了某个记号，查下面的速查表</span><span class="en" lang="en"><span class="lab l-ref">Lookup</span>Forgot a symbol? Check the table below</span></div>
 </div>
-<p class="note"><span class="zh" lang="zh-CN">记号约定：s 是状态（这里是手指和圆盘的位置、圆盘的速度，一共 6 个数），a 是动作，o 是观测（比如一张图），z 是潜变量（模型自己压缩出来的一小串数），t 是第几步，每一步 0.1 秒。f 是世界模型：给定现在和动作，预测下一步。交互里的模型都是事先训练好、或者在你的浏览器里现场训练的小网络，读数大多由页面实时算出（事先算好的会注明）。文中提到的代表性论文都链到了原文。</span><span class="en" lang="en">Notation: s is the state (here the positions of the finger and the puck and the puck’s velocity, 6 numbers in all), a is the action, o is the observation (an image, for example), z is a latent variable (a short list of numbers the model itself compresses things into), and t is the step number, each step lasting 0.1 s. f is the world model: given the present and an action, it predicts the next step. The models in the interactives are small networks, either trained in advance or trained live in your browser, and most readouts are computed live on the page (any computed in advance are marked as such). Representative papers mentioned in the text are linked to the originals.</span></p>
+<p class="note"><span class="zh" lang="zh-CN">记号约定：s 是状态，a 是动作，o 是观测（比如一张图），z 是潜变量（模型自己压缩出来的一小串数），t 是第几步。f 是世界模型：给定现在和动作，预测下一步。交互里的模型都是事先训练好、或者在你的浏览器里现场训练的小网络，读数大多由页面实时算出（事先算好的会注明）。文中提到的代表性论文都链到了原文。</span><span class="en" lang="en">Notation: s is the state, a is the action, o is the observation (an image, for example), z is a latent variable (a short list of numbers the model itself compresses things into), and t is the step number. f is the world model: given the present and an action, it predicts the next step. The models in the interactives are small networks, either trained in advance or trained live in your browser, and most readouts are computed live on the page (any computed in advance are marked as such). Representative papers mentioned in the text are linked to the originals.</span></p>
 <details id="notation"><summary><span class="zh" lang="zh-CN">记号速查表：本篇用到的字母、说法和缩写</span><span class="en" lang="en">Quick reference: the letters, terms and abbreviations used here</span></summary>
-<h4><span class="zh" lang="zh-CN">贯穿全篇的桌面</span><span class="en" lang="en">The table used throughout</span></h4>
-<dl class="nt">
-<dt><span class="zh" lang="zh-CN">桌面</span><span class="en" lang="en">Table</span></dt><dd><span class="zh" lang="zh-CN">1 m × 1 m 的正方形，四周有边：圆盘撞到边就停在那里，手指也出不去</span><span class="en" lang="en">A 1 m × 1 m square with a rim all round: the puck stops where it hits the rim, and the finger cannot get out either</span></dd>
-<dt><span class="zh" lang="zh-CN">手指</span><span class="en" lang="en">Finger</span></dt><dd><span class="zh" lang="zh-CN">机械臂末端竖直朝下的一根短杆，从上往下看是半径 5 cm 的圆。让它往哪走它就往哪走，x、y 两个方向各自最快 25 cm/s</span><span class="en" lang="en">A short rod pointing straight down from the end of the robot arm; seen from above, a circle of radius 5 cm. It goes wherever it is told to, at up to 25 cm/s along x and along y</span></dd>
-<dt><span class="zh" lang="zh-CN">圆盘</span><span class="en" lang="en">Puck</span></dt><dd><span class="zh" lang="zh-CN">半径 6 cm。被手指推时跟着走，松开后接着滑，每一步保留 60% 的速度（这就是摩擦）</span><span class="en" lang="en">Radius 6 cm. It moves along when the finger pushes it and slides on once released, keeping 60% of its velocity at each step (this is the friction)</span></dd>
-<dt><span class="zh" lang="zh-CN">一步</span><span class="en" lang="en">One step</span></dt><dd><span class="zh" lang="zh-CN">0.1 秒：机器人发一次指令，世界往前走 0.1 秒。手指全速走一步是 2.5 cm</span><span class="en" lang="en">0.1 s: the robot sends one command, and the world moves on by 0.1 s. At full speed the finger moves 2.5 cm in one step</span></dd>
-<dt><span class="zh" lang="zh-CN">推一次</span><span class="en" lang="en">One push</span></dt><dd><span class="zh" lang="zh-CN">手指朝同一个方向连续走若干步</span><span class="en" lang="en">The finger moves several steps in a row in the same direction</span></dd>
-<dt><span class="zh" lang="zh-CN">任务</span><span class="en" lang="en">Task</span></dt><dd><span class="zh" lang="zh-CN">把圆盘推进绿色虚线圈：圆盘中心离圈心不到 7 cm，就算推进去了</span><span class="en" lang="en">Push the puck into the green dashed ring: it counts as in once the puck’s centre is less than 7 cm from the centre of the ring</span></dd>
-<dt><span class="zh" lang="zh-CN">玩耍数据</span><span class="en" lang="en">Play data</span></dt><dd><span class="zh" lang="zh-CN">训练模型用的记录：手指随机挑一个方向，绕到圆盘后面推一阵，或者随便走一阵，每隔 8 到 24 步换一次。记下每一步的状态、动作和下一步的状态</span><span class="en" lang="en">The recordings used to train the models: the finger picks a random direction, then either goes round behind the puck and pushes for a while or just wanders for a while, switching every 8 to 24 steps. The state, the action and the next state are recorded at every step</span></dd>
-</dl>
 <h4><span class="zh" lang="zh-CN">通用的字母</span><span class="en" lang="en">General notation</span></h4>
 <dl class="nt">
-<dt><span class="zh" lang="zh-CN">s，s<sub>t</sub></span><span class="en" lang="en">s, s<sub>t</sub></span></dt><dd><span class="zh" lang="zh-CN">状态；第 t 步的状态。这里是（手指的 x、y，圆盘的 x、y，圆盘速度的 x、y）</span><span class="en" lang="en">The state; the state at step t. Here it is (the finger’s x and y, the puck’s x and y, the puck’s velocity in x and y)</span></dd>
-<dt><span class="zh" lang="zh-CN">a，a<sub>t</sub></span><span class="en" lang="en">a, a<sub>t</sub></span></dt><dd><span class="zh" lang="zh-CN">动作：手指在两个方向上的速度，各在 −1 到 1 之间，1 是最快</span><span class="en" lang="en">The action: the finger’s velocity in the two directions, each between −1 and 1, where 1 is full speed</span></dd>
+<dt><span class="zh" lang="zh-CN">s，s<sub>t</sub></span><span class="en" lang="en">s, s<sub>t</sub></span></dt><dd><span class="zh" lang="zh-CN">状态：描述此刻的一串数；s<sub>t</sub> 是第 t 步的状态</span><span class="en" lang="en">The state: a list of numbers describing the present moment; s<sub>t</sub> is the state at step t</span></dd>
+<dt><span class="zh" lang="zh-CN">a，a<sub>t</sub></span><span class="en" lang="en">a, a<sub>t</sub></span></dt><dd><span class="zh" lang="zh-CN">动作：机器人发出的指令；a<sub>t</sub> 是第 t 步的动作</span><span class="en" lang="en">The action: the command the robot sends; a<sub>t</sub> is the action at step t</span></dd>
 <dt><span class="zh" lang="zh-CN">o，o<sub>t</sub></span><span class="en" lang="en">o, o<sub>t</sub></span></dt><dd><span class="zh" lang="zh-CN">观测：机器人实际看到的东西，比如一张俯视的小图（第 ③ 步起）</span><span class="en" lang="en">The observation: what the robot actually sees, such as a small top-down image (from step ③ on)</span></dd>
 <dt><span class="zh" lang="zh-CN">f，f<sub>θ</sub>，θ</span><span class="en" lang="en">f, f<sub>θ</sub>, θ</span></dt><dd><span class="zh" lang="zh-CN">世界模型：给定现在和动作，预测下一步；θ 是它的参数（神经网络的权重）</span><span class="en" lang="en">The world model: given the present and an action, it predicts the next step; θ stands for its parameters (the weights of the neural network)</span></dd>
 <dt>L</dt><dd><span class="zh" lang="zh-CN">损失：模型的预测差了多少；训练就是调 θ，把它压到最小</span><span class="en" lang="en">Loss: how far off the model’s predictions are; training means adjusting θ to make it as small as possible</span></dd>
@@ -526,66 +516,89 @@ window.P8M={"dyn":{"1000":{"s":[10,64,64,4],"a":"tanh","W":[[1.57781,"+wkzFlb6cx
 <p class="eyebrow"><span class="zh" lang="zh-CN">第 0 步 · 开场</span><span class="en" lang="en">Step 0 · Opening</span></p>
 <h2><span class="zh" lang="zh-CN">一个具体的任务：把圆盘推进圈里</span><span class="en" lang="en">A concrete task: push the puck into the ring</span></h2>
 <p><span class="zh" lang="zh-CN">整篇只用一个任务，先把它说清楚。桌上放着一个扁扁的圆形物块，像一枚大号的棋子，下面叫<b>圆盘</b>；桌面上还画着一个圈，叫<b>目标</b>。机器人要把圆盘推进圈里。它不去抓，只是推：机械臂末端装着一根竖直朝下的短杆，像一根<b>手指</b>，用它去拨圆盘。从上往下看，这根手指的横截面是一个圆，所以后面所有的俯视图里，手指都画成一个蓝色的圆，圆盘是橙色的圆。</span><span class="en" lang="en">The whole page uses a single task, so first let us pin it down. On a table lies a flat, round object, like an oversized draughts piece, which we will call the <b>puck</b>; a ring drawn on the table is the <b>goal</b>. The robot has to push the puck into the ring. It does not grab it, it only pushes: at the end of the robot arm is a short rod pointing straight down, like a <b>finger</b>, and the robot nudges the puck with it. Seen from above, the finger’s cross-section is a circle, which is why in every top view from here on the finger is drawn as a blue circle, and the puck as an orange one.</span></p>
+<p><span class="zh" lang="zh-CN">机器人怎么动？它每 0.1 秒给手指发一个指令：往哪个方向、以多快的速度走，然后世界往前走 0.1 秒。这 0.1 秒叫<b>一步</b>，是整篇的时间单位；手指全速走一步是 2.5 cm。<b>推一次</b>，就是让手指朝同一个方向连续走若干步。下面的动画就是推一次：手指朝右走 6 步（0.6 秒）后停下，圆盘被推着走；手指停下以后，圆盘又自己滑了一段，到第 16 步才停住。动画下面把它拆成了一帧一帧，每一帧就是一步。</span><span class="en" lang="en">How does the robot move? Every 0.1 s it sends the finger a command: which direction to move in and how fast, and then the world moves on by 0.1 s. These 0.1 s are called <b>one step</b>, the unit of time for the whole page; at full speed the finger moves 2.5 cm in one step. <b>One push</b> means letting the finger move several steps in a row in the same direction. The animation below is one push: the finger moves right for 6 steps (0.6 s) and stops, pushing the puck along; after the finger stops, the puck slides on by itself and comes to rest only at step 16. Below the animation, the same push is taken apart frame by frame, one frame per step.</span></p>
+<ul class="rules">
+<li><span class="zh" lang="zh-CN">两个视角放的是同一次推，时间放慢了约 3.6 倍。侧面看，手指是一根竖直的短杆；从上往下看，它就是一个圆。淡色是起点。</span><span class="en" lang="en">Both views play the same push, slowed down about 3.6 times. From the side, the finger is a short vertical rod; seen from above, it is just a circle. The faint shapes are the start.</span></li>
+<li><span class="zh" lang="zh-CN"><b>第几步</b>：拖动滑块，停在任意一步。<b>播放</b>、<b>暂停</b>、<b>从头放</b>。下面每一格是一步之后的样子，紫框是动画正放到的那一帧，点一格就停在那一步。</span><span class="en" lang="en"><b>Step</b>: drag the slider to stop at any step. <b>Play</b>, <b>Pause</b>, <b>Replay</b>. Each cell underneath shows the table after one more step; the purple frame is where the animation is now, and tapping a cell stops it there.</span></li>
+<li><span class="zh" lang="zh-CN">这张桌子：1 m × 1 m，四周有边；手指的半径是 5 cm，最快每步走 2.5 cm（25 cm/s）；圆盘的半径是 6 cm，离开手指以后，每一步保留上一步 60% 的速度；圆盘中心离圈心不到 7 cm，就算推进去了。</span><span class="en" lang="en">The table: 1 m × 1 m, with a rim all round; the finger has a radius of 5 cm and moves at most 2.5 cm per step (25 cm/s); the puck has a radius of 6 cm and, once it leaves the finger, keeps 60% of its speed from one step to the next; the puck counts as in once its centre is less than 7 cm from the centre of the ring.</span></li>
+</ul>
+<p class="try"><span class="zh" lang="zh-CN"><b>先玩：</b>先看一遍动画：手指在第几步停下？停下以后，圆盘又滑了几步？把滑块拖到第 3 步和第 10 步，对照下面的帧：哪一步手指还贴着圆盘，哪一步已经分开了？</span><span class="en" lang="en"><b>Play first:</b> watch the animation once: at which step does the finger stop? After it stops, for how many more steps does the puck slide? Drag the slider to step 3 and then to step 10 and compare with the frames below: at which step is the finger still touching the puck, and at which have they separated?</span></p>
 <div class="wg" id="task">
-<canvas aria-label="这一篇的任务，三幅图：侧面看，机械臂末端有一根竖着的手指，手指旁边的桌面上放着一个圆盘，远处桌面上画着目标圈；从上往下看，手指是蓝色的圆，圆盘是橙色的圆，目标是绿色虚线圈；推一次的分解：五行小图，分别是第 0、3、6、10、16 步时手指和圆盘的位置，每一步 0.1 秒；手指朝右连续走 6 步后停下，圆盘被推着走，手指停下以后又自己滑了一小段才停住" data-al-en="The task of this page in three pictures: a side view, with a finger pointing straight down from the end of a robot arm, a puck on the table next to the finger and a goal ring drawn further along the table; a top view, with the finger as a blue circle, the puck as an orange circle and the goal as a green dashed ring; and one push broken down into five small strips showing where the finger and the puck are at steps 0, 3, 6, 10 and 16, 0.1 s per step: the finger moves right for 6 steps and stops, the puck is pushed along and, after the finger stops, slides on a little by itself before coming to rest" data-al-zh="这一篇的任务，三幅图：侧面看，机械臂末端有一根竖着的手指，手指旁边的桌面上放着一个圆盘，远处桌面上画着目标圈；从上往下看，手指是蓝色的圆，圆盘是橙色的圆，目标是绿色虚线圈；推一次的分解：五行小图，分别是第 0、3、6、10、16 步时手指和圆盘的位置，每一步 0.1 秒；手指朝右连续走 6 步后停下，圆盘被推着走，手指停下以后又自己滑了一小段才停住" id="task-cv"></canvas>
+<canvas aria-label="一次推的动画，两个视角同时放：上面是侧面看，机械臂末端竖直朝下的手指贴着桌面往右推圆盘；下面是从上往下看，手指是蓝色的圆，圆盘是橙色的圆，绿色虚线圈是目标。手指走几步后停下，圆盘接着滑一段，停在圈里" data-al-en="An animation of one push, shown from two viewpoints at once: above, a side view, with the finger pointing straight down from the end of a robot arm and pushing the puck to the right along the table; below, a top view, with the finger as a blue circle, the puck as an orange circle and the goal as a green dashed ring. The finger stops after a few steps, and the puck slides on and comes to rest inside the ring" data-al-zh="一次推的动画，两个视角同时放：上面是侧面看，机械臂末端竖直朝下的手指贴着桌面往右推圆盘；下面是从上往下看，手指是蓝色的圆，圆盘是橙色的圆，绿色虚线圈是目标。手指走几步后停下，圆盘接着滑一段，停在圈里" id="task-cv"></canvas>
+<div class="row"><label for="task-k" id="task-kl"></label><input id="task-k" max="16" min="0" step="0.05" type="range" value="0"/><span class="val" id="task-kv"></span></div>
+<div class="btns" id="task-b"></div>
+<div class="status" id="task-st" role="status"></div>
+<canvas aria-label="同一次推拆成一帧一帧：每一格是一步（0.1 秒）之后桌上的样子，从第 0 步排到第 16 步；竖虚线是圆盘的起点" data-al-en="The same push taken apart frame by frame: each cell is the table after one more step (0.1 s), from step 0 to step 16; the dashed line is where the puck started" data-al-zh="同一次推拆成一帧一帧：每一格是一步（0.1 秒）之后桌上的样子，从第 0 步排到第 16 步；竖虚线是圆盘的起点" id="task-fr"></canvas>
+<p class="hint" id="task-h"></p>
 </div>
 <script>
-(()=>{const X=RX,K=WM,$=i=>document.getElementById(i),cv=$('task-cv'),C=n=>X.col(n);
-// A static figure that pins down the task before anything else: what the finger and the puck are (side view vs the
-// top view used everywhere else), and what "one step" and "one push" mean (a strobe of one real push, 0.1 s per dot).
-const NP=6,NT=16,X0=.3,S=[];{const s=new Float64Array([X0-(K.RP+K.RB+.004),.5,X0,.5,0,0]);S.push(Float64Array.from(s));for(let t=0;t<NT;t++){K.step(s,t<NP?1:0,0,s);S.push(Float64Array.from(s))}}
-const wide=W=>W>=560,sideH=W=>wide(W)?212:Math.round(Math.min(230,W*.66)),topH=W=>wide(W)?212:Math.round(Math.min(280,W*.8));
-// one push as a flipbook: the same strip of table at a few moments, one row per moment
-const ROWS=[0,3,NP,10,NT],NOTE={[NP]:['手指停下','finger stops'],10:['圆盘还在滑','puck slides on'],[NT]:['圆盘停住','puck stopped']};
-const rowH=W=>wide(W)?46:Math.round(Math.max(44,Math.min(62,W*.13))),LH=W=>34+16+ROWS.length*(rowH(W)+6)+52;
-const St=K.fstage(cv,W=>wide(W)?sideH(W)+20+LH(W):sideH(W)+16+topH(W)+16+LH(W),draw);
-function arrow(g,x0,y0,x1,y1,col,lw){const a=Math.atan2(y1-y0,x1-x0),h=7;g.strokeStyle=col;g.fillStyle=col;g.lineWidth=lw||2;g.beginPath();g.moveTo(x0,y0);g.lineTo(x1-h*.6*Math.cos(a),y1-h*.6*Math.sin(a));g.stroke();g.beginPath();g.moveTo(x1,y1);g.lineTo(x1-h*Math.cos(a-.45),y1-h*Math.sin(a-.45));g.lineTo(x1-h*Math.cos(a+.45),y1-h*Math.sin(a+.45));g.closePath();g.fill()}
-function side(g,x0,y0,w,h){K.lab(g,X.t('侧面看','Side view'),x0,y0+9,C('--fg'),'left',11.5,true);
-const ty=y0+h-30;g.fillStyle=C('--line');g.fillRect(x0,ty,w,9);g.globalAlpha=.5;g.fillRect(x0+w*.06,ty+9,6,h-(ty-y0)-12);g.fillRect(x0+w*.94-6,ty+9,6,h-(ty-y0)-12);g.globalAlpha=1;
-const bx=x0+w*.1,sh=[bx,ty-26],el=[x0+w*.24,y0+40],fx=x0+w*.46,wr=[fx,y0+58],ph=13,pw=Math.max(34,w*.17),gx=x0+w*.83,gw=Math.max(34,w*.17);
-g.fillStyle=C('--muted');g.globalAlpha=.55;g.fillRect(bx-12,ty-26,24,26);g.globalAlpha=1;
-g.strokeStyle=C('--muted');g.lineCap='round';g.lineWidth=9;g.beginPath();g.moveTo(sh[0],sh[1]);g.lineTo(el[0],el[1]);g.lineTo(wr[0],wr[1]);g.stroke();
-[sh,el,wr].forEach(p=>{g.fillStyle=C('--surface');g.strokeStyle=C('--muted');g.lineWidth=2;g.beginPath();g.arc(p[0],p[1],5,0,K.TAU);g.fill();g.stroke()});
-g.strokeStyle=C('--accent');g.lineWidth=8;g.lineCap='butt';g.beginPath();g.moveTo(fx,wr[1]+5);g.lineTo(fx,ty-1);g.stroke();g.lineCap='round';
-g.fillStyle=C('--amber');const px=fx+4.5;g.beginPath();g.roundRect?g.roundRect(px,ty-ph,pw,ph,3):g.rect(px,ty-ph,pw,ph);g.fill();
-g.save();g.strokeStyle=C('--ok');g.lineWidth=2;g.setLineDash([4,3]);g.beginPath();g.moveTo(gx-gw/2,ty-1);g.lineTo(gx+gw/2,ty-1);g.stroke();g.restore();
-arrow(g,fx+8,ty-ph-14,fx+8+Math.min(46,w*.13),ty-ph-14,C('--k'),2);
-K.lab(g,X.t('推','push'),fx+10+Math.min(46,w*.13),ty-ph-14,C('--k'),'left',11,true);
-K.lab(g,X.t('机械臂','arm'),(sh[0]+el[0])/2+10,(sh[1]+el[1])/2,C('--muted'),'left',11);
-K.lab(g,X.t('手指','finger'),fx-9,(wr[1]+ty)/2-4,C('--accent'),'right',11.5,true);
-K.lab(g,X.t('圆盘','puck'),px+pw/2,ty+20,C('--amber'),'center',11.5,true);
-K.lab(g,X.t('目标圈','goal'),gx,ty+20,C('--ok'),'center',11.5,true)}
-function top(g,x0,y0,w,h){K.lab(g,X.t('从上往下看（后面的交互都用这个视角）','Top view (as in all the interactives)'),x0,y0+9,C('--fg'),'left',11.5,true);
-const V=K.tview(x0,y0+20,w,h-20);K.table(g,V);const s=[.3,.42,.3+K.RP+K.RB+.004,.42],G=[.74,.62];K.goal(g,V,G[0],G[1],.07);K.body(g,V,s);
-arrow(g,V.X(s[2])+K.RB*V.s+5,V.Y(s[3]),V.X(s[2])+K.RB*V.s+5+V.s*.12,V.Y(s[3]),C('--k'),2);
-K.lab(g,X.t('手指','finger'),V.X(s[0]),V.Y(s[1])+K.RP*V.s+11,C('--accent'),'center',11.5,true);
-K.lab(g,X.t('圆盘','puck'),V.X(s[2]),V.Y(s[3])-K.RB*V.s-10,C('--amber'),'center',11.5,true);
-K.lab(g,X.t('目标','goal'),V.X(G[0]),V.Y(G[1])-.07*V.s-10,C('--ok'),'center',11.5,true);
-K.lab(g,X.t('桌面 1 m × 1 m','table 1 m × 1 m'),V.x0+V.w-6,V.y0+V.h-10,C('--muted'),'right',10.5)}
-// wrap a label to a width: breaks between words, or between characters for Chinese; returns the number of lines
-function wrapLab(g,t,x,y,mw,col,sz,b){g.font=(b?'600 ':'')+X.font(sz);const cjk=/[㐀-鿿]/.test(t),parts=cjk?Array.from(t):t.split(' '),sep=cjk?'':' ',lines=[];let cur='';
-parts.forEach(p=>{const tr=cur?cur+sep+p:p;if(g.measureText(tr).width>mw&&cur){lines.push(cur);cur=p}else cur=tr});if(cur)lines.push(cur);
-lines.forEach((l,k)=>K.lab(g,l,x,y+k*(sz+5),col,'left',sz,b));return lines.length}
-function strobe(g,x0,y0,w,h){const nl=wrapLab(g,X.t('推一次：手指朝一个方向连续走几步，每一步是 0.1 秒','One push: the finger moves several steps in one direction, 0.1 s per step'),x0,y0+9,w,C('--fg'),11.5,true),top=y0+30+(nl-1)*16;
-const rh=rowH(w),xa=S[0][0]-K.RP-.02,xb=S[NT][2]+K.RB+.02;g.font='600 '+X.font(11);
-const lw=8+Math.max(...ROWS.map(t=>g.measureText(X.t('第 '+t+' 步 · 0.0 秒','step '+t+' · 0.0 s')).width)),nw=10+Math.max(...Object.values(NOTE).map(n=>g.measureText(X.t(n[0],n[1])).width));
-const sc=Math.min((w-lw-nw)/(xb-xa),(rh-6)/(2*K.RB)),sw=(xb-xa)*sc,sx=x0+lw+(wide(w)?Math.max(0,(w-lw-sw-nw)/2):0);
-ROWS.forEach((t,r)=>{const y=top+r*(rh+6),cy=y+rh/2,PX=x=>sx+(x-xa)*sc,st=S[t];
-g.fillStyle=C('--surface');g.fillRect(sx,y,sw,rh);g.strokeStyle=C('--line');g.lineWidth=1;g.strokeRect(sx+.5,y+.5,sw-1,rh-1);
-g.save();g.setLineDash([3,3]);g.strokeStyle=C('--faint');g.beginPath();g.moveTo(PX(S[0][2]),y+2);g.lineTo(PX(S[0][2]),y+rh-2);g.stroke();g.restore();
-g.fillStyle=C('--amber');g.beginPath();g.arc(PX(st[2]),cy,K.RB*sc,0,K.TAU);g.fill();g.fillStyle=C('--accent');g.beginPath();g.arc(PX(st[0]),cy,K.RP*sc,0,K.TAU);g.fill();
-K.lab(g,X.t('第 '+t+' 步 · '+(t/10).toFixed(1)+' 秒','step '+t+' · '+(t/10).toFixed(1)+' s'),sx-8,cy,C('--fg'),'right',11,t===0||t===NP||t===NT);
-if(NOTE[t])K.lab(g,X.t(NOTE[t][0],NOTE[t][1]),sx+sw+8,cy,t===NP?C('--accent'):C('--amber'),'left',11,true)});
-const by=top+ROWS.length*(rh+6)+12,u=K.VMAX*K.DT*sc,bx=sx;g.strokeStyle=C('--fg');g.lineWidth=1.5;g.beginPath();g.moveTo(bx,by-4);g.lineTo(bx,by+4);g.moveTo(bx,by);g.lineTo(bx+u,by);g.moveTo(bx+u,by-4);g.lineTo(bx+u,by+4);g.stroke();
-K.lab(g,X.t('2.5 cm = 手指全速走一步','2.5 cm = one full-speed step'),bx+u+8,by,C('--muted'),'left',10.5);
-K.lab(g,X.t('竖虚线：圆盘的起点','dashed line: where the puck started'),bx,by+18,C('--muted'),'left',10.5)}
-function draw(){const g=St.g,W=St.w;g.clearRect(0,0,W,St.h);g.lineCap='round';
-if(wide(W)){const sw=Math.round(W*.56);side(g,0,0,sw,sideH(W));top(g,sw+16,0,W-sw-16,topH(W));strobe(g,0,sideH(W)+20,W,LH(W))}
-else{side(g,0,0,W,sideH(W));top(g,0,sideH(W)+16,W,topH(W));strobe(g,0,sideH(W)+16+topH(W)+16,W,LH(W))}}
-X.onLang(draw);draw()})();
+(()=>{const X=RX,K=WM,$=i=>document.getElementById(i),cv=$('task-cv'),fr=$('task-fr'),C=n=>X.col(n);
+// One push, first as an animation (side view and top view in step), then taken apart into frames, one per 0.1 s step.
+// The real world simulator moves the finger right at full speed for NP steps; the puck slides on and comes to rest
+// inside the goal ring.
+const NP=6,T=16,X0=.34,S=[];{const s=new Float64Array([X0-(K.RP+K.RB+.004),.5,X0,.5,0,0]);S.push(Float64Array.from(s));for(let t=0;t<T;t++){K.step(s,t<NP?1:0,0,s);S.push(Float64Array.from(s))}}
+const G=[S[T][2]+.012,.5],GR=.07,SLOW=.36;           // goal just past where the puck stops; seconds of animation per step
+const at=t=>{const a=Math.max(0,Math.min(T,t)),i=Math.min(T-1,Math.floor(a)),f=a-i;return S[i].map((v,j)=>v+(S[i+1][j]-v)*f)};
+let t=0,play=true,hold=0,last=0,SF=null;
+const wide=W=>W>=560,sideH=W=>wide(W)?190:Math.round(Math.min(170,W*.5)),topH=W=>wide(W)?190:Math.round(Math.min(270,W*.74));
+const St=K.fstage(cv,W=>wide(W)?Math.max(sideH(W),topH(W))+4:sideH(W)+14+topH(W),draw);
+function arrow(g,x0,y0,x1,y1,col){const a=Math.atan2(y1-y0,x1-x0),h=7;g.strokeStyle=col;g.fillStyle=col;g.lineWidth=2;g.beginPath();g.moveTo(x0,y0);g.lineTo(x1-h*.6*Math.cos(a),y1-h*.6*Math.sin(a));g.stroke();g.beginPath();g.moveTo(x1,y1);g.lineTo(x1-h*Math.cos(a-.45),y1-h*Math.sin(a-.45));g.lineTo(x1-h*Math.cos(a+.45),y1-h*Math.sin(a+.45));g.closePath();g.fill()}
+// side view: x along the table maps to the panel width; a two-link arm reaches the top of the finger by inverse kinematics
+function side(g,x0,y0,w,h,s){K.lab(g,X.t('侧面看','Side view'),x0,y0+9,C('--fg'),'left',11.5,true);
+const ty=y0+h-26,PX=x=>x0+w*(.1+.86*x),fx=PX(s[0]),bx=x0+w*.07,sh=[bx,ty-24],wr=[fx,y0+44],L=.62*Math.hypot(PX(S[NP][0])-sh[0],wr[1]-sh[1]);
+g.fillStyle=C('--line');g.fillRect(x0,ty,w,8);g.globalAlpha=.5;g.fillRect(x0+w*.03,ty+8,5,h-(ty-y0)-10);g.fillRect(x0+w*.97-5,ty+8,5,h-(ty-y0)-10);g.globalAlpha=1;
+const dx=wr[0]-sh[0],dy=wr[1]-sh[1],d=Math.min(2*L-1,Math.hypot(dx,dy)),a0=Math.atan2(dy,dx),b=Math.acos(d/(2*L)),el=[sh[0]+L*Math.cos(a0-b),sh[1]+L*Math.sin(a0-b)];
+g.fillStyle=C('--muted');g.globalAlpha=.55;g.fillRect(bx-11,ty-24,22,24);g.globalAlpha=1;
+g.strokeStyle=C('--muted');g.lineCap='round';g.lineJoin='round';g.lineWidth=12;g.beginPath();g.moveTo(sh[0],sh[1]);g.lineTo(el[0],el[1]);g.lineTo(wr[0],wr[1]);g.stroke();
+[sh,el].forEach(p=>{g.fillStyle=C('--surface');g.strokeStyle=C('--muted');g.lineWidth=2.5;g.beginPath();g.arc(p[0],p[1],5.5,0,K.TAU);g.fill();g.stroke()});
+const fw=2*K.RP*w*.86,hw=fw+10;g.fillStyle=C('--muted');g.beginPath();g.roundRect?g.roundRect(fx-hw/2,wr[1]-7,hw,14,4):g.rect(fx-hw/2,wr[1]-7,hw,14);g.fill();
+g.fillStyle=C('--accent');g.beginPath();g.roundRect?g.roundRect(fx-fw/2,wr[1]+7,fw,ty-wr[1]-7,[0,0,fw/2.5,fw/2.5]):g.rect(fx-fw/2,wr[1]+7,fw,ty-wr[1]-7);g.fill();
+g.save();g.globalAlpha=.28;g.fillStyle=C('--surface');g.fillRect(fx-fw/2+fw*.18,wr[1]+10,fw*.16,ty-wr[1]-20);g.restore();
+const gx0=PX(G[0]-GR),gx1=PX(G[0]+GR);g.save();g.strokeStyle=C('--ok');g.lineWidth=2;g.setLineDash([4,3]);g.beginPath();g.moveTo(gx0,ty-1);g.lineTo(gx1,ty-1);g.stroke();g.restore();
+const p0=PX(s[2]-K.RB),p1=PX(s[2]+K.RB);g.fillStyle=C('--amber');g.beginPath();g.roundRect?g.roundRect(p0,ty-12,p1-p0,12,3):g.rect(p0,ty-12,p1-p0,12);g.fill();
+K.lab(g,X.t('手指','finger'),fx-K.RP*w*.86-6,(wr[1]+ty)/2,C('--accent'),'right',11.5,true);
+K.lab(g,X.t('圆盘','puck'),(p0+p1)/2,ty+17,C('--amber'),'center',11.5,true);K.lab(g,X.t('目标','goal'),gx1+5,ty-6,C('--ok'),'left',11.5,true);
+K.lab(g,X.t('机械臂','arm'),(sh[0]+el[0])/2+8,(sh[1]+el[1])/2,C('--muted'),'left',11)}
+function top(g,x0,y0,w,h,s,k){K.lab(g,X.t('从上往下看','Top view'),x0,y0+9,C('--fg'),'left',11.5,true);
+const V=K.tview(x0,y0+20,w,h-20);K.table(g,V);K.goal(g,V,G[0],G[1],GR);
+g.save();g.globalAlpha=.25;g.fillStyle=C('--amber');g.beginPath();g.arc(V.X(S[0][2]),V.Y(S[0][3]),K.RB*V.s,0,K.TAU);g.fill();g.fillStyle=C('--accent');g.beginPath();g.arc(V.X(S[0][0]),V.Y(S[0][1]),K.RP*V.s,0,K.TAU);g.fill();g.restore();
+K.body(g,V,s);
+K.lab(g,X.t('第 '+k+' 步 · '+(k/10).toFixed(1)+' 秒','step '+k+' · '+(k/10).toFixed(1)+' s'),V.x0+8,V.y0+14,C('--fg'),'left',11.5,true);
+K.lab(g,X.t('慢放约 3.6 倍；淡色：起点','slowed about 3.6×; faint: the start'),V.x0+8,V.y0+V.h-12,C('--muted'),'left',10.5)}
+function draw(){const g=St.g,W=St.w;g.clearRect(0,0,W,St.h);const s=at(t),k=Math.round(t*100)/100,kk=Math.floor(t+1e-6);
+if(wide(W)){const sw=Math.round(W*.52);side(g,0,0,sw,sideH(W),s);top(g,sw+16,0,W-sw-16,topH(W),s,kk)}
+else{side(g,0,0,W,sideH(W),s);top(g,0,sideH(W)+14,W,topH(W),s,kk)}drawFrames()}
+// the frames: one small crop of the table per step, the current one outlined
+const xa=S[0][0]-K.RP-.02,xb=Math.max(S[T][2]+K.RB,G[0]+GR)+.02,ya=.5-.1,yb=.5+.1;
+const cols=W=>W>=560?6:4,fw=W=>(W-(cols(W)-1)*8)/cols(W),fh=W=>fw(W)*(yb-ya)/(xb-xa),rows=W=>Math.ceil((T+1)/cols(W));
+SF=K.fstage(fr,W=>rows(W)*(fh(W)+22)+2,drawFrames);
+function drawFrames(){if(!SF||!SF.g)return;const g=SF.g,W=SF.w;g.clearRect(0,0,W,SF.h);const c=cols(W),w=fw(W),h=fh(W),sc=w/(xb-xa),cur=Math.floor(t+1e-6);
+for(let k=0;k<=T;k++){const x0=(k%c)*(w+8),y0=Math.floor(k/c)*(h+22),PX=x=>x0+(x-xa)*sc,PY=y=>y0+(yb-y)*sc,s=S[k];
+g.fillStyle=C('--surface');g.fillRect(x0,y0,w,h);g.strokeStyle=k===cur?C('--k'):C('--line');g.lineWidth=k===cur?2.5:1;g.strokeRect(x0+.5,y0+.5,w-1,h-1);
+g.save();g.beginPath();g.rect(x0,y0,w,h);g.clip();
+g.setLineDash([3,3]);g.strokeStyle=C('--ok');g.lineWidth=1.2;g.beginPath();g.arc(PX(G[0]),PY(G[1]),GR*sc,0,K.TAU);g.stroke();g.setLineDash([2,3]);g.strokeStyle=C('--faint');g.beginPath();g.moveTo(PX(S[0][2]),y0);g.lineTo(PX(S[0][2]),y0+h);g.stroke();g.setLineDash([]);
+g.fillStyle=C('--amber');g.beginPath();g.arc(PX(s[2]),PY(s[3]),K.RB*sc,0,K.TAU);g.fill();g.fillStyle=C('--accent');g.beginPath();g.arc(PX(s[0]),PY(s[1]),K.RP*sc,0,K.TAU);g.fill();g.restore();
+const note=w<130?'':k===NP?X.t('手指停下','finger stops'):k===T?X.t('圆盘停住','puck stopped'):'';
+const key=k===NP||k===T;K.lab(g,X.t('第 '+k+' 步','step '+k)+(note?' · '+note:''),x0+2,y0+h+10,k===cur?C('--k'):key?C('--fg'):C('--muted'),'left',10.5,k===cur||key)}}
+fr.addEventListener('click',e=>{const r=fr.getBoundingClientRect(),W=SF.w,c=cols(W),w=fw(W),h=fh(W),i=Math.floor((e.clientX-r.left)/(w+8)),j=Math.floor((e.clientY-r.top)/(h+22)),k=j*c+i;if(i>=0&&i<c&&k>=0&&k<=T){t=k;play=false;ui()}});
+const mkb=(fn)=>{const b=document.createElement('button');b.type='button';b.className='btn';b.addEventListener('click',fn);$('task-b').appendChild(b);return b};
+const bP=mkb(()=>{if(!play&&t>=T)t=0;play=!play;hold=0;last=0;ui()}),bR=mkb(()=>{t=0;play=true;hold=0;last=0;ui()});
+$('task-k').addEventListener('input',e=>{t=+e.target.value;play=false;ui()});
+function status(){const el=$('task-st'),k=Math.floor(t+1e-6);let s;
+if(k<NP)s=X.t('第 '+k+' 步：手指在推。机器人每 0.1 秒发一次指令"全速往右"，手指每一步走 2.5 cm，圆盘被它推着走。','Step '+k+': the finger is pushing. Every 0.1 s the robot sends the command "full speed to the right"; the finger moves 2.5 cm per step and pushes the puck along.');
+else if(k<T)s=X.t('第 '+k+' 步：手指在第 '+NP+' 步停下了，指令变成"不动"。圆盘离开了手指，靠惯性接着滑，每一步只剩上一步 60% 的速度。','Step '+k+': the finger stopped at step '+NP+' and the command is now "stay". The puck has left the finger and slides on by itself, keeping 60% of its speed from one step to the next.');
+else s=X.t('第 '+T+' 步：圆盘停住了，停在圈里。整个推法就是"朝右全速走 '+NP+' 步"，前后一共 '+(T/10).toFixed(1)+' 秒。','Step '+T+': the puck has stopped, inside the ring. The whole push was "full speed to the right for '+NP+' steps", '+(T/10).toFixed(1)+' s from start to finish.');
+el.textContent=s}
+function ui(){$('task-kl').textContent=X.t('第几步','Step');const k=Math.floor(t+1e-6);$('task-kv').textContent=X.t(k+' 步',String(k));$('task-k').value=t;
+bP.textContent=play?X.t('暂停','Pause'):X.t('播放','Play');bR.textContent=X.t('从头放','Replay');
+$('task-h').textContent=X.t('上面的动画拆成一帧一帧：每一格是一步（0.1 秒）之后的样子，紫框是动画正放到的那一帧，点一格就停在那一步。第 6 步手指停下，第 16 步圆盘停住；竖虚线是圆盘的起点。','The animation above, taken apart: each cell is the table after one more step (0.1 s); the purple frame is where the animation is now, and tapping a cell stops it there. The finger stops at step 6 and the puck at step 16; the dashed line is where the puck started.');
+status();draw()}
+const lp=K.loop(cv,()=>{const now=performance.now();if(!last){last=now;return}const dt=(now-last)/1000;last=now;if(!play)return;
+if(t>=T){hold+=dt;if(hold>1.4){t=0;hold=0}}else t=Math.min(T,t+dt/SLOW);
+const k=Math.floor(t+1e-6);if($('task-kv').textContent!==X.t(k+' 步',String(k)))ui();else{$('task-k').value=t;draw()}});
+lp.start();X.onLang(ui);ui()})();
 </script>
 <p><span class="zh" lang="zh-CN">为什么是推？桌上很多东西不好抓：太大、太扁、太滑，或者只是想挪一挪位置，推是最省事的办法。可推又最难算准：手指碰到圆盘的哪一点，决定圆盘往哪边走；手指停下以后，圆盘还会接着滑一段，滑多远取决于桌面的摩擦。所以"把东西推到指定的位置"一直是机器人学习里的常见考题：最早用学出来的视频预测模型给机器人做规划的工作之一，做的就是推东西（<a href="https://arxiv.org/abs/1610.00696" rel="noopener" target="_blank">Finn &amp; Levine 2017</a>）；今天常用的 Push-T（把一个 T 形块推到指定的位置，<a href="https://arxiv.org/abs/2303.04137" rel="noopener" target="_blank">Chi 等 2023</a>）也是这一类，第 ④ 步的 DINO-WM 就拿它做实验。这里用最简单的版本：圆的手指推圆的圆盘。</span><span class="en" lang="en">Why pushing? Many things on a table are hard to grasp: too big, too flat, too slippery, or you only want to shift them a little, and pushing is the simplest way. Yet pushing is also the hardest to calculate: the point where the finger touches the puck decides which way the puck goes, and once the finger stops, the puck slides on for a while, how far depending on the friction of the table. That is why "push an object to a given place" has long been a standard test in robot learning: one of the first works to plan a robot’s actions with a learned video prediction model was about pushing objects (<a href="https://arxiv.org/abs/1610.00696" rel="noopener" target="_blank">Finn &amp; Levine 2017</a>), and today’s popular Push-T (pushing a T-shaped block to a given place, <a href="https://arxiv.org/abs/2303.04137" rel="noopener" target="_blank">Chi et al. 2023</a>) is of the same kind; DINO-WM in step ④ is tested on it. Here we use the simplest version: a round finger pushing a round puck.</span></p>
-<p><span class="zh" lang="zh-CN">机器人怎么动？它每 0.1 秒给手指发一个指令：往哪个方向、以多快的速度走，然后世界往前走 0.1 秒。这 0.1 秒叫<b>一步</b>，是整篇的时间单位；手指全速走一步是 2.5 cm。<b>推一次</b>，就是让手指朝同一个方向连续走若干步。上图最下面一栏就是推一次的分解：手指朝右走了 6 步（0.6 秒）后停下；圆盘被推着走，手指停下以后它又自己滑了一小段，到第 16 步才停住。</span><span class="en" lang="en">How does the robot move? Every 0.1 s it sends the finger a command: which direction to move in and how fast, and then the world moves on by 0.1 s. These 0.1 s are called <b>one step</b>, the unit of time for the whole page; at full speed the finger moves 2.5 cm in one step. <b>One push</b> means letting the finger move several steps in a row in the same direction. The bottom panel of the figure above breaks one push down: the finger moves right for 6 steps (0.6 s) and stops; the puck is pushed along, and after the finger stops it slides on a little by itself, coming to rest only at step 16.</span></p>
 <p><span class="zh" lang="zh-CN">所以要解决的问题是：<b>朝哪个方向推、推几步，圆盘才会停在圈里？</b>如果机器人知道全部的物理规则（摩擦多大、碰撞怎么算），算一算就行。可它不知道，它只有过去随便推、随便走时录下的记录，得从这些记录里学出规律来。</span><span class="en" lang="en">So the question to answer is: <b>in which direction, and for how many steps, should the robot push so that the puck stops inside the ring?</b> If the robot knew all the rules of physics (how much friction, how collisions work), it could simply calculate. But it does not; all it has are recordings made while it pushed and wandered about at random, and it has to learn the rules from them.</span></p>
 <h3><span class="zh" lang="zh-CN">什么是世界模型</span><span class="en" lang="en">What is a world model?</span></h3>
 <p><span class="zh" lang="zh-CN">人推东西之前，会先在脑子里过一遍：从这边推，它大概会滑到哪；推得太猛，会不会冲过头。1943 年，心理学家 Kenneth Craik 就提出，人的脑子里装着一个外部世界的"小尺度模型"，可以先在里面试各种做法，挑出最好的再去做（<a href="https://www.cambridge.org/9780521094450" rel="noopener" target="_blank">Craik 1943</a>）。机器人要这样做，需要一个能回答下面这个问题的东西：</span><span class="en" lang="en">Before pushing something, people run through it in their heads: if I push from this side, where will it roughly slide to? If I push too hard, will it overshoot? In 1943 the psychologist Kenneth Craik proposed that people carry in their heads a "small-scale model" of the outside world, in which they can first try out different courses of action and pick the best before acting (<a href="https://www.cambridge.org/9780521094450" rel="noopener" target="_blank">Craik 1943</a>). For a robot to do this, it needs something that can answer the following question:</span></p>
