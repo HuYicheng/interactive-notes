@@ -19,6 +19,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 | 5 | Loops Within Loops · 环环相扣 | https://huyicheng.github.io/interactive-notes/loops/ | `loops/index.html` |
 | 6 | From PID to World Models · 从 PID 到世界模型 | https://huyicheng.github.io/interactive-notes/control/ | `control/index.html` |
 | 7 | From Noise to Samples · 从噪声到样本 | https://huyicheng.github.io/interactive-notes/generative/ | `generative/index.html` |
+| 8 | Try It in Your Head · 在脑子里试一试 | https://huyicheng.github.io/interactive-notes/world-models/ | `world-models/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -35,6 +36,7 @@ backbones/index.html       From Fully Connected to Attention · 从全连接到�
 loops/index.html           Loops Within Loops · 环环相扣
 control/index.html         From PID to World Models · 从 PID 到世界模型
 generative/index.html      From Noise to Samples · 从噪声到样本
+world-models/index.html    Try It in Your Head · 在脑子里试一试
 toc.js                     the Contents panel shared by every page · 各篇共用的目录面板
 ```
 
@@ -223,6 +225,32 @@ Interactive demos: four kinds of "generation" on the flower (draw new points, co
 Conventions: x is a data point, z and ε are noise, σ is the size of the noise, and in flow matching t runs from 0 (noise) to 1 (data); p(x) is a probability density, s(x) = ∇ log p(x) the score, v(x, t) a velocity.
 
 约定：x 是数据点，z、ε 是噪声，σ 是噪声的大小，t 在 Flow Matching 里从 0（噪声）走到 1（数据）；p(x) 是概率密度，s(x) = ∇ log p(x) 是分数，v(x, t) 是速度。
+
+## 8. Try It in Your Head · 在脑子里试一试
+
+World models from the ground up, told on one small task: a pusher and a puck on a table, and a goal to push the puck into. A world model answers "if I do this, what happens next?", so a robot can try things in its head before acting. The page starts from the simplest learned model; in the first four steps, each one starts from the problem the previous one ran into. It then looks at how to use a model and how to scale it up to video, and asks the questions that cut across all of them: does a world model understand physics, and how do robots actually use one.
+
+世界模型从头讲，全篇只用一个小任务：桌上一个推杆、一个圆盘，要把圆盘推进一个圈。世界模型回答"我这样做，接下来会怎样"，让机器人先在脑子里试一试，再动手。从最简单的学出来的模型讲起，前四步，每一步都从上一种办法撞上的毛病讲起；再看学好了怎么用、怎样放大到视频；最后回答几个横跨所有方法的问题：它懂不懂物理，机器人到底怎么用它。
+
+0. What a world model is: predicting what an action leads to; how it differs from a simulator, from video generation and from the model inside MPC; try a push in your head before doing it for real
+1. The simplest world model: read the state, regress the next step; one step is accurate, many steps drift (compounding error)
+2. Uncertainty and exploitation: a model talks nonsense where it has no data, and a planner seeks out exactly those places; ensembles, pessimism, optimism, short rollouts (PETS, MBPO, MOPO)
+3. From pixels: predicting the next frame by squared error gives a blur when the future is uncertain; compress first, sample a latent, keep a memory (World Models, PlaNet's RSSM, Dreamer)
+4. What the latent should keep: reconstruction keeps whatever fills the picture; predicting only the value (MuZero); predicting in representation space (JEPA, TD-MPC2) and how to stop it collapsing (VICReg, EMA targets, reward and value)
+5. How to use a world model: plan as you go (MPC, MPPI), search ahead (tree search), practise a policy in imagination (Dreamer-style), and what each costs
+6. Scaling up to video: action-conditioned video generation (GAIA, Genie, GameNGen, DIAMOND, Cosmos), latent actions from unlabelled video, real time, memory, and drift with noise augmentation
+7. Does it understand physics: looking right is not being right; counterfactual tests, rare events, and how to evaluate a world model
+8. Robots: planning (V-JEPA 2), practising in imagination (DayDreamer, WMPO), evaluating policies (1X, WorldGym, a Veo-based simulator), generating data (DreamGen) and world models as policies (UniPi, GR-2, world action models)
+9. The spectrum: a map of 48 world models, grouped by approach, where they predict, what they are used for, where the actions come from, how they are trained, and era
+10. Summary: the answer to the opening question, a comparison table, a quiz, further reading
+
+Interactive demos: plan a push, imagine it with a learned model and then do it for real, or let a planner imagine 160 pushes; one-step models trained on 1 000, 10 000 and 100 000 transitions, rolled out open-loop against reality; an ensemble of five networks trained live in the browser, choosing a push strength alone, on average, pessimistically or optimistically; pixel prediction with a hidden friction, the blurry least-squares prediction against a latent model's sharp samples, with an exact posterior that narrows as frames arrive; what three kinds of 4-number latent keep (reconstruction, next-step prediction, value) under flickering or drifting distractors; a tiny JEPA trained live, collapsing or held up by variance terms or by predicting the value; MPC, tree search and an imagination-trained policy pushing a real puck with the same learned model; a small convolutional video model dreaming next to the real world, trained plainly or with noise augmentation; counterfactual tests of an action-blind model and a model that never saw the rim; ranking eight policies inside a world model against the real world; and a map of 48 world models with each method's relatives.
+
+交互：先定一个推法，用学出来的模型在脑子里试，再真的推一次，或者让规划器在脑子里试 160 种推法；用 1000、1 万、10 万步数据学出的一步模型，开环推演和真实对比；在浏览器里现场训练的五个网络组成的集成，一个模型、取平均、悲观、乐观四种挑法；摩擦看不见时的画面预测，均方误差最小的糊糊预测对比潜变量模型清楚的样本，精确的后验随着帧数收窄；三种只有 4 个数的潜变量（重建、预测下一步、只预测价值）在闪烁或漂移的背景下各装了什么；现场训练的小 JEPA，坍塌，或者被方差项、被预测价值撑住；用同一个学出来的模型推真实圆盘的 MPC、树搜索和在想象里练出的策略；和真实世界并排"做梦"的小卷积视频模型，普通训练对比加噪训练；不看动作的模型和没见过桌边的模型的反事实测试；在世界模型里给八种策略排名，对比真实世界；以及 48 种世界模型的地图和每种方法的"亲戚"。
+
+Conventions: s is the state, a the action, o an observation, z a latent, h a memory, and t counts steps of 0.1 s; f is the world model.
+
+约定：s 是状态，a 是动作，o 是观测，z 是潜变量，h 是记忆，t 是第几步（每步 0.1 秒）；f 是世界模型。
 
 ## Adding a page · 新加一篇
 
