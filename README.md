@@ -21,6 +21,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 | 7 | From Noise to Samples · 从噪声到样本 | https://huyicheng.github.io/interactive-notes/generative/ | `generative/index.html` |
 | 8 | Try It in Your Head · 在脑子里试一试 | https://huyicheng.github.io/interactive-notes/world-models/ | `world-models/index.html` |
 | 9 | Which Way to Turn Each Knob · 每个旋钮往哪拧 | https://huyicheng.github.io/interactive-notes/differentiable/ | `differentiable/index.html` |
+| 10 | From Photos to Scenes · 从照片到场景 | https://huyicheng.github.io/interactive-notes/reconstruction/ | `reconstruction/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -39,6 +40,7 @@ control/index.html         From PID to World Models · 从 PID 到世界模型
 generative/index.html      From Noise to Samples · 从噪声到样本
 world-models/index.html    Try It in Your Head · 在脑子里试一试
 differentiable/index.html  Which Way to Turn Each Knob · 每个旋钮往哪拧
+reconstruction/index.html  From Photos to Scenes · 从照片到场景
 toc.js                     the Contents panel shared by every page · 各篇共用的目录面板
 ```
 
@@ -279,6 +281,32 @@ Interactive demos: the throw animated from the side and taken apart frame by fra
 Conventions: θ is all the knobs, L the loss, ∇L the gradient; the throw: release 1.0 m above the floor, the bin centre D = 2.0 m away, the miss e = x − D.
 
 约定：θ 是所有旋钮，L 是损失，∇L 是梯度；扔球：出手点离地 1.0 m，筐中心 D = 2.0 m，差 e = x − D。
+
+## 10. From Photos to Scenes · 从照片到场景
+
+How scenes are reconstructed from photos, as a complete spectrum from classical methods to the newest, built around one task: a robot arm's wrist camera circles a glazed mug and takes 24 photos, and the robot must say what the mug looks like from an angle nobody photographed and where the handle is, to grasp it. Every live widget works in the horizontal cross-section at handle height, where each photo is a single row of 96 pixels. Each family of methods is described by five questions: what goes in, what it is stored as, what it compares, how it is solved and what comes out. The summary answers whether NeRF and 3D Gaussian splatting count as a "modality".
+
+从照片还原场景的完整光谱，从传统方法讲到最新的，只用一个任务：机械臂的腕部相机绕着一个上了釉的马克杯拍 24 张照片，要说出从没拍过的角度看杯子是什么样，以及把手在哪、好去抓。交互都在把手高度的水平截面里做，每张照片只是一行 96 个像素。每一类方法都用五个问题去问：吃什么、存成什么、怎么比、怎么求、吐什么。总结回答 NeRF 和三维高斯泼溅算不算一种"模态"。
+
+0. The task, animated, with the photos laid out; the one problem behind every method (depth is lost in a photo) and the three ways to get it back; the five questions
+1. Cameras and rays: the pinhole camera, poses and intrinsics (calibration, hand–eye calibration, SfM), triangulation and its error along the line of sight
+2. Geometry from photos: features and learned matching, SfM and bundle adjustment, visual SLAM, multi-view stereo by plane sweep, visual hulls and space carving, photometric stereo; why plain surfaces are hard
+3. Active depth: structured light, time of flight, LiDAR, active stereo; TSDF fusion, marching cubes, KinectFusion; the first sense of "modality"
+4. From light fields to radiance fields: light fields, the Lumigraph, image-based rendering, multiplane images (Stereo Magnification, LLFF); density, colour and volume rendering; differentiable mesh rendering
+5. NeRF: a radiance field in a network, positional encoding; grids and hash tables (Plenoxels, TensoRF, Instant-NGP); anti-aliasing, photos from the wild, scenes that move
+6. Gaussian splatting: projection with the Jacobian, sorting and blending, adaptive density control; its roots in splatting, surfels and EWA, and in differentiable and neural point rendering (DSS, NPBG, ADOP); branches from Mip-Splatting to ray tracing, triangles and Gaussian SLAM
+7. Surfaces and depth: mean and median depth; why a well-rendered field can have the wrong shape; signed distance fields (DeepSDF, VolSDF, NeuS, Neuralangelo), 2DGS, SuGaR, Gaussian Opacity Fields, depth supervision; NeRF for transparent objects
+8. Learned priors: overfitting with few views; priors as a constraint (monocular depth, from Make3D and Eigen et al. to Depth Pro), as the answer (MVSNet, pixelNeRF, pixelSplat, LRM, DUSt3R, VGGT and their 2025–2026 successors) and as generation (Zero-1-to-3, CAT3D, DreamFusion, TRELLIS)
+9. The spectrum: a map of 104 methods grouped by input, representation, comparison, solver, output, step and era, with each method's relatives
+10. Summary: NeRF against 3DGS, the three senses of "modality", six lineages and how they cross, one comparison table, which method a robot should use, a quiz, further reading
+
+Interactive demos: the arm circling the mug and its 24 photos; two rays with pixel-error wedges crossing at a stripe edge, the handle or plain glaze; a plane sweep along a pixel's ray with its cost curve, the whole 24-photo point cloud and the visual hull; TSDF fusion of noisy depth frames with marching squares; volume rendering along one ray with transmittance and per-sample shares, with and without fog; a NeRF (or a Plenoxels-style grid) trained live, with positional encoding on or off; 2D Gaussian splatting trained live with densification; geometry taken out of trained Gaussians, photos only against photos plus a depth camera; few-view training on a 90° arc with and without a learned depth prior; and a map of 104 methods.
+
+交互：机械臂绕杯子拍一圈和拍到的 24 张照片；两条带像素误差的射线，在条纹的边、把手或素色的地方相交；沿一个像素的射线做平面扫描，看代价曲线，以及 24 张照片算出的点云和视觉外壳；带噪声的深度一帧帧做 TSDF 融合；沿一条射线做体渲染，看透过率和每个采样点的贡献，有雾和没雾；现场训练的 NeRF（或 Plenoxels 式的格子），可以开关位置编码；现场训练的二维高斯泼溅，带增减高斯；从训练好的高斯里取几何，只用照片和加上深度相机比；在 90° 的弧上只拍几张照片训练，加或不加学来的深度先验；以及 104 种方法的地图。
+
+Conventions: a point in the scene is P, a camera centre o, a pixel's horizontal coordinate u; focal length 140 pixels; the camera is 32 cm from the mug's axis, a photo every 15°.
+
+约定：场景里的点写作 P，相机中心写作 o，像素横坐标写作 u；焦距 140 像素；相机离杯子的轴线 32 cm，每 15° 拍一张。
 
 ## Adding a page · 新加一篇
 
