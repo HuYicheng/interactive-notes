@@ -20,6 +20,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 | 6 | From PID to World Models · 从 PID 到世界模型 | https://huyicheng.github.io/interactive-notes/control/ | `control/index.html` |
 | 7 | From Noise to Samples · 从噪声到样本 | https://huyicheng.github.io/interactive-notes/generative/ | `generative/index.html` |
 | 8 | Try It in Your Head · 在脑子里试一试 | https://huyicheng.github.io/interactive-notes/world-models/ | `world-models/index.html` |
+| 9 | Which Way to Turn Each Knob · 每个旋钮往哪拧 | https://huyicheng.github.io/interactive-notes/differentiable/ | `differentiable/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -37,6 +38,7 @@ loops/index.html           Loops Within Loops · 环环相扣
 control/index.html         From PID to World Models · 从 PID 到世界模型
 generative/index.html      From Noise to Samples · 从噪声到样本
 world-models/index.html    Try It in Your Head · 在脑子里试一试
+differentiable/index.html  Which Way to Turn Each Knob · 每个旋钮往哪拧
 toc.js                     the Contents panel shared by every page · 各篇共用的目录面板
 ```
 
@@ -251,6 +253,32 @@ Interactive demos: one push animated from the side and from above, then taken ap
 Conventions: s is the state, a the action, o an observation, z a latent, h a memory, and t counts steps of 0.1 s; f is the world model.
 
 约定：s 是状态，a 是动作，o 是观测，z 是潜变量，h 是记忆，t 是第几步（每步 0.1 秒）；f 是世界模型。
+
+## 9. Which Way to Turn Each Knob · 每个旋钮往哪拧
+
+Differentiability from the ground up. The first seven steps use one task: a robot arm throws a ball into a bin 2 m away, and the throw lands 25 cm too far. Which way should each knob turn, and by how much? Each step starts from the problem the previous one ran into. The last steps look at how robots and medical systems use the same trick, put dozens of "differentiable X" side by side, and answer the opening question: when people in different fields say "differentiable", do they want the same thing?
+
+可微从头讲。前七步只用一个任务：机械臂把球扔进两米外的筐里，远了 25 厘米。每个旋钮该往哪拧、拧多少？每一步都从上一步撞上的问题讲起。最后几步看机器人和医学里怎样用同一招，把几十种"可微 X"放在一起，回答开头的问题：在不同的地方说"可微"，图的是同一件事吗？
+
+0. The task, animated and taken apart frame by frame; the landing-point formula; what "differentiable" means (zoom in until it looks like a straight line)
+1. One knob: bisection against the derivative; measuring (finite differences) against computing; Newton's method; the loss and gradient descent
+2. Many knobs: the gradient on a contour map; finite differences cost N + 1 runs; the chain rule on a computational graph; forward and reverse mode (backpropagation) and the cheap-gradient principle
+3. Neural networks: a network and the physics chained together, trained by backpropagating through the throw, against two trial-and-error learners (REINFORCE with a miss distance or a hit/miss reward); vanishing and exploding gradients
+4. Hitting the rim: collisions bring jumps and chaos, and gradients lie; smoothing with noise, sampling, truncation (SHAC; Suh et al. 2022; Metz et al. 2021)
+5. Working back from images: render and compare; hard edges have no gradient, soft edges do; coarse to fine; Soft Rasterizer, edge sampling, NeRF and Gaussian splatting fitted live
+6. Discrete and random: softmax and temperature, attention, DARTS; Gumbel-max, Gumbel-softmax, straight-through; reparameterisation against REINFORCE, with a baseline
+7. The real world gives no derivatives: learned stand-ins (a black box, textbook physics plus a learned residual, system identification); TossingBot, Dreamer, PILCO, DDPG, SuperMimic
+8. Robots: differentiable simulators (Brax, MJX, Warp, DiffTaichi), trajectory optimisation (DDP, iLQR, differentiable MPC), localisation and mapping (iNeRF, Gaussian Splatting SLAM, DROID-SLAM), registration and calibration (ICP, DiffDRR), and transcranial ultrasound focusing, where backpropagation is time reversal (the adjoint method)
+9. The spectrum: a map of 59 differentiable methods, grouped by why a gradient is wanted, what is tuned, where the gradient comes from, where it breaks, step on this page and era
+10. Summary: the answer to the opening question, a comparison table, a quiz, further reading
+
+Interactive demos: the throw animated from the side and taken apart frame by frame; one knob (speed or angle) with its tangent, Newton steps and a zoom that shows local linearity; a contour map of the loss over speed and angle with gradient descent; a computational graph run forwards and backwards; a 321-weight network trained live through the physics against two trial-and-error learners; throws near the rim with local gradients, a noise-smoothed hit rate and truncation; a 1D render with hard and soft edges and coarse to fine; 2D Gaussian splatting fitted live to a picture; softmax with temperature and Gumbel samples; pathwise and REINFORCE gradient estimates and their spread; four learned stand-ins aiming a throw in a world with slip and drag; scan-to-model registration by gradient descent from a good and a bad start; a 2D wave simulation that focuses ultrasound through a skull with exact adjoint gradients; and a map of 59 methods with each method's relatives.
+
+交互：侧面看一次扔球的动画，再拆成一帧一帧；一个旋钮（速度或角度）的切线、牛顿法和放大镜，看"放大就像直线"；速度和角度两个旋钮的损失等高线图和梯度下降；一张计算图的正向和反向；在浏览器里现场训练的 321 个权重的网络，穿过物理求导，和两种试错学习比；筐沿附近的局部梯度、加噪声后的进筐率和截断；硬边缘和软边缘的一维渲染，由粗到细；现场拟合一张照片的二维高斯泼溅；softmax 的温度和 Gumbel 抽样；重参数化和 REINFORCE 两种梯度估计有多散；在有打滑和空气阻力的世界里，用四种学出来的替身瞄准；从好的和坏的初始位置，用梯度下降把扫描对到模型上；穿过颅骨聚焦超声的二维波动仿真，用精确的伴随梯度；以及 59 种方法的地图和每种方法的"亲戚"。
+
+Conventions: θ is all the knobs, L the loss, ∇L the gradient; the throw: release 1.0 m above the floor, the bin centre D = 2.0 m away, the miss e = x − D.
+
+约定：θ 是所有旋钮，L 是损失，∇L 是梯度；扔球：出手点离地 1.0 m，筐中心 D = 2.0 m，差 e = x − D。
 
 ## Adding a page · 新加一篇
 
