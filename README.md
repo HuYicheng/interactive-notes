@@ -23,6 +23,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 | 9 | Which Way to Turn Each Knob · 每个旋钮往哪拧 | https://huyicheng.github.io/interactive-notes/differentiable/ | `differentiable/index.html` |
 | 10 | From Photos to Scenes · 从照片到场景 | https://huyicheng.github.io/interactive-notes/reconstruction/ | `reconstruction/index.html` |
 | 11 | Between the Joints and the Hand · 关节和手之间 | https://huyicheng.github.io/interactive-notes/jacobian/ | `jacobian/index.html` |
+| 12 | Two Seconds of Sound · 两秒钟的录音 | https://huyicheng.github.io/interactive-notes/signals/ | `signals/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -43,6 +44,7 @@ world-models/index.html    Try It in Your Head · 在脑子里试一试
 differentiable/index.html  Which Way to Turn Each Knob · 每个旋钮往哪拧
 reconstruction/index.html  From Photos to Scenes · 从照片到场景
 jacobian/index.html        Between the Joints and the Hand · 关节和手之间
+signals/index.html         Two Seconds of Sound · 两秒钟的录音
 toc.js                     the Contents panel shared by every page · 各篇共用的目录面板
 ```
 
@@ -337,6 +339,38 @@ Interactive demos: the wiping task with joint speeds and torques; the Jacobian's
 Conventions: x to the right, y up, the table at y = 0, the shoulder at (0, 0.25) m; links 0.40, 0.35 and 0.15 m with masses 2.0, 1.5 and 0.5 kg; angles counter-clockwise from the x axis.
 
 约定：x 向右、y 向上，桌面 y = 0，肩在 (0, 0.25) m；三节长 0.40、0.35、0.15 m，重 2.0、1.5、0.5 kg；角度从 x 轴量起，逆时针为正。
+
+## 12. Two Seconds of Sound · 两秒钟的录音
+
+The basics of signals and systems in one page, built around one synthetic two-second phone recording in a kitchen (16 kHz): a clap at 0.25 s, a voice saying "ah" (220 Hz, formants 850/1220/2810 Hz) from 0.80 s to 1.80 s, 50 Hz mains hum (−40 dB), white hiss (−50 dB) and the kitchen's echoes (RT60 0.5 s). Every definition gets a physical intuition and every formula is checked against this recording; a later step moves to a photo of the same kitchen wall to compare images with sound.
+
+信号与系统的基本概念放在一篇里，只用一段合成的两秒手机录音（16 kHz）：0.25 秒拍一下手，0.80 到 1.80 秒说一声"啊"（220 Hz，共振峰 850、1220、2810 Hz），混着 50 Hz 的电源嗡嗡声（−40 dB）、白噪声一样的沙沙声（−50 dB）和厨房墙壁的回声（混响时间 0.5 秒）。每个定义配一个物理直觉，每个公式代入这段录音的数；后面换成同一面墙的一张照片，比较图像和声音。
+
+0. The recording, animated and broken into four frames; time domain and frequency domain
+1. Sines: frequency, period, amplitude, phase; rotating arrows (phasors); phase as time delay; in-phase and anti-phase sums; beats
+2. Decibels: power and RMS; 10 log and 20 log; −3 dB as half power, −6 dB as half amplitude; adding levels; references (dB SPL, full scale)
+3. Signal-to-noise ratio: measuring noise in the silent part; averaging N recordings (+10 log N dB); noise power proportional to bandwidth
+4. Fourier series: the voice as 36 harmonics of 220 Hz; measuring a harmonic by averaging against a turning arrow; pitch and timbre; phase deafness (Ohm, Helmholtz); the Gibbs phenomenon
+5. The Fourier transform: winding a signal around the origin; magnitude and phase spectra; the spectrum of the whole recording; delay, scaling and Parseval
+6. Bandwidth: −3 dB, 99 %, null-to-null and noise bandwidth; the telephone band and the missing fundamental; the time–bandwidth product; Shannon capacity
+7. Envelopes and modulation: the analytic signal and the envelope; AM (sidebands, 2B, envelope detection, overmodulation, 9 kHz medium wave); FM (instantaneous frequency, Bessel sidebands, Carson’s rule, noise immunity, ±75 kHz broadcasting); vibrato and FM synthesis
+8. Sampling and quantisation: the sampling theorem, aliasing as folding, anti-alias filters; 6 dB per bit; dither and delta-sigma
+9. The DFT: bins, resolution, the FFT; leakage and windows; spectrograms and the time–frequency trade-off
+10. Impulse responses and convolution: the clap as the kitchen's impulse response; convolution as shifted, scaled copies; Y = X·H; the comb filter of a single echo; correlation and matched filtering
+11. Frequency responses and filters: Bode plots, cutoff at −3 dB, Butterworth order and roll-off, group delay and linear phase; removing the hum and the hiss
+12. The Laplace transform: e^{st}, transfer functions, the RC low-pass, pole pairs and resonance (Q), stability, vowels as three pole pairs
+13. The z-transform: delays as z^{−1}, the unit circle as the frequency axis, FIR and IIR, a 100 Hz notch filter, an echo and its inverse, the bilinear transform
+14. Images and other signals: a photo of the kitchen wall (tiles as harmonics, flicker bands from the same 50 Hz mains, moiré as aliasing, blur as convolution with the point spread function); the differences (2D frequency vectors, no causality, phase matters to the eye, 1/f statistics, photon noise) and the common essence (linearity and shift invariance); video, MRI k-space, point clouds, graphs
+15. The map: 93 methods grouped by domain, purpose, kind, step and era, including signal processing inside modern neural networks (state-space models, anti-aliased networks, Fourier features)
+16. Summary: every term with this recording's numbers, the five transforms compared, questions, a quiz, further reading
+
+Interactive demos: the recording with its four parts and four close-ups (listenable); a phasor with a second sound and beats; decibel squares and a level ruler; adding noise and averaging recordings; building the vowel from harmonics, scrambling phases, the square wave; the Fourier transform as winding; band-limiting the voice and the duration–bandwidth trade-off; envelopes, AM and FM with listenable presets (tremolo, a scaled-down radio, overmodulation, vibrato, FM synthesis, wideband FM); aliasing of a tone, a folding sweep and quantisation; a spectrogram with adjustable windows; convolution with kitchen, echo, bathroom and hall impulse responses; filters applied to the recording with Bode plots; the s-plane with poles you can drag and hear (including vowels); the z-plane with a notch, an echo and its inverse; a photo with its 2D spectrum, low- and high-pass filters, a notch for the flicker bands, downsampling, phase swapping and averaging noisy shots; and the map.
+
+交互：四样东西拆开、能听的录音和四帧特写；带第二个声音和拍的相量；分贝的方块和电平尺子；加噪声和平均录音；用谐波拼出元音、打乱相位、方波；转着圈量频率的傅里叶变换；限制人声的频带和"越短越宽"；包络、调幅和调频，带能听的预设（颤幅、缩小版的收音机、过调制、颤音、FM 合成、宽带调频）；正弦的混叠、折回来的扫频和量化；可调窗长的语谱图；厨房、回声、浴室、大厅四种冲激响应的卷积；作用在录音上的滤波器和伯德图；可以拖、可以听的 s 平面极点（包括元音）；陷波、回声和它的逆的 z 平面；带二维频谱、低通和高通、去掉闪烁条纹的陷波、降采样、相位互换和多张平均的照片；以及地图。
+
+Conventions: sample rate 16 kHz, values between −1 and 1 (full scale); unless stated otherwise, dB means RMS relative to full scale 1. The photo is a synthetic 256 × 256 greyscale image.
+
+约定：采样率 16 kHz，样本在 −1 到 1 之间（满量程）；不另外说明时，dB 是有效值相对满量程 1 的分贝。照片是合成的 256 × 256 灰度图。
 
 ## Adding a page · 新加一篇
 
