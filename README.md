@@ -15,7 +15,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 | 1 | Four Ways to Write a Rotation · 旋转的四种写法 | https://huyicheng.github.io/interactive-notes/rotation/ | `rotation/index.html` |
 | 2 | From Depth to Registration · 从深度到配准 | https://huyicheng.github.io/interactive-notes/perception/ | `perception/index.html` |
 | 3 | From Demonstration to Trial and Error · 从示范到试错 | https://huyicheng.github.io/interactive-notes/robot-learning/ | `robot-learning/index.html` |
-| 4 | From Fully Connected to Attention · 从全连接到注意力 | https://huyicheng.github.io/interactive-notes/backbones/ | `backbones/index.html` |
+| 4 | Inside a Neural Network · 拆开神经网络 | https://huyicheng.github.io/interactive-notes/backbones/ | `backbones/index.html` |
 | 5 | Loops Within Loops · 环环相扣 | https://huyicheng.github.io/interactive-notes/loops/ | `loops/index.html` |
 | 6 | From PID to World Models · 从 PID 到世界模型 | https://huyicheng.github.io/interactive-notes/control/ | `control/index.html` |
 | 7 | From Noise to Samples · 从噪声到样本 | https://huyicheng.github.io/interactive-notes/generative/ | `generative/index.html` |
@@ -37,7 +37,7 @@ index.html                 home page, the explainers side by side · 首页，�
 rotation/index.html        Four Ways to Write a Rotation · 旋转的四种写法
 perception/index.html      From Depth to Registration · 从深度到配准
 robot-learning/index.html  From Demonstration to Trial and Error · 从示范到试错
-backbones/index.html       From Fully Connected to Attention · 从全连接到注意力
+backbones/index.html       Inside a Neural Network · 拆开神经网络
 loops/index.html           Loops Within Loops · 环环相扣
 control/index.html         From PID to World Models · 从 PID 到世界模型
 generative/index.html      From Noise to Samples · 从噪声到样本
@@ -132,29 +132,38 @@ Conventions: s state, a action, π policy, r reward, G return, γ discount facto
 
 约定：s 状态，a 动作，π 策略，r 奖励，G 回报，γ 折扣因子，V 和 Q 是价值。
 
-## 4. From Fully Connected to Attention · 从全连接到注意力
+## 4. Inside a Neural Network · 拆开神经网络
 
-Neural-network backbones from scratch: what fully connected layers, convolutional networks, recurrent networks, U-Nets and Transformers look like, why they look that way, and what each is good and bad at. Every backbone mixes numbers and then bends them; they differ only in which positions get mixed and whether the weights are shared, and that choice is an assumption about the data. Also covers backpropagation, and why a diffusion model is not a backbone but a training objective plus a way of generating.
+Neural networks taken apart from a single multiply–add, around one kitchen robot that is asked to pass a glass of water. Every step works a toy through by hand first, then counts the real network: its parameters, its bytes and the operations one input costs. One neuron deciding whether to let go of the glass; a layer as a matrix times a vector; stacking layers and why the bend matters; convolution and ResNet-18; recurrent networks and gates, down to a 79 KB wake-word model; attention with queries, keys and values; the Transformer block inside Llama 3.1 8B; images cut into tokens (ViT, SigLIP); sound into Whisper; U-Net; PointNet; multimodal models such as π0 and the four ways to fuse modalities; the ten building blocks and mixture of experts; and how big a network is, which chip it fits and which network suits which task and modality.
 
-神经网络的主干结构从零讲起：全连接、卷积、循环、U-Net、Transformer 长什么样，为什么长这样，各有什么优劣。每种结构都是"混合，再弯一下"，区别只在混合哪些位置、权重共不共享，而这个选择就是对数据的假设。还讲了反向传播，以及扩散模型为什么不是一种主干，而是一种训练目标加一种生成方式。
+从一次乘加讲起，拆开神经网络。例子是厨房里一台被叫去递水的机器人。每一步都先用手算得出来的小例子走一遍，再算真实的网络：多少个参数、占多少字节、一个输入要多少运算。一个决定"该不该松手"的神经元；一层就是一次矩阵乘向量；叠起来，以及为什么要弯一下；卷积和 ResNet-18；循环网络和门，一直到 79 KB 的唤醒词模型；注意力里的查询、键、值；Llama 3.1 8B 里的 Transformer 块；图像切成词元（ViT、SigLIP）；声音进 Whisper；U-Net；PointNet；π0 这样的多模态模型，和把几种模态拼起来的四种办法；十种积木和混合专家；以及一个网络有多大、哪块芯片装得下、什么任务和模态该用什么网络。
 
-0. Overview: four ways to connect a layer, and the inductive bias each one encodes
-1. One layer: weighted sums and ReLU, universal approximation, backpropagation and the chain rule, why fully connected layers are not enough
-2. Convolution: kernels, channels and parameter counts, receptive fields and stride, residual connections and vanishing gradients
-3. Recurrence: hidden state, backpropagation through time, LSTM gates
-4. U-Net: encoder, decoder and skip connections
-5. Attention and Transformers: queries, keys and values, positional encoding, the Transformer block, ViT and GPT
-6. Diffusion is not a backbone: the forward process, the noise-prediction loss, why one step collapses to the mean, backbone versus objective versus sampling
-7. Putting it together: ResNet, ViT, GPT, Stable Diffusion, ACT, Diffusion Policy, π0 and Dreamer, block by block
-8. Summary: comparison table, check questions, further reading
+0. The ten seconds in the kitchen: the networks on the robot, when each one runs and what it costs
+   Units: parameters, bytes and FLOPs; how a number is stored in FP32, BF16, FP16, FP8 and FP4; multiply–adds versus FLOP versus FLOP/s; prefixes
+1. One neuron: multiply, add, bend
+2. One layer: a matrix times a vector, batches, a real 4096 × 4096 layer
+3. Stacking up: the MLP, why the bend matters, the robot’s hand policy at real size, where the weights come from
+4. Convolution: one small kernel slid over the whole picture, channels, receptive fields, pooling
+5. ResNet-18: from a photo to "this is a glass", residual connections and normalisation, where the parameters and operations sit
+6. Recurrent networks: memory, gates, a wake-word model on a microcontroller
+7. Attention: queries, keys and values computed by hand, masks, heads, word order, the cost
+8. The Transformer and Llama 3.1 8B: the block, where the 8 billion parameters sit, operations per token, the KV cache
+9. Images as tokens: ViT and SigLIP
+10. Sound into the network: Whisper’s spectrogram, encoder, decoder and cross-attention
+11. U-Net: a whole image out
+12. PointNet: points without order
+13. Multimodal: three images, a sentence and the joint angles into one π0-like model; four ways to fuse
+14. The building blocks, the networks as chains of them, Diffusion Policy and mixture of experts
+15. How big, and which one: operations per parameter, memory and bandwidth budgets, task × modality
+16. Summary: term table, the six opening questions answered, quiz, further reading
 
-Interactive demos: the connectivity of each backbone and what one output can see; fitting curves with ReLU neurons (including one you draw); backpropagation through a three-layer network, step by step, with a check against a small nudge; a sliding convolution kernel with translation equivariance; receptive fields with and without stride; gradients through a deep plain versus residual network; memory fading in an RNN versus a gated memory; a simplified U-Net with skip connections off, copied or filtered; attention heads on a table of objects, with positional encoding and shuffling; diffusion on 2D data, noising and step-by-step generation; and eight real systems taken apart.
+Interactive demos: the robot’s ten seconds with every network on a timeline; one number stored bit by bit in five formats, the bytes each network takes at each precision, and multiply–adds turned into FLOP and FLOP/s; one neuron computed product by product; a layer drawn as a network and as a matrix, in sync, with a batch and a real-size calculator; a 3 → 4 → 2 network that collapses to one layer without the bend, and the hand policy at real size; a convolution kernel sliding over the edge of the glass; ResNet-18 stage by stage at three input sizes; a recurrent memory with and without a gate; the attention toy step by step, with a mask and two heads; a Transformer block with a token travelling up the stack, for a toy, Gemma 2B, Llama 3.1 8B and 70B; a photo cut into patches and turned into tokens; a spoken command through Whisper; a U-Net with and without skip connections; PointNet on the glass’s point cloud, shuffled; a π0-like model denoising an action chunk, with four ways to fuse; networks as chains of building blocks; and all the networks on one size chart against a chip’s memory and compute.
 
-交互：四种连法和一个输出能看到哪些输入；用 ReLU 神经元拟合曲线（可以自己画）；三层小网络上一步步做反向传播，并真的拧一下来验证；滑动的卷积核和平移等变；有无步长时的感受野；普通深网络和残差网络里的梯度；循环网络的记忆衰减和加了门的记忆；可以关掉、原样抄或过滤跳连的简化 U-Net；桌上物体的注意力头，加上位置编码和打乱顺序；二维数据上的加噪和一步步去噪生成；拆开来看的八个真实系统。
+交互：机器人的十秒钟和每个网络在时间轴上什么时候算；一个数在五种格式里一个比特一个比特地存，每个网络在每种精度下占多少字节，乘加怎样换成 FLOP 和 FLOP/s；一个神经元一个乘积一个乘积地算；一层画成网络和写成表格两种样子，同步走，可以一次喂三个、换成真实大小；去掉弯一下就塌成一层的 3 → 4 → 2 小网络，和真实大小的手的策略；在杯子边上滑动的卷积核；ResNet-18 一段一段地算，三种输入大小；带门和不带门的循环记忆；注意力小例子一步步算，可以加掩码、开两个头；一个词元在 Transformer 块里一层层往上走，可选玩具、Gemma 2B、Llama 3.1 8B 和 70B；一张照片切块变成词元；一句话进 Whisper；能去掉跳连的 U-Net；杯子点云上的 PointNet，可以打乱顺序；π0 类模型一步步擦出动作块，四种拼法；网络拆成积木链；所有网络放在一张大小图上，对着一块芯片的内存和算力看。
 
-Conventions: x input, h hidden output, y output, W and b weights and biases, ℓ loss.
+Conventions: x input, w and W weights, b bias, z weighted sum, σ the bend (activation), y output, P parameters, F operations per input, M bytes, q bytes per number; one multiply–add counts as two operations.
 
-约定：x 输入，h 中间层的输出，y 输出，W 和 b 是权重和偏置，ℓ 是损失。
+约定：x 输入，w 和 W 是权重，b 是偏置，z 是加权和，σ 是"弯一下"（激活函数），y 是输出，P 是参数个数，F 是一个输入的运算次数，M 是字节数，q 是每个数的字节数；一次乘加算两次运算。
 
 ## 5. Loops Within Loops · 环环相扣
 
