@@ -24,6 +24,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 | 10 | From Photos to Scenes · 从照片到场景 | https://huyicheng.github.io/interactive-notes/reconstruction/ | `reconstruction/index.html` |
 | 11 | Between the Joints and the Hand · 关节和手之间 | https://huyicheng.github.io/interactive-notes/jacobian/ | `jacobian/index.html` |
 | 12 | Two Seconds of Sound · 两秒钟的录音 | https://huyicheng.github.io/interactive-notes/signals/ | `signals/index.html` |
+| 13 | One Second in Silicon · 芯片里的一秒钟 | https://huyicheng.github.io/interactive-notes/silicon/ | `silicon/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -45,6 +46,7 @@ differentiable/index.html  Which Way to Turn Each Knob · 每个旋钮往哪拧
 reconstruction/index.html  From Photos to Scenes · 从照片到场景
 jacobian/index.html        Between the Joints and the Hand · 关节和手之间
 signals/index.html         Two Seconds of Sound · 两秒钟的录音
+silicon/index.html         One Second in Silicon · 芯片里的一秒钟
 toc.js                     the Contents panel shared by every page · 各篇共用的目录面板
 ```
 
@@ -371,6 +373,39 @@ Interactive demos: the recording with its four parts and four close-ups (listena
 Conventions: sample rate 16 kHz, values between −1 and 1 (full scale); unless stated otherwise, dB means RMS relative to full scale 1. The photo is a synthetic 256 × 256 greyscale image.
 
 约定：采样率 16 kHz，样本在 −1 到 1 之间（满量程）；不另外说明时，dB 是有效值相对满量程 1 的分贝。照片是合成的 256 × 256 灰度图。
+
+## 13. One Second in Silicon · 芯片里的一秒钟
+
+The computing hardware under large language models and embodied AI, explained from zero for a reader who knows nothing about chips, around one sentence in a kitchen: "pass me that glass of water". A fictional two-arm mobile robot, specified after products and papers published in 2025–2026, hands over the glass: a head camera (1280 × 720 at 30 Hz), two wrist cameras, a depth camera, four microphones, an IMU, 21 joints and two wrist force/torque sensors; a Jetson-Thor-class module (128 GB LPDDR5X at 273 GB/s, 40–130 W), an FPGA sensor hub and one microcontroller per joint running a 20 kHz current loop; an ~8B planner and an ~3B vision-language-action model at 10 Hz with 50-step action chunks. A harder question goes to a 70B model on eight B200 GPUs in a data centre. Every formula gets an intuition and is worked through with these numbers, and every figure links to its source. The NVIDIA part covers what it does well and what it costs, and the alternatives are shown with both their strengths and what holds them back.
+
+计算硬件放在一篇里，从零讲起，给对芯片一无所知的人，只用厨房里的一句话："把那杯水递给我"。一台虚构的双臂移动机器人（照着 2025 到 2026 年公开的产品和论文配）把水递过来：头部相机（1280 × 720，每秒 30 帧）、两个手腕相机、一个深度相机、四个麦克风、一个 IMU、21 个关节和两个手腕力传感器；一块 Jetson Thor 一类的计算模块（128 GB LPDDR5X，273 GB/s，40 到 130 W）、一块 FPGA 传感器板，每个关节一个跑 20 kHz 电流环的单片机；约 8B 的规划模型和约 3B、每秒 10 次、每次 50 步动作块的视觉–语言–动作模型。难一点的问题交给数据中心里 8 块 B200 上的 70B 模型。每个公式配一个直觉，代入这些数；每个数字都链接到来源。讲 NVIDIA 时既讲长处也讲代价，别的路线既讲长处也讲卡在哪。
+
+0. The ten seconds in the kitchen, from hearing the request to handing over the glass, and which chip does what at each moment
+1. Chips: transistors as switches, logic gates, an adder, the clock and the longest path; power and why clock rates stopped rising; how chips are made
+2. Programs: from a line of code to instructions; how a line of PyTorch becomes kernel launches on a GPU; why the GPU keeps the weights in its own memory
+3. Memory: registers, SRAM caches, DRAM, HBM and LPDDR; capacity, bandwidth and latency; why bandwidth sets the speed of generation; the memory wall
+4. Computing versus moving: the energy of an operation versus a memory read; how numbers are stored, from FP32 down to FP8, FP4, MX and NVFP4
+5. Kinds of chip: CPUs, GPUs, systolic arrays, FPGAs, microcontrollers and sensor chips; Amdahl’s law; flexibility versus determinism
+6. CUDA and NVIDIA: threads, blocks, warps and streaming multiprocessors; the CUDA stack; why most people choose NVIDIA, what that costs (price, power, lock-in, supply and export controls) and the alternatives already shipping (AMD, TPU, Trainium, Cerebras, Groq, Ascend)
+7. The arithmetic of a large language model: about 2N operations per token, prefill and decode, the KV cache, arithmetic intensity and the roofline
+8. One token through the hardware: from the question across the network to eight GPUs and back, with the time each part takes, and what batching changes
+9. Data centres: why so much memory, so many GPUs and so much fibre; parallelism, all-reduce, NVLink versus the network, ZeRO, training compute, power and cooling
+10. Scaling laws: Kaplan and Chinchilla, the compute-optimal model, overtraining for cheaper inference, test-time compute, and how much data robots have
+11. The robot’s second: sensor data rates, image tokens and the KV cache; crystals, drift and clock synchronisation (PTP, hardware triggers, EtherCAT)
+12. What real-time embodied AI needs: latency budgets, action chunks and real-time chunking, fast and slow systems, memory and power; what a robot running a 70B model on board would need
+13. The robot’s computer, chip by chip: the six layers and nested loops mapped onto sensors, the FPGA, the main module, the buses, the joint drives and the safety controller
+14. The frontier: gate-all-around transistors and backside power, High-NA lithography, chiplets and advanced packaging, HBM4, FP4, faster NVLink and co-packaged optics, 800 V DC power, new accelerators and robot chips
+15. Routes not yet in wide commercial use: analogue in-memory computing, digital near-memory computing, photonic computing, optical interconnect, neuromorphic chips with event cameras, thermodynamic computing, with in-sensor computing as a contrast; who pushes each, what it would solve and why it has not landed
+16. The map: 96 devices, chips, methods and models grouped by layer, purpose, kind, step and era
+17. Summary: every term with this example’s numbers, answers to the opening questions, a quiz, further reading
+
+Interactive demos: the kitchen scene with a time magnifier from 1 s down to 0.1 ms; a switch, a NAND gate, a 4-bit adder and the clock; a toy CPU running y = w·x + b and PyTorch calling a GPU; the memory ladder with models that fit or don’t; energy per operation, number formats and the energy of one token; one matrix product on five kinds of chip; CUDA threads, blocks and warps on a B200, warp divergence and the CUDA stack; a roofline with five chips; one token through eight GPUs; a data-centre calculator for memory, training time, all-reduce, racks, power and optics; scaling-law curves; sensor data rates and drifting clocks; a latency, memory and power budget with presets (π0-like, Helix-like, a cloud model, a 70B model on board); the robot’s computer coloured by layer or by clock; growth curves of GPUs and robot modules; a radar of the routes not yet in wide commercial use; and the map.
+
+交互：带"时间放大镜"（1 秒到 0.1 毫秒）的厨房；开关、与非门、4 位加法器和时钟；跑 y = w·x + b 的玩具 CPU 和 PyTorch 调用 GPU；存储的梯子，看模型放不放得下；每种操作的能耗、数字格式和一个词元的能量账；同一个矩阵乘法交给五种芯片；B200 上的 CUDA 线程、块和 warp，分支和 CUDA 的几层；五种芯片的屋顶线；一个词元走过 8 块 GPU；数据中心的计算器（显存、训练天数、全规约、机柜、电和光模块）；规模定律的曲线；传感器的数据量和各自走偏的钟；延迟、内存和功耗的预算，带预设（像 π0、像 Helix、问云端、身上跑 70B）；按六层或按时钟上色的机器人计算机；GPU 和机器人模块的增长曲线；还没落地的路线的雷达；以及地图。
+
+Conventions: 1 GB = 10⁹ bytes and 1 TB = 10¹² bytes; unless stated otherwise, TFLOPS and PFLOPS are dense peaks (not counting sparsity), and NVLink bandwidth is quoted as NVIDIA does, with both directions added. Chip specifications are those published by November 2026, and "announced" is kept apart from "shipping". The kitchen robot is fictional; its sensors, computer and models follow products and papers published in 2025–2026.
+
+约定：1 GB = 10⁹ 字节，1 TB = 10¹² 字节；不另外说明时，TFLOPS、PFLOPS 是不算稀疏的稠密峰值，NVLink 的带宽按 NVIDIA 的写法是两个方向加起来。芯片的规格以 2026 年 11 月公开的数字为准，"发布"和"上市"分开说。厨房里的机器人是虚构的：它的传感器、计算模块和模型照着 2025 到 2026 年公开的产品和论文来配。
 
 ## Adding a page · 新加一篇
 
