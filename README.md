@@ -22,6 +22,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 | 8 | Try It in Your Head · 在脑子里试一试 | https://huyicheng.github.io/interactive-notes/world-models/ | `world-models/index.html` |
 | 9 | Which Way to Turn Each Knob · 每个旋钮往哪拧 | https://huyicheng.github.io/interactive-notes/differentiable/ | `differentiable/index.html` |
 | 10 | From Photos to Scenes · 从照片到场景 | https://huyicheng.github.io/interactive-notes/reconstruction/ | `reconstruction/index.html` |
+| 11 | Between the Joints and the Hand · 关节和手之间 | https://huyicheng.github.io/interactive-notes/jacobian/ | `jacobian/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -41,6 +42,7 @@ generative/index.html      From Noise to Samples · 从噪声到样本
 world-models/index.html    Try It in Your Head · 在脑子里试一试
 differentiable/index.html  Which Way to Turn Each Knob · 每个旋钮往哪拧
 reconstruction/index.html  From Photos to Scenes · 从照片到场景
+jacobian/index.html        Between the Joints and the Hand · 关节和手之间
 toc.js                     the Contents panel shared by every page · 各篇共用的目录面板
 ```
 
@@ -307,6 +309,34 @@ Interactive demos: the arm circling the mug and its 24 photos; two rays with pix
 Conventions: a point in the scene is P, a camera centre o, a pixel's horizontal coordinate u; focal length 140 pixels; the camera is 32 cm from the mug's axis, a photo every 15°.
 
 约定：场景里的点写作 P，相机中心写作 o，像素横坐标写作 u；焦距 140 像素；相机离杯子的轴线 32 cm，每 15° 拍一张。
+
+## 11. Between the Joints and the Hand · 关节和手之间
+
+The Jacobian, the singular value decomposition, kinematics and dynamics in one page, built around one task: a three-link planar arm on a 25 cm post wipes a table with a sponge, from 36 cm to 80 cm and back in 3.2 s, while pressing down with 10 N. The same Jacobian is used three times: joint rates to hand velocity (v = J q̇), hand force to joint torques (τ = Jᵀ F), and joint-space mass to the mass felt at the hand (Λ⁻¹ = J M⁻¹ Jᵀ); the SVD reads each one as "which direction, how much". The second half derives the equations of motion and uses them to control the wiping.
+
+雅可比矩阵、奇异值分解、运动学和动力学放在一篇里，只用一个任务：一只装在 25 cm 立柱上的三节平面机械臂，拿海绵从 36 cm 擦到 80 cm 再擦回来，一个来回 3.2 秒，一直往下压 10 N。同一个雅可比用了三次：关节转速变成手的速度（v = J q̇），手上的力变成关节力矩（τ = Jᵀ F），关节空间的质量变成手上感到的质量（Λ⁻¹ = J M⁻¹ Jᵀ）；SVD 把每一次都读成"沿哪个方向、放大多少"。后半篇推出运动方程，再用它去控制擦桌子。
+
+0. The task, animated in four frames, with joint speeds and torques; the two sides (joints and hand), redundancy, and the three uses of J
+1. The Jacobian: forward kinematics; each column as the hand's velocity when one joint turns; why it is only a linear approximation
+2. The SVD: rotate, stretch, rotate, on 2 × 2 matrices; the SVD of the arm's 2 × 3 Jacobian and its null direction; the four subspaces; Golub–Kahan and Golub–Reinsch
+3. Velocity ellipses and singularities: manipulability, the condition number, the stretched arm, interior singularities, parallel mechanisms
+4. Inverting: the pseudoinverse and its 1/σ, damped least squares, the truncated SVD, the Jacobian transpose, chasing a target out of reach
+5. The null space: self-motion, gradient projection to keep the elbow under a shelf, task priority, algorithmic singularities, repeatability
+6. Force: τ = Jᵀ F by virtual work, gravity torques, force ellipses and the velocity–force duality, torque limits, stiffness K_q = Jᵀ K_x J, the human arm's stiffness
+7. Mass: the mass matrix, the operational-space inertia Λ and effective mass, push responses that go sideways, dynamic manipulability, impact safety and ISO/TS 15066
+8. The Lagrange equations: M q̈ + C q̇ + g = τ − Jᵀ F, Christoffel symbols, the skew-symmetry of Ṁ − 2C and energy, linearity in the parameters, learned Lagrangian models
+9. Newton–Euler: the outward and inward recursions with the forces inside each joint, why it is fast, CRBA, ABA and modern libraries
+10. Control: joint PD, PD plus gravity compensation, computed torque and the hand stiffness ω²Λ, operational-space and force control, compared in the air and on the table, with a wet sponge and at double speed; impedance and adaptive control
+11. The map: 66 methods grouped by the matrix they use, what they are for, how they use it, step and era; the SVD beyond robots (PCA, low-rank approximation, point-set alignment, the eight-point algorithm, randomised SVD, LoRA)
+12. Summary: the three uses of J in one table, Lagrange against Newton–Euler, the four controllers, questions, a quiz, further reading
+
+Interactive demos: the wiping task with joint speeds and torques; the Jacobian's columns as arrows with a real rotation against the linear prediction; any 2 × 2 matrix decomposed step by step; the velocity ellipse along the table with σ₁, σ₂ and manipulability; three inverse-kinematics methods chasing a target out of reach; self-motion and wiping under a shelf with and without the null-space term; forces, torque bars, force ellipses and the maximum press; pushes at the hand and the mass felt in each direction; a free triple pendulum with its energy and the three torque terms; four controllers simulated with the full dynamics and a frictional table; and a map of 66 methods.
+
+交互：擦桌子的动画，带关节转速和力矩；J 的三列画成箭头，真转一个角度和线性预测比；任意 2 × 2 矩阵一步步分解；沿桌面看速度椭圆、σ₁、σ₂ 和可操作度；三种逆运动学办法追一个够不着的目标；自运动，以及加不加零空间那一项在搁板下面擦；力、力矩条、力椭圆和最多能压多大；在手上推一下，看各个方向感到的质量；一个自由的三节摆，带能量和三项力矩；四种控制办法在完整的动力学和有摩擦的桌面上仿真；以及 66 种方法的地图。
+
+Conventions: x to the right, y up, the table at y = 0, the shoulder at (0, 0.25) m; links 0.40, 0.35 and 0.15 m with masses 2.0, 1.5 and 0.5 kg; angles counter-clockwise from the x axis.
+
+约定：x 向右、y 向上，桌面 y = 0，肩在 (0, 0.25) m；三节长 0.40、0.35、0.15 m，重 2.0、1.5、0.5 kg；角度从 x 轴量起，逆时针为正。
 
 ## Adding a page · 新加一篇
 
