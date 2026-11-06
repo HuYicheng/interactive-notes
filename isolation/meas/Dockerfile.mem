@@ -1,0 +1,3 @@
+FROM scratch
+COPY mem /mem
+ENTRYPOINT ["/mem"]

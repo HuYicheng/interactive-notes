@@ -1,0 +1,4 @@
+FROM hello:1
+COPY big.bin /big.bin
+COPY app /app
+CMD ["/app"]

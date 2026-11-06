@@ -25,6 +25,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 | 11 | Between the Joints and the Hand · 关节和手之间 | https://huyicheng.github.io/interactive-notes/jacobian/ | `jacobian/index.html` |
 | 12 | Two Seconds of Sound · 两秒钟的录音 | https://huyicheng.github.io/interactive-notes/signals/ | `signals/index.html` |
 | 13 | One Second in Silicon · 芯片里的一秒钟 | https://huyicheng.github.io/interactive-notes/silicon/ | `silicon/index.html` |
+| 14 | One Machine, Many Worlds · 一台机器，几个世界 | https://huyicheng.github.io/interactive-notes/isolation/ | `isolation/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -47,6 +48,7 @@ reconstruction/index.html  From Photos to Scenes · 从照片到场景
 jacobian/index.html        Between the Joints and the Hand · 关节和手之间
 signals/index.html         Two Seconds of Sound · 两秒钟的录音
 silicon/index.html         One Second in Silicon · 芯片里的一秒钟
+isolation/index.html       One Machine, Many Worlds · 一台机器，几个世界
 toc.js                     the Contents panel shared by every page · 各篇共用的目录面板
 ```
 
@@ -415,6 +417,38 @@ Interactive demos: the kitchen scene with a time magnifier from 1 s down to 0.1 
 Conventions: 1 GB = 10⁹ bytes and 1 TB = 10¹² bytes; unless stated otherwise, TFLOPS and PFLOPS are dense peaks (not counting sparsity), and NVLink bandwidth is quoted as NVIDIA does, with both directions added. Chip specifications are those published by November 2026, and "announced" is kept apart from "shipping". The kitchen robot is fictional; its sensors, computer and models follow products and papers published in 2025–2026.
 
 约定：1 GB = 10⁹ 字节，1 TB = 10¹² 字节；不另外说明时，TFLOPS、PFLOPS 是不算稀疏的稠密峰值，NVLink 的带宽按 NVIDIA 的写法是两个方向加起来。芯片的规格以 2026 年 11 月公开的数字为准，"发布"和"上市"分开说。厨房里的机器人是虚构的：它的传感器、计算模块和模型照着 2025 到 2026 年公开的产品和论文来配。
+
+## 14. One Machine, Many Worlds · 一台机器，几个世界
+
+Virtual machines, dual boot, containers, conda, venv and twenty-odd other ways of giving a program "a machine of its own", compared side by side, around a kitchen-robot team with one Ubuntu 24.04 workstation and seven requests that clash: a new PyTorch 2.5 project, an old Python 3.8 / PyTorch 1.13 baseline, ROS 2 Humble built for Ubuntu 22.04, a Windows-only calibration tool over USB, a 1 kHz control loop that needs a real-time kernel, untrusted code, and deployment to an ARM64 Jetson Thor, a cloud GPU server and a cluster without root. The page takes a computer apart into layers and shows that every method does the same thing — it replaces one of the "name → thing" tables at some layer — and differs only in where it cuts (above the cut each world has its own copy, below it everything is shared) and who enforces the wall (hardware, the kernel, a naming convention or taking turns, and for a few, software). Then it opens each family: processes and page tables; booting, EFI and Secure Boot; virtual machines from Popek–Goldberg to VT-x, VM exits and nested paging; microVMs, gVisor, WSL, Wine, Rosetta and QEMU; namespaces, control groups and seccomp; OverlayFS and image layers; Docker, Podman, Apptainer and Distrobox; sandboxes; PATH, sys.path and the dynamic linker behind venv, uv, conda and Lmod; Nix's hash paths; the GPU driver versus the CUDA runtime, and MIG; hardware partitions and trusted execution environments; and an answer for each of the seven requests. Some numbers were measured on a small cloud VM (system-call cost, process and container start-up, OverlayFS copy-up, cgroup limits); the programs are in `isolation/meas/`.
+
+虚拟机、双系统、容器、conda、venv，和另外二十来种"给程序一台自己的机器"的办法，放在一起比。例子是一个厨房机器人团队：一台 Ubuntu 24.04 工作站，七个互相打架的要求：PyTorch 2.5 的新项目、Python 3.8 加 PyTorch 1.13 的老基线、给 Ubuntu 22.04 做的 ROS 2 Humble、只有 Windows 版的 USB 标定工具、要实时内核的 1 kHz 控制回路、不可信的代码，还要部署到 ARM64 的 Jetson Thor、云上的 GPU 服务器和没有 root 的集群。这一篇先把一台电脑拆成几层，说明所有方法做的是同一件事：在某一层换掉"名字 → 东西"的那张表；它们只在两点上不同：切在哪一层（往上各一份，往下共用），以及谁来守这堵墙（硬件、内核、约定，或者轮流；少数靠软件）。然后一族一族拆开：进程和页表；开机、EFI 和安全启动；虚拟机，从 Popek–Goldberg 到 VT-x、VM 退出和嵌套页表；微虚拟机、gVisor、WSL、Wine、Rosetta 和 QEMU；命名空间、控制组和 seccomp；OverlayFS 和镜像的层；Docker、Podman、Apptainer 和 Distrobox；沙箱；venv、uv、conda、Lmod 背后的 PATH、sys.path 和动态链接器；Nix 的哈希路径；GPU 的驱动和 CUDA 运行时，以及 MIG；硬件分区和可信执行环境；最后七个要求各给一个答案。有些数是在一台云上的小虚拟机里测的（系统调用、进程和容器的启动、OverlayFS 的复制、控制组的上限），测量程序在 `isolation/meas/`。
+
+0. Seven requests on one workstation, and the six places where they collide
+1. The layers of a computer; one command traced from the shell to the SSD; every layer looks things up by name; the cost of a system call
+2. Processes: virtual memory, page tables, user and kernel mode, 4-level paging; what a process does not isolate
+3. The overview: where the cut is, who enforces it, the five motives, twenty-five methods in one comparison
+4. Dual boot: UEFI, the EFI system partition, Secure Boot, GRUB; the shared disk and its pitfalls; Live USB
+5. Virtual machines: trap and emulate, Popek–Goldberg, x86's 17 problem instructions, binary translation, paravirtualisation, VT-x/AMD-V, the cost of VM exits, nested paging and its 24 memory references, virtio and passthrough, type 1 and 2, costs; system versus process VMs
+6. MicroVMs (Firecracker, Kata), gVisor, WSL 1 and 2, Wine, Rosetta 2, QEMU
+7. Containers: from chroot to Docker; namespaces, control groups, capabilities, seccomp, user namespaces; what stays shared
+8. Images: OverlayFS, copy-up and whiteouts, layers named by SHA-256, Dockerfile caching, multi-architecture images
+9. The container family: Docker, Podman, LXC/Incus, Apptainer, Distrobox, Docker Desktop, Kubernetes
+10. Sandboxes: Android, Flatpak, Snap, seccomp, mandatory access control; running untrusted code
+11. Environment managers: PATH, sys.path and the library search order; venv, uv, conda, pyenv/nvm, Lmod, one-file bundles
+12. Nix and Guix: store paths named by a hash of all build inputs
+13. GPUs: the kernel driver versus the CUDA runtime, NVIDIA's compatibility rule, how a GPU enters each kind of world, MPS and MIG
+14. Separate machines, hardware partitions, the IOMMU and trusted execution environments
+15. An answer for each of the seven requests; nesting
+16. Summary: a comparison table, the six questions answered, further reading
+
+Interactive demos: the seven requests animated on the workstation's layer stack; one command traced through the layers with each lookup table; two processes, one address, two frames, and real 4-level paging; twenty-five methods switchable and comparable side by side (layers and the cut line, the path of one file read, costs, motives, origins, overview table); a dual-boot power-on with Secure Boot, a changed boot order, Fast Startup and the clock; nine sensitive instructions under five ways of virtualising; the two-dimensional page walk, numbered; one file read through native, container, gVisor, a microVM, WSL 1 and 2, Wine and qemu-user; namespaces switched on and off with real outputs, and control-group limits; OverlayFS layers, copy-up and shared image layers; ten things untrusted code tries against five sandboxes; PATH, sys.path and library lookup under venv, conda, uv and Lmod; a Nix dependency graph with real SHA-256 store paths; who provides each layer of the GPU stack and whether a CUDA version runs on a driver; and a chooser that finds the lowest layer that has to differ.
+
+交互：七个要求在工作站的层上一个个卡住；一条命令穿过各层，每层一张查找表；两个进程、同一个地址、两个物理页，以及真实的四级页表；二十五种方法可以切换、可以并排比较（分层和切线、一次读文件的路径、代价、动机、诞生、一览表）；双系统开机，可以开关安全启动、被改的启动顺序、快速启动和时钟；九条敏感指令在五种虚拟化办法下的结果；编好号的二维页表遍历；一次读文件经过原生、容器、gVisor、微虚拟机、WSL 1 和 2、Wine、qemu-user 的路径；逐个开关命名空间看真实的输出，以及控制组的上限；OverlayFS 的层、复制和共享的镜像层；不可信的代码想做的十件事对五种沙箱；venv、conda、uv、Lmod 下的 PATH、sys.path 和库的查找；一张用真 SHA-256 算出仓库路径的 Nix 依赖图；GPU 每一层由谁提供、某个 CUDA 版本在某个驱动上能不能跑；一个找出"必须不同的最低一层"的选择器。
+
+Conventions: kB/MB/GB step by 1000 and KiB/MiB/GiB by 1024, quoted numbers keep the source's unit; "measured" numbers come from a 2-vCPU cloud VM (Ubuntu 24.04, Linux 6.18, Docker 29.8); "est." marks an order-of-magnitude estimate without a source; versions and licences as of November 2026.
+
+约定：kB、MB、GB 按 1000 进位，KiB、MiB、GiB 按 1024 进位，引用的数照原文的写法；"我们测的"来自一台 2 个虚拟 CPU 的云虚拟机（Ubuntu 24.04、Linux 6.18、Docker 29.8）；"估"是没有出处的数量级估计；版本和授权以 2026 年 11 月为准。
 
 ## Adding a page · 新加一篇
 
