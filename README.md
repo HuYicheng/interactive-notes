@@ -26,6 +26,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 | 12 | Two Seconds of Sound · 两秒钟的录音 | https://huyicheng.github.io/interactive-notes/signals/ | `signals/index.html` |
 | 13 | One Second in Silicon · 芯片里的一秒钟 | https://huyicheng.github.io/interactive-notes/silicon/ | `silicon/index.html` |
 | 14 | One Machine, Many Worlds · 一台机器，几个世界 | https://huyicheng.github.io/interactive-notes/isolation/ | `isolation/index.html` |
+| 15 | One Robot, Dozens of Programs · 一台机器人，几十个程序 | https://huyicheng.github.io/interactive-notes/ros/ | `ros/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -49,6 +50,7 @@ jacobian/index.html        Between the Joints and the Hand · 关节和手之间
 signals/index.html         Two Seconds of Sound · 两秒钟的录音
 silicon/index.html         One Second in Silicon · 芯片里的一秒钟
 isolation/index.html       One Machine, Many Worlds · 一台机器，几个世界
+ros/index.html             One Robot, Dozens of Programs · 一台机器人，几十个程序
 toc.js                     the Contents panel shared by every page · 各篇共用的目录面板
 ```
 
@@ -449,6 +451,37 @@ Interactive demos: the seven requests animated on the workstation's layer stack;
 Conventions: kB/MB/GB step by 1000 and KiB/MiB/GiB by 1024, quoted numbers keep the source's unit; "measured" numbers come from a 2-vCPU cloud VM (Ubuntu 24.04, Linux 6.18, Docker 29.8); "est." marks an order-of-magnitude estimate without a source; versions and licences as of November 2026.
 
 约定：kB、MB、GB 按 1000 进位，KiB、MiB、GiB 按 1024 进位，引用的数照原文的写法；"我们测的"来自一台 2 个虚拟 CPU 的云虚拟机（Ubuntu 24.04、Linux 6.18、Docker 29.8）；"估"是没有出处的数量级估计；版本和授权以 2026 年 11 月为准。
+
+## 15. One Robot, Dozens of Programs · 一台机器人，几十个程序
+
+What holds a robot's software together, explained from the hardware up around one kitchen robot (a Franka Research 3 arm on FCI at 1 kHz, a RealSense D435i on USB 3, a Hokuyo UST-10LX lidar, a mobile base whose wheel drivers sit on CAN under a microcontroller, a Jetson AGX Thor, a real-time PC and a workstation over Wi-Fi; a dozen devices and a few dozen programs). The page follows bytes from the sensors along the buses into memory, then between processes and between computers; shows how robots were programmed before ROS and why every lab had its own framework; takes ROS 1 apart (the master, XML-RPC, TCPROS, the md5sum check, the six PR2 assumptions) and ROS 2 (rclcpp/rclpy → rcl → rmw → DDS or Zenoh, discovery without a master and the RTPS port formula, QoS and its compatibility rules, loaned messages); looks inside a node (executors, callback groups, components, lifecycle nodes); places ROS on Linux (it is not an operating system: a set of names, message conventions, frameworks and tools on top of one); and opens ros2_control's 1 ms loop and the real-time kernel, MoveIt 2, tf2 and Nav2. It then answers three questions directly: why upgrading ROS is so hard and whether that contradicts its vision of reuse; why the core is C++ while the glue is Python; and what the alternatives are and what each was born for (vendor controllers and PLCs, OROCOS, LCM, plain DDS or Zenoh, AUTOSAR and Apollo Cyber RT, gRPC robot APIs, micro-ROS, Isaac ROS/NITROS, dora-rs, LeRobot); and finally puts the whole robot together and walks through its failure cases. Some numbers were measured on a small cloud VM (inter-process round trips, message decoding in C and Python, garbage-collection pauses, 1 kHz loop lateness) or counted from the official repositories (package counts per distribution, lines of code per language); the programs are in `ros/meas/`.
+
+一台机器人的软件是怎样拼起来的，围绕一台厨房机器人从硬件讲起（Franka Research 3 手臂用 FCI 每 1 毫秒交换一次数据，USB 3 上的 RealSense D435i，Hokuyo UST-10LX 激光雷达，轮子驱动器挂在 CAN 上、由单片机管着的底盘，一块 Jetson AGX Thor，一台实时控制电脑和一台 Wi-Fi 连着的工作站；十几个设备，二三十个程序）。这一篇先跟着字节从传感器顺着总线进到内存，再看进程之间、电脑之间怎样传数据；看 ROS 以前机器人怎么编程、为什么每个实验室一套框架；拆开 ROS 1（主节点、XML-RPC、TCPROS、md5sum 校验、PR2 的六个假设）和 ROS 2（rclcpp/rclpy → rcl → rmw → DDS 或 Zenoh，没有主节点的发现和 RTPS 的端口公式，QoS 和它的兼容规则，借出消息）；看一个节点里面（执行器、回调组、组件、生命周期节点）；说清 ROS 在 Linux 上的哪一层（它不是操作系统，而是装在操作系统上的一套名字、消息约定、框架和工具）；再拆开 ros2_control 的 1 毫秒回路和实时内核、MoveIt 2、tf2 和 Nav2。然后直接回答三个问题：ROS 为什么这么难升级，这和它"复用"的愿景冲突吗；为什么核心是 C++、胶水是 Python；还有哪些别的办法，各为什么诞生（厂家控制器和 PLC、OROCOS、LCM、单用 DDS 或 Zenoh、AUTOSAR 和 Apollo Cyber RT、gRPC 机器人接口、micro-ROS、Isaac ROS/NITROS、dora-rs、LeRobot）；最后把整台机器人搭一遍，并逐个走一遍它的故障。有些数是在一台云上的小虚拟机里测的（进程间往返、C 和 Python 解消息、垃圾回收的停顿、1 kHz 循环的迟到），或者从官方仓库里数的（每个发行版的软件包数、各语言的代码行数），程序在 `ros/meas/`。
+
+0. One kitchen robot: the hardware, the data per second, six integration problems and eight questions
+1. Sensors, buses and drivers: USB, Ethernet, CAN and serial; t = 8 (L + h·⌈L/p⌉) / B; DMA, interrupts and the Linux device files
+2. Between processes: pipes, sockets, shared memory, serialisation; c ≈ c0 + k·L/β with our measurements
+3. Before ROS: vendor controllers and their languages, PLCs, one big program, lab frameworks (Player, OROCOS, CARMEN, YARP, MRDS, LCM); N(N−1)/2 versus N
+4. ROS 1: origins, five design goals, the master and the TCPROS handshake, the md5sum fingerprint, tools and packages, the six PR2 assumptions
+5. ROS 2 on DDS: why, the five layers, discovery and the RTPS port formula, Zenoh routers, QoS and compatibility, types, zero copy and overheads
+6. Inside a node: executors, callback groups, U = Σ C_i/T_i and worst-case lateness, components and intra-process communication, lifecycle nodes
+7. Where ROS sits: not an operating system; what Linux does and what ROS does; its own names; the layers and tools; one command traced from a behaviour tree to the motors
+8. One millisecond per turn: ros2_control, the real-time handoff, PREEMPT_RT, our loop measurements and the Franka budget; ROS 2 is soft real-time
+9. MoveIt 2: the planning scene, plugins and defaults, RRT-Connect, time parameterisation and the trapezoid profile
+10. tf2 and Nav2: the frame tree, time stamps and interpolation, REP 105, Nav2's servers, behaviour trees and costmaps
+11. Versions: distributions and REP 2000, what breaks on an upgrade, our package counts, P = p^k, ROS 1 to 2, and whether it contradicts the vision
+12. C++ and Python: our line counts, s = f·c, garbage collection, the GIL and allocation, rclpy and rospy
+13. The alternatives and what each was born for, with a comparison table
+14. Putting the kitchen robot together: where each loop runs, decisions per layer, failure scenarios
+15. Summary: a table of layers, the eight questions answered, further reading
+
+Interactive demos: one second inside the robot, with every device, bus and message rate; a message crossing USB, Ethernet, CAN or serial frame by frame; an image handed between two processes by pipe, socket or shared memory with our measured times; how many connections N programs need with and without a shared convention; the ROS 1 master and TCPROS handshake with a live md5sum; DDS discovery (and Zenoh routers) and QoS compatibility over a lossy link; one executor thread juggling three callbacks; where ROS sits, with one command traced through the layers; the 1 ms ros2_control loop against our lateness data and the Franka budget; one MoveIt plan grown by RRT-Connect, smoothed, timed and executed; the tree of frames and the cost of looking up at the wrong time; what an upgrade loses, distribution by distribution; C++ versus Python by lines of code, CPU share and jitter; the alternatives compared by function; and the whole kitchen robot under seven failure and change scenarios.
+
+交互：机器人里的一秒钟，每个设备、每根总线、每种消息的频率；一条消息一帧帧走过 USB、以太网、CAN 或串口；一张图用管道、套接字或共享内存交给另一个进程，配我们测的时间；N 个程序在有没有公共约定时要几根连线；ROS 1 的主节点和 TCPROS 握手，当场算 md5sum；DDS 的发现（以及 Zenoh 的路由程序）和丢包链路上的 QoS 兼容；一个执行器线程轮流跑三种回调；ROS 在哪一层，一条命令穿过各层；ros2_control 的 1 毫秒回路对照我们测的迟到数据和 Franka 的预算；MoveIt 的一次规划：RRT-Connect 长树、平滑、配时间、执行；坐标系的树，以及用错时间戳的代价；一个发行版一个发行版地看升级会丢掉什么；C++ 和 Python 的代码行数、CPU 占用和抖动；按功能对比别的办法；整台厨房机器人在七种故障和改动下的表现。
+
+Conventions: bit/s, kB and MB step by 1000 and KiB/MiB by 1024, quoted numbers keep the source's unit; "measured" numbers come from a 2-vCPU cloud VM (Ubuntu 24.04, Linux 6.18, not a real-time kernel, Python 3.13); "counted" numbers come from the official repositories in early November 2026; "est." marks an order-of-magnitude estimate without a source and "illustrative" a made-up example value; versions, defaults and support dates as of November 2026.
+
+约定：bit/s、kB、MB 按 1000 进位，KiB、MiB 按 1024 进位，引用的数照原文的写法；"我们测的"来自一台 2 个虚拟 CPU 的云虚拟机（Ubuntu 24.04、Linux 6.18，不是实时内核，Python 3.13）；"我们数的"来自 2026 年 11 月初的官方仓库；"估"是没有出处的数量级估计，"示意"是编的例子；版本、默认值和支持期以 2026 年 11 月为准。
 
 ## Adding a page · 新加一篇
 
