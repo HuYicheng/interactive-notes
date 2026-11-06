@@ -28,6 +28,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 | 14 | One Machine, Many Worlds · 一台机器，几个世界 | https://huyicheng.github.io/interactive-notes/isolation/ | `isolation/index.html` |
 | 15 | One Robot, Dozens of Programs · 一台机器人，几十个程序 | https://huyicheng.github.io/interactive-notes/ros/ | `ros/index.html` |
 | 16 | Where Am I, and How Sure? · 我在哪，有多确定 | https://huyicheng.github.io/interactive-notes/estimation/ | `estimation/index.html` |
+| 17 | What Next, and How? · 接下来做什么，怎么做 | https://huyicheng.github.io/interactive-notes/planning/ | `planning/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -53,6 +54,7 @@ silicon/index.html         One Second in Silicon · 芯片里的一秒钟
 isolation/index.html       One Machine, Many Worlds · 一台机器，几个世界
 ros/index.html             One Robot, Dozens of Programs · 一台机器人，几十个程序
 estimation/index.html      Where Am I, and How Sure? · 我在哪，有多确定
+planning/index.html        What Next, and How? · 接下来做什么，怎么做
 toc.js                     the Contents panel shared by every page · 各篇共用的目录面板
 ```
 
@@ -513,6 +515,34 @@ Robot state estimation explained from a single noisy reading up to a whole robot
 Conventions: "our arithmetic" comes from `estimation/calc/calcnum.py`; "measured" numbers come from a 2-vCPU cloud VM (Linux 6.18, not a real-time kernel); "read in the source" means the robot_localization, navigation2 and slam_toolbox repositories in early November 2026 (read only, not run); "est." marks an order-of-magnitude estimate without a source and "illustrative" a made-up example value; versions and defaults as of November 2026.
 
 约定："我们算的"来自 `estimation/calc/calcnum.py`；"我们测的"来自一台 2 个虚拟 CPU 的云虚拟机（Linux 6.18，不是实时内核）；"我们在源码里读到的"指 2026 年 11 月初的 robot_localization、navigation2 和 slam_toolbox 仓库（只读，没有运行）；"估"是没有出处的数量级估计，"示意"是编的例子；版本和默认值以 2026 年 11 月为准。
+
+## 17. What Next, and How? · 接下来做什么，怎么做
+
+Robot planning and decision-making explained from the bottom up, around the kitchen robot of pages 15–16 (a differential-drive base, a Hokuyo UST-10LX lidar, a RealSense D435i head camera and a Franka Research 3 arm on ROS 2 Humble, with Nav2 for the base, MoveIt 2 for the arm and a BehaviorTree.CPP task tree), asked to "bring cup A to the island". The page starts from why a robot must plan instead of only reacting (potential fields and their local minima), and what planning is: search in a model, with a cost and constraints, where every practical planner gives up completeness or optimality somewhere. It then takes the methods a real robot uses one by one: costmaps and configuration space (Nav2's inflation layer), Dijkstra and A* on a grid (NavFn, Smac), sampling planners for a 7-joint arm (PRM, RRT, RRT-Connect, RRT*, narrow passages), trajectory optimisation (CHOMP, STOMP, TrajOpt, and why the initial guess decides the side), time parameterisation (TOTG, Ruckig, how hard you can accelerate a cup of water), and local planning and replanning (DWA/DWB, MPPI). On the decision side: expected cost and whether another look is worth it (with page 16's error budget), POMDPs in one paragraph, state machines and behaviour trees (BehaviorTree.CPP semantics, Nav2's default tree), symbolic planning and task-and-motion planning (STRIPS, PDDL, PDDLStream, PlanSys2), language models (SayCan, Code as Policies, VLA), and where learned skills such as diffusion policy sit compared with planners. It ends with failures and the escalation ladder (and why safety is not planning's job), a landscape of methods, and the robot's whole decision and planning layer with a time budget for fetching one cup. Defaults are read from the Humble branches of Nav2 and MoveIt 2 and from BehaviorTree.CPP 3.8; our own arithmetic is in `planning/calc/`.
+
+机器人的规划和决策，从下往上讲，例子还是第 15、16 篇那台厨房机器人（差速底盘、Hokuyo UST-10LX 激光雷达、RealSense D435i 头部相机、Franka Research 3 手臂，跑 ROS 2 Humble，底盘归 Nav2，手臂归 MoveIt 2，任务由一棵 BehaviorTree.CPP 的行为树来排），任务是"把杯子 A 拿到岛台上"。这一篇先讲为什么不能只看眼前（势场和它的局部极小），规划到底是什么：在模型里搜索，带着代价和约束，每种实用的规划器都在完备或最优上让了一步。然后把真实机器人用的方法一个个拆开：代价地图和构型空间（Nav2 的膨胀层），格子上的 Dijkstra 和 A*（NavFn、Smac），七个关节的手臂在高维空间里撒点（PRM、RRT、RRT-Connect、RRT*，窄通道），轨迹优化（CHOMP、STOMP、TrajOpt，以及为什么初值决定了从哪边绕），时间参数化（TOTG、Ruckig，端着一杯水能加速多猛），局部规划和重规划（DWA/DWB、MPPI）。决策这边：期望代价和"再看一眼"值不值（用第 16 篇的误差预算），一段话讲 POMDP，状态机和行为树（BehaviorTree.CPP 的语义、Nav2 的默认树），符号规划和任务与运动规划（STRIPS、PDDL、PDDLStream、PlanSys2），语言模型（SayCan、Code as Policies、VLA），以及扩散策略这类学出来的技能和规划器比起来站在哪。最后讲出了岔子谁来接（以及为什么安全不归规划管），各种方法的全景，再给这台机器人搭出整个决策规划层，算一笔"拿一只杯子要多久"的账。默认值读自 Nav2、MoveIt 2 的 Humble 分支和 BehaviorTree.CPP 3.8；我们自己算的数在 `planning/calc/`。
+
+0. One sentence, a chain of decisions: Gat's three layers (controller, sequencer, deliberator) and how fast each runs; nine questions
+1. Try it in a model first: potential fields and their traps; planning as search with a model, a cost and constraints; PSPACE-hardness
+2. Shrink the robot to a point: configuration space, Nav2's costmap layers and inflation; the arm's 7-D space
+3. Dijkstra and A*: f = g + h, admissible heuristics, weighted A* and greedy; NavFn, Smac, Hybrid-A*
+4. Sampling: PRM, RRT, RRT-Connect (MoveIt's default), RRT*; probabilistic completeness and narrow passages
+5. Trajectory optimisation: CHOMP, STOMP, TrajOpt; local minima and the initial guess; MPC, MPPI, Diffuser
+6. Adding time: TOTG and Ruckig, FR3 limits, how hard you can accelerate a cup of water
+7. Local planning and replanning: global at 1 Hz, DWB at 20 Hz, the dynamic window and critics; MPPI in Jazzy
+8. Grasp now or look again: expected cost, the value of another look, POMDPs
+9. State machines and behaviour trees: tick, Sequence, Fallback, RUNNING; Nav2's default tree
+10. Let the program order the steps: STRIPS, PDDL, Fast Downward; task and motion planning, PDDLStream, PlanSys2
+11. From a sentence to a plan: SayCan (useful × feasible), Code as Policies, VLA
+12. Learned skills: where diffusion policy sits, planner vs policy
+13. When things go wrong: the escalation ladder, execution monitoring, safety is separate
+14. The landscape: dozens of methods by layer and by how they think
+15. The kitchen robot's decision and planning layer, and a time budget for fetching one cup
+16. Summary: four ingredients, several approximations, nine answers, further reading
+
+Conventions: "our arithmetic" comes from `planning/calc/calcnum.py`; "read in the source" means the Humble branches of navigation2 and moveit2, BehaviorTree.CPP 3.8, OMPL and PlanSys2 in early November 2026 (read only, not run); "est." marks an order-of-magnitude estimate without a source and "illustrative" a made-up example value; versions and defaults as of November 2026.
+
+约定："我们算的"来自 `planning/calc/calcnum.py`；"我们在源码里读到的"指 2026 年 11 月初 navigation2 和 moveit2 的 Humble 分支、BehaviorTree.CPP 3.8、OMPL 和 PlanSys2 的仓库（只读，没有运行）；"估"是没有出处的数量级估计，"示意"是编的例子；版本和默认值以 2026 年 11 月为准。
 
 ## Adding a page · 新加一篇
 

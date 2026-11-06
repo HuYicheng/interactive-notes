@@ -1,0 +1,78 @@
+
+## 1  Nav2 inflation layer: cost = 252·exp(−k·(d − r_ins)) for r_ins < d ≤ r_inf; NavFn cell cost = 50 + 0.8·cost
+  d = 0.30 m: cost  253.0 (int 253), NavFn cell cost 252.4 = 5.05 × free
+  d = 0.35 m: cost  216.9 (int 216), NavFn cell cost 222.8 = 4.46 × free
+  d = 0.40 m: cost  186.7 (int 186), NavFn cell cost 198.8 = 3.98 × free
+  d = 0.45 m: cost  160.7 (int 160), NavFn cell cost 178.0 = 3.56 × free
+  d = 0.50 m: cost  138.3 (int 138), NavFn cell cost 160.4 = 3.21 × free
+  d = 0.55 m: cost  119.0 (int 119), NavFn cell cost 145.2 = 2.90 × free
+  with TurtleBot default robot_radius 0.22: d = 0.50 m → cost 108.8
+  north corridor 1.2 m wide (island top 2.7, counter front 3.9): centre 0.60 m from both → cost 0 (beyond 0.55)
+  beside the oven cabinet (front 3.7): 1.0 m wide, centre 0.50 m from both → cost 138.3
+  place pose (2.5, 3.3): 0.6 m from the counter front and the island → cost 0;  (3.0, 3.3): 0.4 m from the cabinet → cost 186.7
+
+## 2  Grid search on the kitchen costmap: dock (1.2, 1.2) → grasp pose (4.5, 3.3), 8-connected, 5 cm cells
+  dijkstra eps=1: expanded  3853 cells, path 5.16 m, cost     5157, min clearance 0.55 m, route east (round the south and east of the island)
+  astar    eps=1: expanded  1493 cells, path 5.16 m, cost     5157, min clearance 0.55 m, route east (round the south and east of the island)
+  wastar   eps=2: expanded   171 cells, path 5.36 m, cost     5364, min clearance 0.55 m, route east (round the south and east of the island)
+  greedy   eps=1: expanded    88 cells, path 4.81 m, cost    14475, min clearance 0.30 m, route west (round the west end of the island)
+  free cells: 4591 of 10800
+  cost_scaling_factor  1.0: A* path 5.16 m, first third mostly east, min clearance 0.55 m
+  cost_scaling_factor  3.0: A* path 5.16 m, first third mostly east, min clearance 0.55 m
+  cost_scaling_factor 10.0: A* path 5.16 m, first third mostly east, min clearance 0.55 m
+  grasp pose → place pose (2.5, 3.3): A* path 2.04 m, expanded 1335, max cell cost on path 138
+
+## 3  Potential field (illustrative): U = ½·k_a·|x − g|² + ½·k_r·Σ(1/ρ − 1/ρ0)² for ρ < ρ0, gradient descent
+  south of island → place pose: stuck (no progress) at (2.50, 1.29) after 4000 steps, 2.01 m from the goal
+  dock → grasp pose: stuck at (4.50, 3.18) after 1093 steps, 0.12 m from the goal
+  east aisle → place pose: reached at (2.55, 3.30) after 643 steps, 0.05 m from the goal
+
+## 4  Carrying cup A of water: when does it spill? (cylinder, free surface tilts tan φ = a / g)
+  water 10 mm below the rim: static limit a = 2·g·Δh / D = 3.27 m/s²; a sudden step can overshoot ×2 → 1.64 m/s²
+  water 5 mm below the rim: static limit a = 2·g·Δh / D = 1.64 m/s²; a sudden step can overshoot ×2 → 0.82 m/s²
+  water 2 mm below the rim: static limit a = 2·g·Δh / D = 0.65 m/s²; a sudden step can overshoot ×2 → 0.33 m/s²
+  first slosh mode, R = 30 mm, water depth 30 mm: f = 3.81 Hz (period 0.263 s)
+  first slosh mode, R = 30 mm, water depth 60 mm: f = 3.90 Hz (period 0.256 s)
+  Nav2 Humble default acc_lim_x 2.5 m/s² (TurtleBot 3) > 1.64 m/s² → would spill a cup 10 mm from the rim on a step
+  trapezoid 2.0 m at v = 0.3 m/s, a = 0.5 m/s²: T = 7.27 s
+  trapezoid 2.0 m at v = 0.3 m/s, a = 2.5 m/s²: T = 6.79 s
+  trapezoid 2.0 m at v = 0.26 m/s, a = 2.5 m/s²: T = 7.80 s
+  S-curve, a = 0.5 m/s², jerk 1.0 m/s³: ramp 0.50 s, T = 7.77 s
+  S-curve, a = 0.5 m/s², jerk 5.0 m/s³: ramp 0.10 s, T = 7.37 s
+  acceleration ramped up over 0.000 s: residual slosh = 1.00 × the static tilt (overshoot peak ≈ 2.00 ×)
+  acceleration ramped up over 0.128 s: residual slosh = 0.64 × the static tilt (overshoot peak ≈ 1.64 ×)
+  acceleration ramped up over 0.256 s: residual slosh = 0.00 × the static tilt (overshoot peak ≈ 1.00 ×)
+  acceleration ramped up over 0.500 s: residual slosh = 0.02 × the static tilt (overshoot peak ≈ 1.02 ×)
+
+## 5  FR3 joint move times with the datasheet limits (2.62 rad/s, 10 rad/s², 5000 rad/s³), trapezoid / S-curve
+  joint 1 turns 0.5 rad: trapezoid T = 0.447 s; MoveIt Setup Assistant scales limits to 0.1 (page 15): 2.17 s
+  joint 1 turns 1.0 rad: trapezoid T = 0.644 s; MoveIt Setup Assistant scales limits to 0.1 (page 15): 4.08 s
+  joint 1 turns 1.5 rad: trapezoid T = 0.835 s; MoveIt Setup Assistant scales limits to 0.1 (page 15): 5.99 s
+
+## 6  DWB (Nav2 Humble default) at 20 Hz: the dynamic window and the number of candidate trajectories
+  dynamic window per 50 ms step: Δv = ±0.125 m/s (acc_lim_x 2.5), Δω = ±0.16 rad/s (acc_lim_theta 3.2)
+  samples: vx 20 × vtheta 20 = 400 trajectories (vy samples ignored: max_vel_y 0), each simulated 1.7 s ahead
+  at 0.26 m/s, 1.7 s ahead = 0.44 m;  at our 0.3 m/s: 0.51 m
+
+## 7  Grasp now or look again? (page 16 budget: σ = 6.28 mm first look, 4.49 mm after moving to 0.55 m; clearance 10 mm per side)
+  σ = 6.28 mm: P(|e| < 10 mm) = 2Φ(1.592) − 1 = 0.8887
+  σ = 4.49 mm: P(|e| < 10 mm) = 2Φ(2.227) − 1 = 0.9741
+  failure costs  10 s: grasp now E = 1.11 s, look again E = 3.0 + 0.26 = 3.26 s → grasp now
+  failure costs  20 s: grasp now E = 2.23 s, look again E = 3.0 + 0.52 = 3.52 s → grasp now
+  failure costs  35 s: grasp now E = 3.90 s, look again E = 3.0 + 0.91 = 3.91 s → grasp now
+  failure costs  60 s: grasp now E = 6.68 s, look again E = 3.0 + 1.56 = 4.56 s → look again
+  failure costs 120 s: grasp now E = 13.36 s, look again E = 3.0 + 3.11 = 6.11 s → look again
+  break-even failure cost C* = t_look / (P2 − P1) = 3.0 / 0.0854 = 35.1 s
+
+## 8  Time budget of "bring cup A to the island" (illustrative durations; speeds from the page)
+  plan the path (NavFn)                              0.1 s   (cumulative   0.1 s)
+  drive dock → stove: 5.16 m at 0.3 m/s + one 90° turn + ~3.1 s start/corner/stop (illus.)  23.5 s   (cumulative  23.6 s)
+  first look (detect + track)                        1.0 s   (cumulative  24.6 s)
+  look again: 0.25 m closer + detect (= t_look, §7)   3.0 s   (cumulative  27.6 s)
+  plan the arm (RRTConnect + TOTG)                   0.5 s   (cumulative  28.1 s)
+  reach, close, lift                                 6.0 s   (cumulative  34.1 s)
+  turn to face west (π/2 at 0.5 rad/s)               3.1 s   (cumulative  37.2 s)
+  carry to the island, 2.04 m at a = 0.5 m/s²        7.4 s   (cumulative  44.6 s)
+  turn to face south (π/2)                           3.1 s   (cumulative  47.8 s)
+  place and release                                  5.0 s   (cumulative  52.8 s)
+  total ≈ 53 s
