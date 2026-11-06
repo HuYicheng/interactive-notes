@@ -1,0 +1,10 @@
+# measured 2026-11-06 on a cloud VM: 2 vCPU, 8 GB RAM, Linux 6.18.44-fc-v242, gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, Python 3.13.16, numpy 2.5.3, scipy 1.18.1
+particles 500 x 61 beams: median 1.821 ms per update
+particles 2000 x 61 beams: median 5.515 ms per update
+particles 5000 x 61 beams: median 13.465 ms per update
+15-state EKF predict + 6-D update: median 8.31 us
+poses unknowns edges nnz(%) sparse_ms dense_ms
+250 750 260 5886 (1.046%) 0.75 12.8
+1000 3000 1044 23612 (0.262%) 2.62 411.8
+2000 6000 2089 47242 (0.131%) 4.76 2610.2
+4000 12000 4180 94516 (0.066%) 10.35 nan

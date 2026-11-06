@@ -27,6 +27,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 | 13 | One Second in Silicon · 芯片里的一秒钟 | https://huyicheng.github.io/interactive-notes/silicon/ | `silicon/index.html` |
 | 14 | One Machine, Many Worlds · 一台机器，几个世界 | https://huyicheng.github.io/interactive-notes/isolation/ | `isolation/index.html` |
 | 15 | One Robot, Dozens of Programs · 一台机器人，几十个程序 | https://huyicheng.github.io/interactive-notes/ros/ | `ros/index.html` |
+| 16 | Where Am I, and How Sure? · 我在哪，有多确定 | https://huyicheng.github.io/interactive-notes/estimation/ | `estimation/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -51,6 +52,7 @@ signals/index.html         Two Seconds of Sound · 两秒钟的录音
 silicon/index.html         One Second in Silicon · 芯片里的一秒钟
 isolation/index.html       One Machine, Many Worlds · 一台机器，几个世界
 ros/index.html             One Robot, Dozens of Programs · 一台机器人，几十个程序
+estimation/index.html      Where Am I, and How Sure? · 我在哪，有多确定
 toc.js                     the Contents panel shared by every page · 各篇共用的目录面板
 ```
 
@@ -482,6 +484,35 @@ Interactive demos: one second inside the robot, with every device, bus and messa
 Conventions: bit/s, kB and MB step by 1000 and KiB/MiB by 1024, quoted numbers keep the source's unit; "measured" numbers come from a 2-vCPU cloud VM (Ubuntu 24.04, Linux 6.18, not a real-time kernel, Python 3.13); "counted" numbers come from the official repositories in early November 2026; "est." marks an order-of-magnitude estimate without a source and "illustrative" a made-up example value; versions, defaults and support dates as of November 2026.
 
 约定：bit/s、kB、MB 按 1000 进位，KiB、MiB 按 1024 进位，引用的数照原文的写法；"我们测的"来自一台 2 个虚拟 CPU 的云虚拟机（Ubuntu 24.04、Linux 6.18，不是实时内核，Python 3.13）；"我们数的"来自 2026 年 11 月初的官方仓库；"估"是没有出处的数量级估计，"示意"是编的例子；版本、默认值和支持期以 2026 年 11 月为准。
+
+## 16. Where Am I, and How Sure? · 我在哪，有多确定
+
+Robot state estimation explained from a single noisy reading up to a whole robot, around the kitchen robot of page 15 (a differential-drive base with wheel encoders, a Hokuyo UST-10LX lidar, a RealSense D435i head camera with its Bosch BMI055 IMU, a Franka Research 3 arm, and a Jetson AGX Thor running robot_localization, nav2_amcl, a slam_toolbox map and a cup tracker). No sensor tells the robot where it is, so the page starts from what a reading is (truth + bias + noise, σ, covariance ellipses), why dead reckoning with wheels and an IMU drifts without bound, and how two readings are fused by their variances; then builds the Bayes predict-and-correct loop on a histogram, the Kalman filter in one dimension and as matrices (velocity estimated from positions alone), the EKF and the "banana" that breaks it, the UKF and error-state filters, and particle filters as nav2_amcl really implements them (likelihood field, its additive beam combination, KLD sampling, kidnapping). It then handles real robots: sensors with different rates, latencies and frames (time stamps, rewinding for lagged data, REP 103/105, not fusing the same information twice); SLAM with occupancy grids, scan matching and loop closure; factor graphs, sparsity and why a filter is a smoother that marginalised its past; tracking several cups with Mahalanobis gating; estimating biases, extrinsics, time offsets and external torque (momentum observer); how estimators fail and check themselves with the NIS; a landscape of methods from 1960 to 2025; and the kitchen robot's estimation layer with an error budget for grasping a cup. Some numbers are our own arithmetic or were measured on a small cloud VM (an AMCL update, a 15-state EKF cycle, a pose-graph solve sparse vs dense); the programs are in `estimation/calc/`.
+
+机器人的状态估计，从一个带噪声的读数讲到整台机器人，例子还是第 15 篇那台厨房机器人（轮子带编码器的差速底盘、Hokuyo UST-10LX 激光雷达、带 Bosch BMI055 IMU 的 RealSense D435i 头部相机、Franka Research 3 手臂，以及跑着 robot_localization、nav2_amcl、slam_toolbox 地图和杯子跟踪的 Jetson AGX Thor）。没有一个传感器会告诉机器人它在哪，所以这一篇先讲一个读数是什么（真值 + 偏差 + 噪声，σ，协方差椭圆），轮子和 IMU 的航迹推算为什么越走越偏、误差没有上限，两个读数怎样按方差合成一个；再在格子上搭出贝叶斯的"预测、修正"循环，讲一维和矩阵形式的卡尔曼滤波（只量位置也能估出速度），扩展卡尔曼和让它失灵的"香蕉"，无迹卡尔曼和误差状态滤波，以及 nav2_amcl 真正的粒子滤波做法（似然场、把各束光"加起来"、KLD 采样、绑架）。然后处理真实的机器人：频率、延迟、坐标系都不同的传感器（时间戳、迟到的读数退回去重算、REP 103/105、同一份信息只用一次）；用占据栅格、扫描匹配和回环做 SLAM；因子图、稀疏性，以及"滤波就是把过去边缘化掉的平滑"；用马氏距离的门限跟踪好几只杯子；估计零偏、外参、时间差和外力（动量观测器）；估计怎样出错、怎样用 NIS 自检；1960 到 2025 年的方法全景；最后给这台机器人搭出估计层，并为抓杯子算一笔误差预算。有些数是我们自己算的，或者在一台云上的小虚拟机里测的（AMCL 的一次更新、15 维 EKF 的一个周期、位姿图稀疏和稠密求解），程序在 `estimation/calc/`。
+
+0. One lap of the kitchen: the sensors, what each measures, the three things the robot must know, eight questions
+1. Every reading has an error: z = x + b + v, σ/√n, accuracy vs repeatability, the covariance matrix and ellipse
+2. Dead reckoning: wheel odometry and the IMU; δθ = b_g·t, δp = ½·b_a·t², δy ≈ d·δθ; UMBmark
+3. Two readings into one: inverse-variance weighting; information adds; never count the same information twice
+4. Bayes: prior × likelihood; predict and correct on a histogram
+5. The Kalman filter: Q, R and the gain; its history from Kalman 1960 to Apollo
+6. State vectors: covariance ellipses, observability, robot_localization's 15 variables, Stanley's UKF
+7. The EKF, the banana and the UKF; error-state and iterated filters
+8. Particle filters and nav2_amcl: likelihood field, additive beam weights, KLD sampling, kidnapping
+9. Fusion: time stamps, lagged data, clocks, REP 103 and REP 105, duplicated information
+10. SLAM: occupancy grids and log-odds, slam_toolbox, loop closure
+11. Factor graphs: filter or smoother, sparsity, marginalisation and fill-in, sliding windows, iSAM2
+12. Tracking cups: Mahalanobis gating, nearest neighbour vs global association, occlusion
+13. Estimating more than position: biases, extrinsics, time offsets, external torque and the momentum observer
+14. How estimation fails and how to notice: degeneracy, over-confidence, wrong association, time and frames; NIS
+15. The landscape: dozens of methods by representation and how much past they keep
+16. The kitchen robot's estimation layer and an error budget for grasping a cup
+17. Summary: one loop, several approximations, eight answers, further reading
+
+Conventions: "our arithmetic" comes from `estimation/calc/calcnum.py`; "measured" numbers come from a 2-vCPU cloud VM (Linux 6.18, not a real-time kernel); "read in the source" means the robot_localization, navigation2 and slam_toolbox repositories in early November 2026 (read only, not run); "est." marks an order-of-magnitude estimate without a source and "illustrative" a made-up example value; versions and defaults as of November 2026.
+
+约定："我们算的"来自 `estimation/calc/calcnum.py`；"我们测的"来自一台 2 个虚拟 CPU 的云虚拟机（Linux 6.18，不是实时内核）；"我们在源码里读到的"指 2026 年 11 月初的 robot_localization、navigation2 和 slam_toolbox 仓库（只读，没有运行）；"估"是没有出处的数量级估计，"示意"是编的例子；版本和默认值以 2026 年 11 月为准。
 
 ## Adding a page · 新加一篇
 

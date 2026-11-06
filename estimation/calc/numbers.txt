@@ -1,0 +1,90 @@
+
+## 1 fuse two readings (step 3)
+weights 1111.1 156.25 share 0.877 0.123; fused 1.5114 m, sigma 28.09 mm
+Mahalanobis distance between readings: 0.82 sigma
+
+## 2 1D Kalman filter steady state (step 5): Q=(3 mm)^2 per step, R=(30 mm)^2, 10 Hz
+P- 9.461e-05 (sigma- 9.73 mm)  K 0.0951  P 8.561e-05 (sigma 9.25 mm)
+first steps (k, K, sigma mm): [(1, 0.996, 29.9), (2, 0.502, 21.2), (3, 0.338, 17.5), (4, 0.258, 15.3), (5, 0.212, 13.8)] ... k=30 [0.096, 9.277]
+after 3 s without lidar: sigma 18.9 mm; after 30 s: 52.8 mm
+
+## 3 2D KF [x, v] steady state (step 6): dt=0.1, sigma_a=0.2 m/s^2, position meas sigma 0.03 m, P0 diag(0.2^2, 0.3^2)
+first five posteriors (sigma_x mm, sigma_v mm/s, rho): [(29.7, 297.4, np.float64(0.022)), (24.5, 241.9, np.float64(0.508)), (24.5, 171.9, np.float64(0.707)), (23.7, 123.1, np.float64(0.768)), (22.5, 92.9, np.float64(0.787))]
+steady posterior: sigma_x 16.6 mm, sigma_v 44.7 mm/s, rho 0.674; gain K = [0.3056 0.5556]
+prior: sigma_x 19.9 mm, sigma_v 49.0 mm/s, rho 0.739
+
+## 4 banana (step 7): drive d=2 m straight with heading sigma
+sigma_theta 5 deg: sample mean x 1.992 m (EKF says 2.000), sample sigma_y 0.173 m, EKF sigma_y 0.175 m, mean pulled back 0.8 cm, sample sigma_x 1.1 cm
+sigma_theta 20 deg: sample mean x 1.881 m (EKF says 2.000), sample sigma_y 0.659 m, EKF sigma_y 0.698 m, mean pulled back 11.9 cm, sample sigma_x 16.3 cm
+sigma_theta 45 deg: sample mean x 1.468 m (EKF says 2.000), sample sigma_y 1.191 m, EKF sigma_y 1.571 m, mean pulled back 53.2 cm, sample sigma_x 65.4 cm
+  with 5% range noise, sigma_theta 5: fraction inside EKF 2-sigma ellipse 0.864 (should be 0.865)
+  with 5% range noise, sigma_theta 20: fraction inside EKF 2-sigma ellipse 0.705 (should be 0.865)
+  with 5% range noise, sigma_theta 45: fraction inside EKF 2-sigma ellipse 0.402 (should be 0.865)
+  exact (quadrature): sigma_theta 5: inside 86.4 %, sample-mean x = 2 exp(-s^2/2) = 1.992 m
+  exact (quadrature): sigma_theta 20: inside 70.3 %, sample-mean x = 2 exp(-s^2/2) = 1.882 m
+  exact (quadrature): sigma_theta 45: inside 40.1 %, sample-mean x = 2 exp(-s^2/2) = 1.469 m
+
+## 5 KLD sample count as in nav2_amcl (pop_err 0.05, pop_z 0.99 used directly)
+k=10: raw 131, clamped 500
+k=50: raw 588, clamped 588
+k=100: raw 1129, clamped 1129
+k=200: raw 2188, clamped 2000
+k=500: raw 5303, clamped 2000
+k=2000: raw 20616, clamped 2000
+UST-10LX beams used by AMCL max_beams 60: step 18 count 61
+
+## 6 D435 depth RMS error: sigma_z = z^2 * subpixel / (f_px * B)
+xres 848 f 424 px: z=0.4 m -> 0.60 mm, z=0.8 m -> 2.42 mm, z=1.0 m -> 3.77 mm, z=2.0 m -> 15.09 mm, z=4.0 m -> 60.38 mm
+xres 1280 f 640 px: z=0.4 m -> 0.40 mm, z=0.8 m -> 1.60 mm, z=1.0 m -> 2.50 mm, z=2.0 m -> 10.00 mm, z=4.0 m -> 40.00 mm
+
+## 7 IMU dead reckoning (BMI055 numbers)
+gyro bias 1 deg/s -> 60 deg after 60 s; 0.01 deg/s -> 0.60 deg/min
+gyro ARW 0.014 deg/sqrt(s): 60 s -> 0.108 deg, 1 h -> 0.84 deg
+accel bias 70 mg = 0.6865 m/s^2: 1 s -> 0.343 m, 10 s -> 34.32 m, 60 s -> 1235.6 m
+accel bias 1 mg = 0.0098 m/s^2: 1 s -> 0.005 m, 10 s -> 0.49 m, 60 s -> 17.7 m
+tilt 1 deg leaks 0.1711 m/s^2: 10 s -> 8.56 m
+VRW 1.471 mm/s/sqrt(s): position sigma after 10 s 26.9 mm, 60 s 395 mm
+heading-bias lateral error, v=0.3 m/s, bias 0.01 deg/s: 60 s -> 9.4 cm
+
+## 8 wheel odometry systematic errors (b = 0.40 m)
+wheelbase 1% error: per lap (2 pi) heading error 0.0628 rad = 3.6 deg; lateral after 6 m 0.377 m
+wheel radius mismatch 0.5%: over 4 m heading 0.050 rad = 2.86 deg, lateral 0.100 m
+
+## 9 time offsets
+80 ms latency, rotating 0.5 rad/s, cup 0.85 m from the base centre: 3.4 cm; driving 0.5 m/s: 4.0 cm
+lidar sweep 25 ms, the 270 deg field takes 18.75 ms: at 0.5 m/s 9.4 mm; rotating 0.5 rad/s 0.54 deg -> at 5 m 4.7 cm
+
+## 10 chi-square quantiles
+1 dof: 95% 3.841 99% 6.635
+2 dof: 95% 5.991 99% 9.21
+3 dof: 95% 7.815 99% 11.345
+mean of N=10 NIS values with m=2: 95% line = chi2(0.95, 20) / 10 = 31.41 / 10 = 3.14
+mean of N=20 NIS values with m=2: 95% line = chi2(0.95, 40) / 20 = 55.76 / 20 = 2.79
+
+## 11 momentum observer delay
+K_O 50.0/s (time constant 20 ms): step 5.0 N m crosses 2.0 N m after 10.2 ms; 63% after 20 ms
+
+## 12 error budget for the cup (sigma, mm)
+  depth noise at 0.8 m (1280 px): 1.60
+  detection centroid (illustrative): 5.00
+  camera extrinsic translation (illustrative): 2.00
+  camera extrinsic rotation 0.2 deg at 0.8 m: 2.79
+  arm absolute accuracy after kinematic calibration (assumed; datasheet <0.1 mm is repeatability): 0.30
+base_link chain total 6.28 mm (2 sigma 12.6)
+map chain (+ 2 x 30 mm localisation, illustrative) 42.9 mm
+  second look depth noise at 0.8 m (1280 px): 0.76
+  second look detection centroid (illustrative): 3.44
+  second look camera extrinsic translation (illustrative): 2.00
+  second look camera extrinsic rotation 0.2 deg at 0.8 m: 1.92
+  second look arm absolute accuracy after kinematic calibration (assumed; datasheet <0.1 mm is repeatability): 0.30
+second look at 0.55 m: 4.49 mm (2 sigma 8.98)
+ellipse sx 5 cm, sy 2 cm, rho 0.6: eigen [ 2.407 26.593] axes [1.551 5.157] angle 14.87
+grid cells 120*90*360 = 3888000 ; lidar 2 deg at 5 m 0.1746 m
+
+## 13 occupancy log-odds
+0.7 0.847
+0.4 -0.405
+3 hits -> 2.542 p 0.927
+
+## 14 Stanley without GPS
+1.7 m / 1300 m = 0.13 %
