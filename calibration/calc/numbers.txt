@@ -1,0 +1,116 @@
+## 1 story: remounted head camera, bias at the grasp
+yaw 0.5 deg at 0.8 m -> 6.98 mm; + shift 1.0 -> bias 7.98 mm
+yaw 0.5 deg at 0.55 m -> 4.80 mm; + shift 1.0 -> bias 5.80 mm
+no bias:  first look P = 0.8887; second look P = 0.9741
+with bias: first look P = 0.6240; second look P = 0.8250
+failures per 20 grasps: no bias 0.5; with bias 3.5
+  bias 0 mm -> s=6.28: 0.889, s=4.49: 0.974, s=3.0: 0.999, s=1.0: 1.000, s=0.1: 1.000
+  bias 5.8 mm -> s=6.28: 0.742, s=4.49: 0.825, s=3.0: 0.919, s=1.0: 1.000, s=0.1: 1.000
+  bias 8 mm -> s=6.28: 0.623, s=4.49: 0.672, s=3.0: 0.748, s=1.0: 0.977, s=0.1: 1.000
+  bias 10 mm -> s=6.28: 0.499, s=4.49: 0.500, s=3.0: 0.500, s=1.0: 0.500, s=0.1: 0.500
+  bias 12 mm -> s=6.28: 0.375, s=4.49: 0.328, s=3.0: 0.252, s=1.0: 0.023, s=0.1: 0.000
+RMS error with bias 5.80 and sigma 4.49: sqrt(b^2+s^2) = 7.33 mm
+
+## 1b looking many times from the same spot (0.55 m): only the per-look part averages away
+per-look random part 3.52 mm; fixed-for-this-robot part 2.79 mm (sigma over our ignorance)
+  n = 1: sigma 4.49 mm; P(no remount bias) 0.9740; P(remount bias 5.80) 0.8250
+  n = 4: sigma 3.30 mm; P(no remount bias) 0.9976; P(remount bias 5.80) 0.8986
+  n = 16: sigma 2.92 mm; P(no remount bias) 0.9994; P(remount bias 5.80) 0.9246
+  n = inf: sigma 2.79 mm; P(no remount bias) 0.9997; P(remount bias 5.80) 0.9340
+
+## 2 ISO 9283: repeatability RP = mean(l) + 3 std(l) for isotropic Gaussian scatter, sigma per axis
+3D: mean l = 1.5958 s, std l = 0.6734 s -> RP = 3.6161 s; RP 0.1 mm -> s = 27.7 um per axis
+2D: RP = 3.2187 s
+30 simulated poses (seed 9283): RP = 0.0930 mm
+
+## 3 lever arms and sensitivities (cup A)
+f_rgb = 640/tan(34.5 deg) = 931.2 px; 1 px at 0.80 m = 0.859 mm; at 0.55 m = 0.591 mm
+  angle 0.05 deg: at 0.55 m 0.48 mm, 0.80 m 0.70 mm, 2 m 1.7 mm, 4 m 3.5 mm, 10 m 8.7 mm
+  angle 0.1 deg: at 0.55 m 0.96 mm, 0.80 m 1.40 mm, 2 m 3.5 mm, 4 m 7.0 mm, 10 m 17.5 mm
+  angle 0.2 deg: at 0.55 m 1.92 mm, 0.80 m 2.79 mm, 2 m 7.0 mm, 4 m 14.0 mm, 10 m 34.9 mm
+  angle 0.5 deg: at 0.55 m 4.80 mm, 0.80 m 6.98 mm, 2 m 17.5 mm, 4 m 34.9 mm, 10 m 87.3 mm
+  angle 1.0 deg: at 0.55 m 9.60 mm, 0.80 m 13.96 mm, 2 m 34.9 mm, 4 m 69.8 mm, 10 m 174.6 mm
+cx off by 4 px at 0.80 m: 3.44 mm
+focal length 1 % wrong: lateral error = 1 % of the lateral offset x: x = 0 -> 0; x = 0.10 m -> 1.0 mm; x = 0.40 m -> 4.0 mm
+depth scale 1 % wrong: 0.80 m -> 8.0 mm along the ray; 0.55 m -> 5.5 mm
+page-16 budget at 0.80 m: depth noise 1.60, detection centre 5.00, extrinsic translation 2.00, extrinsic rotation 0.2 deg at 0.8 m 2.79, arm absolute 0.30
+  RSS = 6.28 mm; worst case (all same sign) = 11.69 mm; largest term share of variance = 63 %
+  at 0.55 m: depth noise 0.76, detection centre 3.44, extrinsic translation 2.00, extrinsic rotation 1.92, arm absolute 0.30 -> RSS 4.49
+  halve the extrinsic rotation (0.2 -> 0.1 deg) at 0.8 m: RSS 5.80; halve detection (5 -> 2.5): 4.55
+  correlation rho +0 between extrinsic translation and rotation: budget at 0.8 m 6.28 mm; the pair alone at 0.55 m 2.77 mm
+  correlation rho +1 between extrinsic translation and rotation: budget at 0.8 m 7.11 mm; the pair alone at 0.55 m 3.92 mm
+  correlation rho -1 between extrinsic translation and rotation: budget at 0.8 m 5.32 mm; the pair alone at 0.55 m 0.08 mm
+  correlation rho -0.9 between extrinsic translation and rotation: budget at 0.8 m 5.42 mm; the pair alone at 0.55 m 0.88 mm
+  averaging n readings with pairwise correlation rho: sigma_mean/sigma = sqrt(rho + (1-rho)/n); rho 0.5, n -> inf: 0.707
+  Phi(1) = 0.8413, Phi(2) = 0.9772
+
+## 4 calibration as least squares: depth scale s and offset b, z_meas = (1+s) z + b + v
+noise per reading: sigma_z(z) from the D435 formula plus 0.5 mm for placing the target (illustrative)
+  all at 0.80 m (x20): sigma_s = 2965820.801 %, sigma_b = 23726566.41 mm, rho = -1.000, cond = 2.86e+21 (columns scaled to equal length: inf); predicted sigma at 0.55 m 7414552.00, 0.8 m 0.27, 2.0 m 35589849.61 mm
+    (all readings at one distance: J has two proportional columns, the matrix is exactly singular; the numbers above are round-off)
+  0.75-0.85 m (x20): sigma_s = 1.060 %, sigma_b = 8.43 mm, rho = -0.999, cond = 3.25e+08 (columns scaled to equal length: 2.05e+03); predicted sigma at 0.55 m 2.62, 0.8 m 0.38, 2.0 m 12.79 mm
+  0.4-2.0 m (x20): sigma_s = 0.131 %, sigma_b = 0.70 mm, rho = -0.909, cond = 1.64e+06 (columns scaled to equal length: 20.9); predicted sigma at 0.55 m 0.31, 0.8 m 0.51, 2.0 m 2.01 mm
+  0.4 and 2.0 m only (x20): sigma_s = 0.198 %, sigma_b = 0.83 mm, rho = -0.970, cond = 2.97e+06 (columns scaled to equal length: 65.6); predicted sigma at 0.55 m 0.35, 0.8 m 0.81, 2.0 m 3.17 mm
+  0.4-1.2 m (x20): sigma_s = 0.134 %, sigma_b = 0.74 mm, rho = -0.941, cond = 2.69e+06 (columns scaled to equal length: 33); predicted sigma at 0.55 m 0.25, 0.8 m 0.45, 2.0 m 1.99 mm
+
+## 5 stereo depth: disparity offset dd gives dz = z^2 dd / (f B), f = 640 px, B = 50 mm
+  dd 0.05 px: 0.4 m -> 0.25 mm (0.06 %), 0.55 m -> 0.47 mm (0.09 %), 0.8 m -> 1.00 mm (0.12 %), 1.2 m -> 2.25 mm (0.19 %), 2.0 m -> 6.25 mm (0.31 %)
+  dd 0.1 px: 0.4 m -> 0.50 mm (0.12 %), 0.55 m -> 0.95 mm (0.17 %), 0.8 m -> 2.00 mm (0.25 %), 1.2 m -> 4.50 mm (0.38 %), 2.0 m -> 12.50 mm (0.62 %)
+  dd 0.32 px: 0.4 m -> 1.60 mm (0.40 %), 0.55 m -> 3.02 mm (0.55 %), 0.8 m -> 6.40 mm (0.80 %), 1.2 m -> 14.40 mm (1.20 %), 2.0 m -> 40.00 mm (2.00 %)
+  2 % at 2 m = 40 mm <-> dd = 0.32 px
+  subpixel noise 0.08 px -> sigma_z: 0.4 m 0.40 mm, 0.55 m 0.76 mm, 0.8 m 1.60 mm, 2.0 m 10.00 mm
+  baseline off by 0.5 %: depth off by 0.5 % -> 0.8 m 4.0 mm, 2 m 10.0 mm
+  baseline off by 1.0 %: depth off by 1.0 % -> 0.8 m 8.0 mm, 2 m 20.0 mm
+  example (illustrative): dd = 0.1 px and scale -0.5 %: raw error 0.4 m -2.50, 0.55 m -3.69, 0.8 m -5.99, 1.2 m -10.46, 2.0 m -22.36 mm
+    tare at 0.80 m (offset only): dd_hat = 0.302 px; residual 0.4 m -1.00, 0.55 m -0.86, 0.8 m +0.00, 1.2 m +3.02, 2.0 m +15.19 mm
+
+## 6 hand-eye: translation from (R_A - I) t_X = R_X t_B - t_A; (R_A - I) has singular values 2 sin(theta/2), 2 sin(theta/2), 0
+  rotation 5 deg between poses: 2 sin(theta/2) = 0.087; noise amplification x11.46
+  rotation 10 deg between poses: 2 sin(theta/2) = 0.174; noise amplification x5.74
+  rotation 20 deg between poses: 2 sin(theta/2) = 0.347; noise amplification x2.88
+  rotation 30 deg between poses: 2 sin(theta/2) = 0.518; noise amplification x1.93
+  rotation 45 deg between poses: 2 sin(theta/2) = 0.765; noise amplification x1.31
+  rotation 60 deg between poses: 2 sin(theta/2) = 1.000; noise amplification x1.00
+  rotation 90 deg between poses: 2 sin(theta/2) = 1.414; noise amplification x0.71
+
+## 7 arm
+  independent kinematic parameters 4r + 2p + 6, FR3 r = 7, p = 0: 34
+  joint-1 offset 0.1 deg at 0.60 m from the joint-1 axis (arm base 0.25 m ahead of the base centre, illustrative): 1.05 mm; 0.01 deg: 0.105 mm
+  after moving 0.25 m closer the cup is 0.60 m ahead of the base centre, 0.35 m from the joint-1 axis: 0.1 deg -> 0.61 mm
+  aluminium 23e-6 /K x 0.855 m x 10 K = 0.197 mm
+
+## 8 IMU (BMI055 datasheet values)
+  gyro noise 0.014 deg/s/sqrt(Hz) = 0.84 deg/sqrt(h) = 2.443e-04 rad/s/sqrt(Hz); x10 for Kalibr = 2.443e-03
+  accel noise 150 ug/sqrt(Hz) = 1.471e-03 m/s^2/sqrt(Hz)
+  gyro offset over temperature 0.015 deg/s/K x 20 K = 0.30 deg/s -> 18 deg in 60 s if uncorrected
+  accel offset drift 1 mg/K x 20 K = 20 mg = 0.196 m/s^2 -> 1/2 a t^2 over 10 s = 9.8 m
+  gyro scale 1 %: one full turn -> 3.6 deg; cross-axis 1 % at 0.5 rad/s -> 0.29 deg/s on the other axes
+  datasheet density is one-sided (0.014 x sqrt(47 Hz) = 0.096 deg/s rms vs 0.1 listed): std of a T-second average = 0.014/sqrt(2T): 1 s 0.0099, 100 s 0.00099 deg/s
+  Allan / IEEE N = 0.014/sqrt(2) = 0.0099 deg/s/sqrt(Hz) = 0.59 deg/sqrt(h) = 1.728e-04 rad/s/sqrt(Hz)
+  six-position example (illustrative): +g reads 9.95, -g reads -9.75 -> bias (ap+am)/2 = 0.100 m/s^2, scale (ap-am)/(2g) = 1.0044
+
+## 9 lidar on the base
+  lidar 0.20 m ahead in the URDF but really 0.22 m: turn 90 deg in place -> scans disagree by 2 sin(45 deg) x 20 mm = 28.3 mm; 180 deg -> 40 mm
+
+## 10 time offsets: error = v dt (driving) or r w dt (turning)
+  dt 0.2 ms: 0.3 m/s -> 0.06 mm; turning 0.5 rad/s, cup at 0.80 m -> 0.08 mm; arm tip 0.25 m/s -> 0.05 mm
+  dt 5 ms: 0.3 m/s -> 1.50 mm; turning 0.5 rad/s, cup at 0.80 m -> 2.00 mm; arm tip 0.25 m/s -> 1.25 mm
+  dt 30 ms: 0.3 m/s -> 9.00 mm; turning 0.5 rad/s, cup at 0.80 m -> 12.00 mm; arm tip 0.25 m/s -> 7.50 mm
+  dt 80 ms: 0.3 m/s -> 24.00 mm; turning 0.5 rad/s, cup at 0.80 m -> 32.00 mm; arm tip 0.25 m/s -> 20.00 mm
+
+## 11 load and tool
+  load of 0.15 kg not configured -> fake external force 1.47 N
+  load of 0.5 kg not configured -> fake external force 4.90 N
+  centre of mass 2 cm off with 0.15 kg -> 0.029 N m
+  pivot, 8 poses on a cone of half-angle 5 deg, 0.1 mm noise: sigma tip (x, y, z along the tool) = 0.573, 0.573, 0.406 mm
+  pivot, 8 poses on a cone of half-angle 15 deg, 0.1 mm noise: sigma tip (x, y, z along the tool) = 0.192, 0.192, 0.137 mm
+  pivot, 8 poses on a cone of half-angle 30 deg, 0.1 mm noise: sigma tip (x, y, z along the tool) = 0.098, 0.098, 0.071 mm
+  pivot, 8 poses on a cone of half-angle 45 deg, 0.1 mm noise: sigma tip (x, y, z along the tool) = 0.068, 0.068, 0.050 mm
+
+## 15 the budget after calibration (second look, 0.55 m)
+  depth noise 0.76, detection centre 3.44, extrinsic translation 0.50, extrinsic rotation 0.05 deg 0.48, arm absolute 0.30 -> sigma 3.60 mm, P = 0.9945; with 1 mm residual bias P = 0.9927
+  page-16 assumptions (2.0 mm, 0.2 deg) at 0.55 m: sigma 4.49 -> P = 0.9741
+  skip the hand-eye recalibration after the remount: bias 5.80 mm, sigma 4.49 -> P = 0.8250
+  arm left on the nominal model, everything else calibrated: b = 5 mm -> P = 0.918; b = 3 mm -> 0.974
+  largest residual bias that keeps P >= 0.99 with sigma 3.60: b 1.0 -> 0.9927, b 1.5 -> 0.9902, b 1.53 -> 0.9900, b 2.0 -> 0.9864
+  skip the hand-eye: bias 5.80 and the old extrinsic sigma (2.0 mm, 0.2 deg) -> sigma 4.49 -> P = 0.8250; with sigma 3.60 it would be 0.8783

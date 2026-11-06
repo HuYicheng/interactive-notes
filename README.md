@@ -29,6 +29,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 | 15 | One Robot, Dozens of Programs · 一台机器人，几十个程序 | https://huyicheng.github.io/interactive-notes/ros/ | `ros/index.html` |
 | 16 | Where Am I, and How Sure? · 我在哪，有多确定 | https://huyicheng.github.io/interactive-notes/estimation/ | `estimation/index.html` |
 | 17 | What Next, and How? · 接下来做什么，怎么做 | https://huyicheng.github.io/interactive-notes/planning/ | `planning/index.html` |
+| 18 | A Little Off, Every Time · 每次都偏一点 | https://huyicheng.github.io/interactive-notes/calibration/ | `calibration/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -55,6 +56,7 @@ isolation/index.html       One Machine, Many Worlds · 一台机器，几个世�
 ros/index.html             One Robot, Dozens of Programs · 一台机器人，几十个程序
 estimation/index.html      Where Am I, and How Sure? · 我在哪，有多确定
 planning/index.html        What Next, and How? · 接下来做什么，怎么做
+calibration/index.html     A Little Off, Every Time · 每次都偏一点
 toc.js                     the Contents panel shared by every page · 各篇共用的目录面板
 ```
 
@@ -543,6 +545,34 @@ Robot planning and decision-making explained from the bottom up, around the kitc
 Conventions: "our arithmetic" comes from `planning/calc/calcnum.py`; "read in the source" means the Humble branches of navigation2 and moveit2, BehaviorTree.CPP 3.8, OMPL and PlanSys2 in early November 2026 (read only, not run); "est." marks an order-of-magnitude estimate without a source and "illustrative" a made-up example value; versions and defaults as of November 2026.
 
 约定："我们算的"来自 `planning/calc/calcnum.py`；"我们在源码里读到的"指 2026 年 11 月初 navigation2 和 moveit2 的 Humble 分支、BehaviorTree.CPP 3.8、OMPL 和 PlanSys2 的仓库（只读，没有运行）；"估"是没有出处的数量级估计，"示意"是编的例子；版本和默认值以 2026 年 11 月为准。
+
+## 18. A Little Off, Every Time · 每次都偏一点
+
+Robot errors and calibration explained from the bottom up, around the kitchen robot of pages 15–17 (a differential-drive base, a Hokuyo UST-10LX lidar, a RealSense D435i head camera with a built-in Bosch BMI055 IMU and a Franka Research 3 arm on ROS 2 Humble). After its head camera was taken off and put back, the robot keeps missing cup A on the same side, and looking again does not help. The page is self-contained: it starts from "reading = truth + bias + noise", averaging (σ/√n) and the difference between accuracy and repeatability (ISO 9283; why a 0.1 mm repeatability says little about absolute accuracy), then shows how errors propagate along the chain pixel → intrinsics → depth → camera extrinsics → arm kinematics → tool (sensitivities, lever arms, J Σ Jᵀ, error budgets, error fields and why a one-point correction is not a calibration), and why calibration is weighted least squares whose data must be spread out for the parameters to be identifiable. Each link is then calibrated in turn: camera intrinsics (pinhole model, distortion, Zhang's method, how to place the board), depth bias that grows with distance (RealSense self-calibration and Tare), hand–eye calibration of the head camera (eye-to-hand, AX = XB, why the hand must rotate a lot), arm kinematic calibration (identification Jacobian, 4r + 2p + 6 identifiable parameters), the IMU (error model, six positions, Allan variance, Kalibr's noise parameters), lidar, wheels and camera–lidar extrinsics, time offsets, payload, F/T gravity compensation and TCP pivot calibration. It ends with validation (training vs test error, overfitting, the touch test, loop closure), drift and online self-calibration (observability and degenerate motions), a landscape table, and the robot's calibration plan with a residual error budget. Our own arithmetic is in `calibration/calc/`.
+
+机器人的误差和标定，从下往上讲，例子还是第 15–17 篇那台厨房机器人（差速底盘、Hokuyo UST-10LX 激光雷达、内置 Bosch BMI055 IMU 的 RealSense D435i 头部相机、Franka Research 3 手臂，跑 ROS 2 Humble）。头上的相机拆下来又装回去以后，它抓杯子 A 时总是偏向同一边，再看一眼也没用。这一篇能单独读：从"读数 = 真值 + 偏差 + 噪声"、平均（σ/√n）和绝对精度、重复精度的区别讲起（ISO 9283；为什么 0.1 mm 的重复精度说明不了绝对精度），再讲误差怎样沿着"像素 → 内参 → 深度 → 相机外参 → 手臂运动学 → 工具"这条链传下去（灵敏度、杠杆臂、J Σ Jᵀ、误差预算、误差场，以及为什么在一个点上对准不算标定），为什么标定就是加权最小二乘、数据要铺开参数才分得开。然后把链上每一段拆开来标：相机内参（小孔模型、畸变、张正友标定、棋盘格怎么摆），随距离长的深度偏差（RealSense 的自标定和 Tare），头部相机的手眼标定（眼在手外、AX = XB、为什么手要大幅转），手臂的运动学标定（辨识雅可比、4r + 2p + 6 个可辨识参数），IMU（误差模型、六面法、Allan 方差、Kalibr 的噪声参数），激光雷达、轮子和相机–激光的外参，时间偏差，负载、力传感器的重力补偿和工具中心点的枢轴法。最后讲怎么验证（训练误差和测试误差、过拟合、摸一下、闭环检查），标定怎样过期和在线标定（可观性和退化运动），一张全景表，再给这台机器人排一份标定计划，算一笔标完以后的误差账。我们自己算的数在 `calibration/calc/`。
+
+0. A little off, every time: the remounted camera, the error chain from pixel to fingertip, nine questions
+1. Two kinds of error: bias and noise, σ/√n, RMS² = b² + σ², trueness and precision, ISO 9283 accuracy and repeatability
+2. How errors travel: sensitivities and lever arms, signed biases vs root-sum-square, J Σ Jᵀ, error budgets, error fields
+3. Calibration is estimation: weighted least squares, (JᵀWJ)⁻¹, identifiability, excitation, wrong models
+4. The camera: pinhole model, K, distortion, Zhang's method, reprojection error, how to place the board
+5. Depth: z = fB/d, noise and bias that grow with distance, plane tests, RealSense self-calibration and Tare
+6. Hand–eye: eye-in-hand and eye-to-hand, AX = XB, rotate a lot about different axes
+7. The arm: DH parameters, identification Jacobian, 4r + 2p + 6, repeatability vs accuracy, applying a calibration
+8. The IMU: error model, BMI055 datasheet, six positions, Allan variance, Kalibr's noise parameters
+9. Lidar, wheels and camera: spin-in-place calibration, UMBmark, the camera–lidar plane constraint
+10. Time: δp ≈ vΔt + ωrΔt, hardware stamps, clock sync, cross-correlation, Kalibr
+11. Load and tool: phantom external forces, F/T gravity compensation, TCP pivot calibration
+12. Checking: training vs test error, overfitting, the touch test, loop closure
+13. Drift: what makes a calibration expire, start-up checks, online self-calibration and degenerate motions
+14. The landscape: what to calibrate, against what, with which tool, how often, how to check
+15. The kitchen robot's calibration plan, its dependencies and the residual error budget
+16. Summary: two kinds of error, one least-squares problem, nine answers, further reading
+
+Conventions: "our arithmetic" comes from `calibration/calc/calcnum.py`; "est." marks an order-of-magnitude estimate without a source and "illustrative" a made-up example value (the 0.5° and 1 mm of the remounted camera are illustrative); versions and specifications as of November 2026.
+
+约定："我们算的"来自 `calibration/calc/calcnum.py`；"估"是没有出处的数量级估计，"示意"是编的例子（重装相机的 0.5° 和 1 mm 是示意的）；版本和规格以 2026 年 11 月为准。
 
 ## Adding a page · 新加一篇
 
