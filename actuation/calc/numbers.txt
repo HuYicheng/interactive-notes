@@ -1,0 +1,232 @@
+
+§1 motor (EC 45 flat 70 W, 24 V)
+k_e from speed constant = 0.0405 V·s/rad (k_t = 0.0404 N·m/A)
+ideal no-load speed 24 V × 236 rpm/V = 5664 rpm; datasheet 5600 rpm
+no-load friction torque k_t·I0 = 10.9 mN·m
+model no-load speed (24 − R·I0)·k_n = 5627 rpm
+stall current V/R = 41.9 A; stall torque = 1.692 N·m
+gradient R/k_t² = 351.1 rad/s per N·m = 3.35 rpm/mN·m
+mechanical time constant R·J/k_t² = 6.35 ms
+nominal: k_t × I_N = 132.9 mN·m (sheet 134)
+cold line at 134 mN·m: 5151 rpm (sheet nominal speed 4750)
+max mechanical power ≈ τ_stall·ω0/4 = 248 W (theoretical, cold, short)
+lift hold (design 2)   τ=0.0716 N·m n=   0 rpm I=1.77 A P_mech=0.0 W P_cu=1.80 W P_in=1.8 W eff=0%
+lift raise 0.1 m/s     τ=0.0716 N·m n=4200 rpm I=2.04 A P_mech=31.5 W P_cu=2.39 W P_in=38.7 W eff=81%
+voltage 24.00 V at motor: no-load ≈ 5627 rpm; at 0.0716 N·m ≈ 5388 rpm
+voltage 23.04 V at motor: no-load ≈ 5401 rpm; at 0.0716 N·m ≈ 5161 rpm
+voltage 18.90 V at motor: no-load ≈ 4424 rpm; at 0.0716 N·m ≈ 4184 rpm
+voltage 18.00 V at motor: no-load ≈ 4211 rpm; at 0.0716 N·m ≈ 3972 rpm
+
+§2 heat (two-node model: winding C_w = τ_w/R_th1, housing C_h = τ_motor/R_th2)
+C_w = 6.49 J/K, C_h = 49.8 J/K, R_th total 9.19 K/W
+allowed loss at 25 °C ambient: 100 K / 9.19 = 10.88 W
+R at 125 °C = 0.796 Ω (+39%)
+copper-only continuous current for 125 °C: 3.70 A (sheet 3.29 A)
+steady winding temperature at 1.77 A (copper only, 25 °C ambient): 42.6 °C
+steady winding temperature at 3.29 A (copper only, 25 °C ambient): 98.3 °C
+steady winding temperature at 3.70 A (copper only, 25 °C ambient): 125.3 °C
+steady winding temperature at 5.00 A (copper only, 25 °C ambient): 295.6 °C
+derating: ambient 25 °C → I_cont ≈ 3.29 × sqrt((125−25)/100) = 3.29 A
+derating: ambient 35 °C → I_cont ≈ 3.29 × sqrt((125−35)/100) = 3.12 A
+derating: ambient 45 °C → I_cont ≈ 3.29 × sqrt((125−45)/100) = 2.94 A
+first design holding at 11.17 A (if the drive allowed it): winding reaches 125 °C after 8.3 s
+3.29 A for 3000 s: T_w 98.3 °C, T_h 45.3 °C
+1.77 A (design-2 hold) for 3000 s: T_w 42.6 °C
+design-2 duty cycle 58.6 s: RMS current 1.41 A (motor continuous 3.29 A)
+
+§3 battery and power budget (8S EVE LF80, ILLUSTRATIVE pack)
+pack: nominal 25.6 V, full 29.2 V, cut-off 20.0 V, 80 Ah → 2048 Wh
+cells AC resistance 8 × 0.5 mΩ = 4.0 mΩ; pack incl. BMS, fuse, cables 30 mΩ (ILLUSTRATIVE)
+1C = 80 A, 3C = 240 A (cells); mass of cells 13.0 kg
+  Jetson AGX Thor (40–130 W; take 100 W)       100.0 W  (40%)
+  real-time PC (ILLUSTRATIVE)                   35.0 W  (14%)
+  FR3 controller ~80 W via inverter η 0.90      88.9 W  (35%)
+  sensors, switch, MCU (ILLUSTRATIVE)           15.0 W  ( 6%)
+  wheels, average (ours)                        10.0 W  ( 4%)
+  lift, average (ours)                           2.0 W  ( 1%)
+  total 251 W → 9.8 A at 25.6 V; runtime 2048 Wh / 251 W = 8.2 h
+  with Thor at 130 W: 281 W → 7.3 h
+  motors (wheels + lift) share of the average: 5%
+sag at 10 A × 30 mΩ = 0.30 V
+sag at 30 A × 30 mΩ = 0.90 V
+sag at 60 A × 30 mΩ = 1.80 V
+rolling resistance (100 kg, c_rr 0.015, ILLUSTRATIVE): 14.7 N; at 0.3 m/s 4.4 W
+
+§4 gear ratio, reflected inertia
+wheel: J_m × 74² = 0.0991 kg·m² per wheel; both wheels as mass at the rim: 31.0 kg
+wheel continuous torque from the motor: 0.134 × 74 × 0.72 = 7.14 N·m (gearhead continuous 15 N·m → the motor limits)
+current limit to protect the gearhead (22 N·m intermittent): 10.22 A
+motor peak with drive 15 A: 0.606 N·m → at wheel 32.3 N·m (would exceed 22)
+wheel top speed at light load (5432 rpm /74, r 0.08): 0.615 m/s
+base: 2 × 22 N·m / 0.08 = 550.0 N → accel (100 kg + 31 kg reflected) 4.09 m/s²
+0.5 m/s²: force 80.2 N, wheel torque 3.21 N·m each, motor current 1.49 A
+lift load 26 kg (FR3 18.3 + Hand 0.73 + payload 3 + carriage ~4, ILLUSTRATIVE): F = 255.1 N
+design 1: lead 10 mm, direct: rad of motor per m = 628; holding torque 0.4510 N·m = 11.16 A; motor speed at 0.1 m/s 600 rpm
+   rotor seen as mass at the carriage J_m·k² = 7.1 kg
+design 2: lead 5 mm + 3.5:1: rad of motor per m = 4398; holding torque 0.0716 N·m = 1.77 A; motor speed at 0.1 m/s 4200 rpm
+   rotor seen as mass at the carriage J_m·k² = 350.1 kg
+ball screw 16 mm × 0.5 m steel: m = 0.789 kg, J = 2.53e-05 kg·m²; as mass: lead 5 mm 39.9 kg, lead 10 mm 10.0 kg
+inertia-matching ratio sqrt(m/J_m) = 1199 rad/m → with a 5 mm lead N = 0.95; design 2 is 3.67 × that
+joint example J_m × N²: N =   6 → 0.0007 kg·m²
+joint example J_m × N²: N =  80 → 0.1158 kg·m²
+joint example J_m × N²: N = 100 → 0.1810 kg·m²
+joint example J_m × N²: N = 160 → 0.4634 kg·m²
+Mini Cheetah rotor 7.2e−5 × 36 = 0.00259 kg·m² (thesis output inertia 0.0023); same rotor ×100² = 0.72
+
+§5 gears
+planetary: sun 12, ring 30 → 1 + 30/12 = 3.50; wheel 74:1 = 147/2 = 3.5 × 3.5 × 6 = 73.5 (three stages, maxon 203123)
+harmonic: flexspline 200, circular 202 → 100:1 (output opposite); 160/162 → 80:1
+stage efficiencies 0.9^1..4 = 0.900, 0.810, 0.729, 0.656 (GP 42 C 90/81/72/64)
+CSD-20-80 joint with EC45: continuous 0.134 × 80 × 0.76 = 8.15 N·m; drive peak 0.606 × 80 × 0.76 = 36.8 N·m
+
+§6 screws
+Roton check φ 9.34°: λ 8° → forward 45%, backdrive -17%
+Roton check φ 9.34°: λ 20° → forward 65%, backdrive 52%
+ball screw 16×5: lead angle 5.68°
+ball screw 16×10: lead angle 11.25°
+lead screw Tr16×4 (pitch dia 14): lead angle 5.20°
+Tr16×4, μ 0.10 (φ 5.71°): forward 47%, backdrive -10% → self-locking
+lift with Tr16×4 + 3.5:1: raising torque 0.1092 N·m = 2.70 A without motor friction (ball screw design: 1.77 A); copper loss ratio 2.3× (with friction: §16)
+   … but a self-locking screw needs no torque to hold: 0 A at rest
+design 2 power off: load torque on the screw 0.1624 N·m; at the motor (planetary backdrive η 0.9, ILLUSTRATIVE) 0.0418 N·m
+   motor friction 0.0109 N·m < 0.0418 → it slides; (old sizing WITH friction, superseded by §16:) 2× → 0.084 N·m; 0.24 N·m = 5.7×
+design 1 power off: load torque on screw/motor 0.3248 N·m
+slide design 1, drive at 5 A           m_eff 43.1 kg, net force 70.3 N → 0.40 m in 0.70 s, 1.14 m/s at the bottom
+slide design 1, torque off             m_eff 43.1 kg, net force 197.2 N → 0.40 m in 0.42 s, 1.91 m/s at the bottom
+slide design 2, torque off, no brake   m_eff 416.0 kg, net force 135.7 N → 0.40 m in 1.57 s, 0.51 m/s at the bottom
+design 2 with brake engaging after 10 ms: sag 0.016 mm
+design 2 with brake engaging after 20 ms: sag 0.065 mm
+design 2 with brake engaging after 50 ms: sag 0.408 mm
+kinetic energy of the lift at 0.1 m/s incl. reflected inertia: 2.08 J (= 2.12 kg falling 10 cm)
+design 2 accelerating at 0.5 m/s²: rotor 0.0398 N·m, screw 0.0045, load 0.0036; total with gravity 0.1196 N·m = 3.23 A
+power chain raising 26 kg at 0.1 m/s: load 25.5 W ← screw in 28.3 W ← motor shaft 31.5 W; motor I 2.04 A, P_cu 2.39 W, friction 4.80 W, motor in 38.7 W; drive η 0.95 (ILLUSTRATIVE) → bus 40.8 W = 1.59 A at 25.6 V; overall 63%
+holding: 1.77 A, 1.80 W of heat, 0 W of work
+lowering at 0.1 m/s: mechanical power into the motor 13.6 W (before copper loss) → roughly 13 W back to the bus
+energy: lifting 26 kg by 0.40 m = 102 J; braking 100 kg from 0.3 m/s = 4.5 J
+
+§7 backlash, compliance
+GP 42 C 1 stage backlash 0.6° → wheel arc 0.84 mm
+GP 42 C 2 stage backlash 0.8° → wheel arc 1.12 mm
+GP 42 C 3 stage backlash 1.0° → wheel arc 1.40 mm
+wheel 1.0° per reversal: 1.40 mm; worst-case heading 2×arc/0.40 = 6.98 mrad = 0.40°; at 1 m ahead 7.0 mm
+lift planetary 0.6° at the screw → 8.3 µm of carriage travel
+CSD-20-80 twist at 7.0 N·m: 0.54 mrad = 1.9 arcmin; at 0.6 m 0.32 mm, 0.8 m 0.43 mm
+CSD-20-80 twist at 22.0 N·m: 1.42 mrad = 4.9 arcmin; at 0.6 m 0.85 mm, 0.8 m 1.14 mm
+CSD-20-80 twist at 25.0 N·m: 1.60 mrad = 5.5 arcmin; at 0.6 m 0.96 mm, 0.8 m 1.28 mm
+CSD-20-80 twist at 36.8 N·m: 2.07 mrad = 7.1 arcmin; at 0.6 m 1.24 mm, 0.8 m 1.66 mm
+CSD-20-80 twist at 51.0 N·m: 2.64 mrad = 9.1 arcmin; at 0.6 m 1.58 mm, 0.8 m 2.11 mm
+accuracy 1 arcmin = 0.291 mrad → 0.23 mm at 0.8 m
+CSG-20-100 backdriving 5.6 N·m: push at 0.5 m lever = 11.2 N; CSD-20-80 4.9 N·m → 9.8 N
+CSD-20-80 starting torque 4.8 N·cm at the input × 80 = 3.84 N·m at the output
+
+§8 backdrive (push it by hand)
+wheel 74:1 (3-stage planetary, backdrive η 0.72 ILLUSTRATIVE): 1.12 N·m at the wheel → 14.0 N per wheel at the rim; both + rolling 14.7 N → 43 N to push the robot
+Dynamixel XM430: 353.5:1; stall 4.1 N·m; output encoder 4096/rev = 0.088°
+Mini Cheetah 6:1, peak 17 N·m, continuous 6.9 N·m, 480 g: peak torque per kg 35.4 N·m/kg
+Dynamixel 4.1 N·m / 0.082 kg = 50.0 N·m/kg (stall)
+
+§9 encoders
+lift motor encoder 1024 counts/turn ×4 = 4096; per carriage µm: 0.349; Hall only (8 pole pairs × 6 = 48/rev): 29.8 µm
+wheel: 4096 × 74 = 303104 counts per wheel turn → 1.66 µm at the rim; Hall: 48 × 74 = 3552 → 0.142 mm
+12 bit: 0.08789° = 316.41 arcsec; at 0.8 m 1227.2 µm
+14 bit: 0.02197° = 79.10 arcsec; at 0.8 m 306.8 µm
+17 bit: 0.00275° = 9.89 arcsec; at 0.8 m 38.3 µm
+20 bit: 0.00034° = 1.24 arcsec; at 0.8 m 4.8 µm
+Mini Cheetah: 14 bit on the motor × 6 = 98304 counts per output turn = 0.0037°
+
+§10 torque sensing
+joint example EC45 + CSD-20-80: τ_out ≈ N·η·k_t·I = 2.456 N·m per A
+friction scale: backdriving 4.9 N·m, starting 3.84 N·m vs rated 22 N·m → 17–22%
+a 4.9 N·m blind spot at 0.6 m lever = 8.2 N at the hand
+strain bridge: 2 mV/V at 1000 µε; 5 V excitation → 10 mV full scale; 16-bit over ±FS → 0.31 µV/count
+page 18: 0.15 kg cup not configured → 1.47 N phantom force
+
+§11 drive
+bus 20.0 V → max motor voltage 18.00 V → no-load 4211 rpm
+bus 25.6 V → max motor voltage 23.04 V → no-load 5401 rpm
+bus 29.2 V → max motor voltage 26.28 V → no-load 6166 rpm
+drive peak 15 A × k_t = 0.606 N·m (36 % of the 1.69 N·m stall torque); continuous 5 A × k_t = 0.202 N·m
+PWM 50 kHz = 20 µs period; current loop 25 kHz = 40 µs; speed/position 2.5 kHz = 400 µs; FR3 FCI 1 kHz = 1000 µs
+FR3 τ̇_max 1000 N·m/s: 0 → 87 N·m takes at least 87 ms
+
+§12 E-stop (ILLUSTRATIVE design)
+wheels Category 1 at 1.0 m/s² from 0.3 m/s: 0.30 s, 45 mm
+wheels Category 0, no brakes (coast on rolling resistance + reflected inertia): 0.112 m/s² → 2.7 s, 0.40 m
+lift: Category 0 + spring brake (engage 20 ms) → sag 0.065 mm; without brake → 0.40 m in about 1.6 s
+
+§13 datasheet checks (see §1) and weakest links
+wheel: motor continuous at the wheel 7.14 N·m < gearhead 15 N·m (motor limits); drive current limit for the 22 N·m intermittent rating 10.22 A
+lift gearhead 1 stage: continuous 3.0 N·m vs screw torque while holding 0.226 N·m
+first design: required 0.451 N·m = 27% of stall torque (looks fine) = 3.4× the continuous torque
+
+§15 sizing summary, design 2 (lift)
+force 255.1 N; lead 5 mm; screw torque 0.2255 N·m; motor 0.0716 N·m (1.77 A hold), 4200 rpm at 0.1 m/s; accel peak ~0.120 N·m; RMS over the duty cycle ≈ 1.41 A < 3.29 A (3.23 A accel: §16); drive 5/15 A OK; brake 0.24 N·m = 4.1× the frictionless 0.058 N·m (§16)
+
+§1b motor widget states (model: I = (τ + τ_f)/k_t, ω = (V − R·I)/k_e, τ_f = k_t·I0 when turning)
+24 V, 0.0716 N·m                         n  5388 rpm  I  2.04 A  P_mech  40.4 W  P_cu  2.39 W  friction 6.15 W  P_in  49.0 W  η 82.4%
+24 V, no load                            n  5627 rpm  I  0.27 A  P_mech   0.0 W  P_cu  0.04 W  friction 6.43 W  P_in   6.5 W  η  0.0%
+24 V, 0.134 N·m (nominal)                n  5179 rpm  I  3.59 A  P_mech  72.7 W  P_cu  7.37 W  friction 5.92 W  P_in  86.1 W  η 84.4%
+24 V, 0.451 N·m (design 1 hold torque)   n  4118 rpm  I 11.43 A  P_mech 194.5 W  P_cu 74.90 W  friction 4.70 W  P_in 274.4 W  η 70.9%
+voltage that gives 4200 rpm at 0.0716 N·m: 18.97 V
+voltage that gives 600 rpm at 0.451 N·m (design 1 raising): 9.09 V; current 11.43 A
+hot winding (R ×1.39) at 24 V, 0.0716 N·m: n 5280 rpm, I 2.04 A
+max power point at 24 V: τ 0.841 N·m, n 2814 rpm, P_mech 248 W, I 21.1 A
+max efficiency at 24 V (model): 84.5% at 0.125 N·m (sheet 85%)
+
+§2b heat widget profiles (25 °C ambient)
+11.17 A for 3 s then 5 A: after 600 s T_w 279 °C; 125 °C reached at 54.6 s
+design-2 duty cycle for 1 h: T_w 36.9 °C (end), hit None
+I 1.77 A, ambient 25 °C: T_w after 20 min 42.6 °C; 125 °C at never
+I 1.77 A, ambient 45 °C: T_w after 20 min 64.0 °C; 125 °C at never
+I 3.29 A, ambient 25 °C: T_w after 20 min 98.2 °C; 125 °C at never
+I 3.29 A, ambient 45 °C: T_w after 20 min 124.0 °C; 125 °C at never
+I 11.17 A, ambient 25 °C: T_w after 20 min > 300 °C (runaway); 125 °C at 8.3 s
+I 11.17 A, ambient 45 °C: T_w after 20 min > 300 °C (runaway); 125 °C at 6.3 s
+I 3.70 A constant: 125 °C at 986 s
+I 5.00 A constant: 125 °C at 69 s
+runaway when α·I²·R25·R_th > 1: I > 6.98 A
+
+§1c windings of the same frame (catalog): k_t, R, k_m = k_t/sqrt(R) (torque per sqrt(watt) of copper loss)
+24 V winding: k_t 40.4 mN·m/A, R 0.573 Ω, k_m 0.0534 N·m/√W; holding 0.0716 N·m needs 1.77 A and 1.80 W of copper loss; no-load ≈ 5673 rpm at its voltage
+36 V winding: k_t 57.0 mN·m/A, R 1.560 Ω, k_m 0.0456 N·m/√W; holding 0.0716 N·m needs 1.26 A and 2.46 W of copper loss; no-load ≈ 6031 rpm at its voltage
+48 V winding: k_t 80.8 mN·m/A, R 3.070 Ω, k_m 0.0461 N·m/√W; holding 0.0716 N·m needs 0.89 A and 2.41 W of copper loss; no-load ≈ 5673 rpm at its voltage
+60 V winding: k_t 152.0 mN·m/A, R 7.370 Ω, k_m 0.0560 N·m/√W; holding 0.0716 N·m needs 0.47 A and 1.64 W of copper loss; no-load ≈ 3769 rpm at its voltage
+stall current at 24 V: P = 41.9² × 0.573 = 1006 W of heat
+nominal current cold: 3.29² × 0.573 = 6.20 W
+
+§16 after fact-check (holding band, brake without friction, lead screw, inertia matching with the screw, battery current)
+design 1 (10 mm, direct): raise 0.4510 N·m (11.16 A), hold at least 0.3248 N·m (8.04 A), frictionless 0.4059 N·m
+design 2 (5 mm, 3.5:1): raise 0.0716 N·m (1.77 A), hold at least 0.0418 N·m (1.03 A), frictionless 0.0580 N·m
+brake sizing without friction: 0.0580 N·m; 2× = 0.116; 0.24 N·m = 4.14×
+Tr16×4 raising: 0.1092 N·m + friction → 2.97 A; ball screw 2.04 A; copper ratio 2.12
+Tr16×4 at 0.10 m/s: motor 5250 rpm, needs 23.95 V
+   bus 25.6 V → 23.04 V → 5035 rpm → 0.0959 m/s
+   bus 20.0 V → 18.00 V → 3846 rpm → 0.0733 m/s
+Tr16×4 self-locking lost below μ = 0.091 (square thread); with 15° flank μ/cos15: 0.088
+inertia matching with the screw: J_load at the screw 4.172e-05 kg·m² → N* = 1.52; design 2 (3.5) = 2.31× N*
+   (carriage only: N* = 0.95)
+wheel at 0.0 m/s, current limit: motor 5.86 V × 10.22 A = 59.9 W per wheel → both 119.7 W → 4.68 A from a 25.6 V bus (drive losses ignored)
+wheel at 0.0 m/s, 0.5 m/s² (1.49 A): motor 0.85 V × 1.49 A = 1.3 W per wheel → both 2.5 W → 0.10 A from a 25.6 V bus (drive losses ignored)
+wheel at 0.3 m/s, current limit: motor 17.08 V × 10.22 A = 174.6 W per wheel → both 349.2 W → 13.64 A from a 25.6 V bus (drive losses ignored)
+wheel at 0.3 m/s, 0.5 m/s² (1.49 A): motor 12.08 V × 1.49 A = 18.0 W per wheel → both 36.0 W → 1.41 A from a 25.6 V bus (drive losses ignored)
+wheel at 0.5 m/s, current limit: motor 24.57 V × 10.22 A = 251.1 W per wheel → both 502.3 W → 19.62 A from a 25.6 V bus (drive losses ignored)
+wheel at 0.5 m/s, 0.5 m/s² (1.49 A): motor 19.57 V × 1.49 A = 29.2 W per wheel → both 58.3 W → 2.28 A from a 25.6 V bus (drive losses ignored)
+sag at 14 A × 30 mΩ = 0.42 V
+wheel top speed at 25.6 V bus (23.04 V at the motor), light load: 0.592 m/s; at 0.3 m/s the wheel turns 35.8 rpm
+duty cycle with 3.23 A accel: RMS 1.409 A
+regen 13 W vs other loads ~240 W: the other loads absorb it (bus does not rise)
+design 1 hold minimum 8.04 A > drive 5 A: still slides
+
+§17 after fact-check, part 2 (wheel braking limit, coasting with friction, E-stop while lowering, exact 147/2, other robots)
+wheel driving: 10.22 A × k_t × 74 × 0.72 = 22.0 N·m; braking (power flows back, friction adds at the output): 10.22 A × k_t × 74 / 0.72 = 42.4 N·m (gearhead intermittent 22 N·m)
+current limit that keeps braking under 22 N·m: 22 × 0.72 / (74 × k_t) = 5.30 A; normal 0.5 m/s² needs 1.49 A
+wheels Category 0 coasting with gear + motor friction: 42.7 N / 131 kg = 0.326 m/s² → 0.92 s, 0.138 m from 0.3 m/s (rolling only, worst case: 0.112 m/s² → 2.7 s, 0.40 m)
+lift E-stop while lowering at 0.10 m/s (Category 0, brake after 20 ms): 2.07 mm in the 20 ms, reaching 0.1065 m/s = 4474 rpm at the motor; brake decel 2.21 m/s² → 2.57 mm more; total 4.6 mm; brake absorbs 2.71 J
+lift E-stop at standstill: sag 0.065 mm (brake after 20 ms)
+lift sliding without brake: motor speed at the bottom (design 2) 21452 rpm (max 10000 rpm)
+wheel with the exact ratio 147/2 = 73.5: 4096 × 73.5 = 301056 counts per wheel turn → 1.67 µm at the rim; Hall 48 × 73.5 = 3528 → 0.142 mm
+odometry that divides by 74 instead of 73.5 reads 0.68 % short: 6.8 mm per metre
+1X NEO: 842 Wh / 4 h = 210.5 W average
+Unitree H1: 16 cells × 4.2 V = 67.2 V (matches the 67.2 V maximum on the product page)
+kitchen robot: 2048 Wh / 251 W = 8.2 h
+wheel top speed at 23.04 V (25.6 V bus), rolling resistance only: motor 0.0110 N·m, 0.54 A, 5364 rpm → wheel 72.5 rpm → 0.607 m/s (ratio widget)

@@ -30,6 +30,7 @@ The home page lists the explainers side by side, and each one lives in its own f
 | 16 | Where Am I, and How Sure? · 我在哪，有多确定 | https://huyicheng.github.io/interactive-notes/estimation/ | `estimation/index.html` |
 | 17 | What Next, and How? · 接下来做什么，怎么做 | https://huyicheng.github.io/interactive-notes/planning/ | `planning/index.html` |
 | 18 | A Little Off, Every Time · 每次都偏一点 | https://huyicheng.github.io/interactive-notes/calibration/ | `calibration/index.html` |
+| 19 | From Battery to Torque · 从电池到力矩 | https://huyicheng.github.io/interactive-notes/actuation/ | `actuation/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -57,6 +58,7 @@ ros/index.html             One Robot, Dozens of Programs · 一台机器人，�
 estimation/index.html      Where Am I, and How Sure? · 我在哪，有多确定
 planning/index.html        What Next, and How? · 接下来做什么，怎么做
 calibration/index.html     A Little Off, Every Time · 每次都偏一点
+actuation/index.html       From Battery to Torque · 从电池到力矩
 toc.js                     the Contents panel shared by every page · 各篇共用的目录面板
 ```
 
@@ -573,6 +575,35 @@ Robot errors and calibration explained from the bottom up, around the kitchen ro
 Conventions: "our arithmetic" comes from `calibration/calc/calcnum.py`; "est." marks an order-of-magnitude estimate without a source and "illustrative" a made-up example value (the 0.5° and 1 mm of the remounted camera are illustrative); versions and specifications as of November 2026.
 
 约定："我们算的"来自 `calibration/calc/calcnum.py`；"估"是没有出处的数量级估计，"示意"是编的例子（重装相机的 0.5° 和 1 mm 是示意的）；版本和规格以 2026 年 11 月为准。
+
+## 19. From Battery to Torque · 从电池到力矩
+
+A robot's actuation layer and sensor hardware explained from the bottom up, around the kitchen robot of pages 15–18 (a differential-drive base, a Franka Research 3 arm, a Jetson AGX Thor), which gets a ball-screw lift column under its arm so it can reach the wall cabinet. The first version slides down with the arm on it after three seconds at the top; the second holds, but slides when the E-stop takes the torque away; the wheels lose a little travel at every reversal. The page is self-contained: it starts from the force on a wire in a magnetic field (torque constant, back-EMF, k_e = k_t, the torque–speed line, brushless motors and commutation), explains why continuous torque is a small fraction of stall torque (copper loss, thermal resistances and time constants, RMS current, the drive's current limits and I²t), and follows the energy from the battery (LiFePO4 cells, internal resistance and sag, the power budget) through the drive (PWM, half bridges, the current loop, the voltage limit, regeneration and braking resistors). Then the mechanics: gear ratio (torque ×N, speed ÷N, reflected inertia ×N², rotary-to-linear, inertia matching), planetary, strain wave and cycloidal reducers, ball, lead and roller screws (forward and backdrive efficiency, self-locking), backlash, friction and compliance, and backdrivability. The sensors: incremental and absolute encoders on the motor or the joint side, and torque from current, strain gauges or a series spring. The drive's nested control loops, its current limits and trips, and the CiA 402 state machine; the E-stop chain in hardware (stop categories, contactors, STO, spring-applied brakes, dual-channel safety relays, ISO 13849 categories). Finally the page reads a real motor datasheet and a drive's interface description line by line, sizes the lift from requirements to parts, and asks the same questions of other robots (Mini Cheetah, Unitree H1, Dynamixel, RV joints, humanoid linear actuators). The parts and their data are real (maxon EC 45 flat, GP 42 C, EPOS4; Harmonic Drive; Franka); the lift, battery and E-stop design are illustrative. Our own arithmetic is in `actuation/calc/`.
+
+机器人的执行层和传感器硬件，从下往上讲，例子还是第 15–18 篇那台厨房机器人（差速底盘、Franka Research 3 手臂、Jetson AGX Thor）：为了够到吊柜，给它的手臂下面加一根滚珠丝杠的升降柱。第一版停在顶上三秒就连着手臂一起滑了下来；第二版托得住了，可按下急停时力矩被拿走，又滑了下来；轮子每换一次向，里程计还会差一点。这一篇能单独读：从磁场里一根导线受的力讲起（力矩常数、反电动势、k_e = k_t、力矩–转速线、无刷电机和换相），讲清楚连续力矩为什么比堵转力矩小得多（铜损、热阻和热时间常数、均方根电流、驱动器的电流上限和 I²t），再顺着能量从电池（磷酸铁锂电芯、内阻和压降、耗电的分账）经过驱动器（PWM、半桥、电流环、电压上限、回馈和制动电阻）走到电机。然后是机械：减速比（力矩乘 N、转速除 N、转子惯量乘 N²、转动变直线、惯量匹配），行星、谐波、摆线减速器，滚珠、梯形和行星滚柱丝杠（正反两个效率、自锁），回差、摩擦和柔性，能不能反驱。传感器：装在电机侧或关节侧的增量式、绝对式编码器，从电流、应变片或者一根弹簧量力矩。驱动器里套着的控制环、电流上限和报错，CiA 402 状态机；急停在硬件上怎么切断动力（停止类别、接触器、STO、弹簧制动器、双通道安全继电器、ISO 13849 的类别）。最后一行行读一份真的电机规格书和一份驱动器的接口说明，把升降柱从需求选到零件，再拿同样的问题去问别的机器人（Mini Cheetah、Unitree H1、Dynamixel、RV 关节、人形机器人的直线关节）。零件和它们的数据是真的（maxon EC 45 flat、GP 42 C、EPOS4，Harmonic Drive，Franka）；升降柱、电池和急停回路的设计是示意的。我们自己算的数在 `actuation/calc/`。
+
+0. The first lift column: three symptoms, the chain from battery to carriage, where the watts go, twelve questions
+1. The motor: force on a wire, τ = k_t I, back-EMF and k_e = k_t, the torque–speed line, brushless motors
+2. Heat: copper loss, thermal resistance, continuous vs peak torque, thermal time constants, RMS current, I²t
+3. Battery and drive: cells, sag, the power budget, PWM, the current loop, the voltage limit, regeneration
+4. Gear ratio: torque ×N, reflected inertia ×N², 350 kg of rotor, inertia matching
+5. Three reducers: planetary, strain wave, cycloidal (RV)
+6. Screws: F = 2πητ/L, forward and backdrive efficiency, self-locking, why the lift slides
+7. Backlash, friction and compliance: lost motion, starting vs backdriving torque, three-segment stiffness
+8. Backdrivability: friction ×N, inertia ×N², why it matters, hand guiding by control
+9. Encoders: incremental, quadrature, homing, absolute; motor side vs joint side; resolution vs accuracy
+10. Torque sensing: from current, strain gauges and bridges, series elastic actuators
+11. The drive: nested loops (on the EPOS4 a position PID feeds the current loop directly), limits and trips, the CiA 402 state machine, the FR3's FCI limits
+12. The E-stop: stop categories, contactors and STO, brakes, safety relays, ISO 13849 Category 3
+13. Reading a datasheet: cross-checks, notes, traps, the weakest link
+14. Reading an interface description: the EPOS4 against the robot, the FR3's interface, questions to ask
+15. Sizing the lift from requirements to parts
+16. Another robot: Mini Cheetah, Unitree H1, Dynamixel, RV joints, humanoid linear actuators, NEO
+17. Summary and further reading
+
+Conventions: "our arithmetic" comes from `actuation/calc/calc19.py`; "est." marks an order-of-magnitude estimate without a source and "illustrative" a design choice or made-up example value (the lift, battery and E-stop design); specifications as of November 2026.
+
+约定："我们算的"来自 `actuation/calc/calc19.py`；"估"是没有出处的数量级估计，"示意"是为了讲清楚而定的设计或编的数（升降柱、电池和急停回路的设计）；规格以 2026 年 11 月为准。
 
 ## Adding a page · 新加一篇
 
