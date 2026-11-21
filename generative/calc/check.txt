@@ -1,0 +1,160 @@
+-- step 0 · what: four ways to "generate"
+ok   draw new points: 98% on a petal, 8 / 8, nearest training point 0.07 (spacing of the training points 0.07)
+ok   copy training points: 100%, 8 / 8, "new" is 0
+ok   scatter at random: 20% on a petal, 6 petals touched, 0.71
+ok   scatter, after four more batches: all 8 petals touched, still about a fifth on a petal (15 to 25%)
+ok   take the average: 0% on a petal, 0 petals, 0.92; all 40 in the centre
+-- step 1 · mle: one Gaussian, mixtures, a small Gaussian on every point
+ok   one Gaussian: 22% of the samples on a petal, test score -3.57
+ok   the true distribution scores -1.94 on the test set
+ok   mixture, K = 2…8: test scores -3.43, -3.18, -3.06, -2.85, -2.66, -2.35, -2.06
+ok   K = 8: training -1.71, 97% on a petal, about 0.1 short of the true distribution
+ok   8 refits at K = 8: only the 2nd, 6th and 7th get back to -2.06; the other five stop between -2.31 and -2.76
+ok   K = 12 on those nine starts: training -1.61 to -1.65 (above the -1.71 of K = 8), test -2.13 to -2.29 (below -2.06)
+ok   the status at K = 12 says the training score keeps rising while the test score stops improving
+ok   a small Gaussian on every point, h = 0.01: training +2.11, test -83.56, more than 85 apart
+-- step 2 · cdf: matching by rank in one dimension
+ok   on opening: z = -0.55, stretch 1.09
+ok   after four batches the histogram has three peaks: a tall narrow one in the middle and a lower one on each side, with gaps between (same draws as the interactive)
+ok   dragged to z = 0: stretch 0.48, density 0.399 → 0.831 (the spike in the middle)
+ok   dragged to about z = -0.32: the readout shows a large stretch (the curve is so steep there that a hair’s breadth changes it; exactly at -0.32 it is 70.9)
+ok   the largest stretch is about 73, at z = ±0.32 (scan in steps of 0.005 with the interactive’s own functions)
+ok   the stretched sliver of z lands on x from 0.2 to 1.1, the gap between two peaks
+-- step 2 · nf: ten coupling layers
+ok   layer 10 after playing: 78% on a petal, test score -2.27 (truth -1.94, best 8 Gaussians -2.06), 11 860 parameters
+ok   tap between the left and upper-left petals, 1 from the centre: the flow says -2.13, the truth -8.60: over six hundred times too dense
+ok   tap the centre of the right-hand petal: -1.19 against a true -0.93 (a little too low)
+ok   300 steps of training: 41% on a petal, test score -2.94
+ok   1000 steps: 56% and -2.70
+-- step 3 · vae: six values of β
+ok   β = 0.3: reconstruction error 0.233, KL 2.46, 67% on a petal, decoder noise 0.39
+ok   β = 0.3: the codes of the eight petals lie on a ring, neighbouring petals next to each other (each step 30° to 60° the same way round)
+ok   β = 0.3: the point midway between two neighbouring codes decodes to a place between the two petals, on neither (all eight pairs)
+ok   tapping between two colours in the code space leaves the readouts as they were
+ok   β = 0.01: reconstruction error 0.010, 29% on a petal; the clouds have shrunk to dots (width about 0.05)
+ok   β = 10: KL 0.00, reconstruction error 4.134, 0% on a petal; every code at the origin, everything decodes to the centre
+ok   with decoder noise, β from small to large: 29%, 57%, 43%, 29%, 25%, 19% on a petal; the noise at β = 10 is 2.24
+-- step 4 · gan: a small GAN trained live, and re-run step by step in the page
+ok   matched pace, paused after 3000 steps: 8 / 8 petals, 70 to 90% on a petal, the discriminator’s average score near 0.5
+ok   impatient generator, paused after 3000 steps: the training ran and the readouts are there (the exact numbers come from the re-run below)
+ok   impatient, but D sees pairs, paused after 1500 steps: at least 5 petals have samples; the status explains why pairs help
+ok   matched pace: 5 petals at 300 steps, all 8 for the first time between 700 and 800 steps (and again at 800); 76 to 85% on a petal and a score of 0.48 to 0.49 between 2000 and 3000 steps
+ok   impatient generator, first 1500 steps: never more than 4 petals at once, one or two most of the time, and sometimes none
+ok   impatient generator, later: all 8 petals for the first time a little after 1800 steps; 6 to 8 petals from 3000 to 6000 steps
+ok   D sees pairs: all 8 petals for the first time after three or four hundred steps; after 1000 steps all 8 nearly nine tenths of the time, never fewer than 5
+-- step 5 · ar: one number at a time
+ok   three single draws: 3 distinct points, 2 steps per point
+ok   classification head, 300 at once: about 95% on a petal (94 to 97), all 8 petals
+ok   Gaussian head, 300: about 45% on a petal (42 to 47); the status speaks of vertical streaks
+ok   the middle column: the true distribution has two peaks (near y = -2 and +2) and almost nothing in between; the Gaussian head has mean 0.00 and width 2.04
+ok   temperature 0, Gaussian head, 300 draws: 1 distinct point, 0% on a petal (it sits in the gap in the centre)
+ok   with the picture cleared, tapping the middle column makes the status state the Gaussian head’s mean 0.00 and width 2.04
+ok   temperature 0, classification head: still 1 distinct point, but on a petal
+-- step 6 · sc: the score field, Langevin sampling, annealing
+ok   σ = 0.10: every arrow points to the nearest petal, the arrows between petals push against each other
+ok   σ = 0.45 (between 0.3 and 1): the petals blur and neighbours begin to join
+ok   σ = 1.41 and 3.00: one big blob, arrows towards the centre almost everywhere
+ok   training samples: 22 of 36 blocks hold a dot at σ = 0.10, 35 at 0.97, all 36 at 1.41; at σ = 3 only 152 of the 300 are inside the picture
+ok   small noise only, from the corner: nearly everything in one petal (the fullest holds 87%), 1 / 8 petals
+ok   annealing, from the same corner: all 8 petals, the fullest only 15% (ideal 12.5%), 90% on a petal
+-- step 7 · den: the best guess of the original point
+ok   cross on the centre of the right-hand petal, σ up to 0.5: the guess stays 2.0 to 2.1 from the centre; one bar (100%; 96% at σ = 0.5)
+ok   σ = 0.7: 1.93 from the centre (73%); σ = 0.9: 1.50 (43%); σ = 1: in the centre (0.00), eight equal bars (13%)
+ok   cross midway between two petals, σ = 0.3: 50% each, the guess lies between them (1.85 from the centre), on neither petal
+-- step 7 · dif: sampling by denoising step by step
+ok   1 step: all 400 points in the centre, 0% on a petal
+ok   3 steps: at the first step every guess sits in the centre; in the end only 49% on a petal, many between the centre and the petals (mean distance 1.6 from the centre)
+ok   10 steps: 94% on a petal; in the first step all 400 points shrink towards the centre; for 379 the first step differs by more than 90° from where they end; the route is 23% longer than the straight line
+ok   100 steps: DDIM 95% and DDPM 97% on a petal, all 8 petals in both
+ok   the 60 routes drawn at 100 steps: DDPM’s path is about 12 times the straight line, DDIM’s only 1.2 times
+-- step 8 · fm: flow matching, the diffusion routes, reflow
+ok   1 step: 0% on a petal (everything in the centre); 2 steps 35%; 4 steps 73%
+ok   the 50 training lines: 48 cross another line, 8 crossings per line on average, half of the crossings within 1 of the centre
+ok   64 steps: 94% on a petal
+ok   with the diffusion routes overlaid: path ÷ straight distance 1.54 for flow matching, 1.18 for diffusion
+ok   the 60 routes drawn: the two kinds are about 0.46 apart at the halfway point, yet end only 0.004 apart on average, always on the same petal
+ok   straightened once, 1 step: 76% on a petal, path ÷ straight distance 1.00
+ok   straightened once, 64 steps: only 86%, short of the original’s 94%
+-- step 9 · src: five starting distributions
+ok   one point: 1 distinct sample, in the centre, start-to-end distance 0.00
+ok   one point with randomness on the way, 64 steps: 300 distinct samples, 97% on a petal, all 8 petals
+ok   the same with fewer steps: 75% at 8, 56% at 4, 35% at 2, and with 1 step everything back in the centre
+ok   8 steps: standard Gaussian 94% (start-to-end distance 0.66), uniform square 89%
+ok   a rough answer: 64% on a petal with 1 step, 90% with 2; start to end only 0.40 and 0.46
+ok   standard Gaussian, 1 step: everything in the centre, counted as 1 distinct sample
+-- step 10 · cfg: classifier-free guidance
+ok   only the right-hand petal, w = 0: 12% on it
+ok   w = 0.5: 46% on it, 50% off every petal
+ok   w = 1: 96% on it, sideways width 0.103, 1.99 from the centre
+ok   w = 3: 2.66 from the centre, width 0.030, a quarter of the true 0.12
+ok   w = 5: 66% pushed off the petal; from 7 up not one is left
+ok   only the four on the axes, w = 6: 97% on them, sideways width only 0.009
+-- step 11 · pol: regression, redraw every step, a chunk at a time
+ok   at the start: one arrow up-left, one up-right, 50% each; their average points straight up, at the obstacle
+ok   regression, one run: it crashes into the obstacle (0 / 1)
+ok   redraw every step, 20 runs: 20 / 20, 6.5 reversals on average, closest approach 0.33
+ok   a chunk at a time, 20 runs: 20 / 20, 0.3 reversals, closest approach 0.46; a chunk is 8 steps
+-- step 12 · sp: the map of methods
+ok   by family: 9 groups, 64 methods in all; diffusion is the largest group, with 16
+ok   tap DDPM: DDIM and Score SDE get dashed boxes; the panel says DDIM is the same trained network with a deterministic sampler, a few dozen steps
+ok   Score SDE: the unifying framework, DDPM and NCSN are two special cases of it
+ok   what it learns: all 16 diffusion and all 8 flow-matching methods are in the "field" group (30 in all)
+ok   the adversarial family is split: GAN, DCGAN, StyleGAN … under "a function from noise to data"; GAIL and AMP under "a rating"
+ok   steps to generate: 22 one-step methods = 17 from the mixture, VAE, GAN and flow families + 3 distilled + 2 that learn an average velocity
+ok   in robots: 15 methods generate actions, from seven of the nine families (all but normalizing flows and adversarial)
+-- the flower (notation table) and step 0
+ok   the flower: 8 petals, each with probability 1/8, centres 2 from the origin, standard deviations 0.42 along and 0.12 across
+ok   "on a petal" = within 2.5 standard deviations: about 96% of true samples (1 - exp(-2.5²/2) = 95.6%; 100 000 samples of the engine: 95.6%)
+ok   a 64 × 64 colour image is 64 × 64 × 3 = 12288 numbers
+ok   the petals cover about 15% of the box (8 ellipses with half-axes 2.5 × 0.42 and 2.5 × 0.12 in a box of side 7.2)
+-- step 1 · text and figure
+ok   the covariance of one Gaussian over 12288 numbers has 12288² ≈ 1.5 亿 entries
+ok   card: one Gaussian about -3.57 on the test set; 8 Gaussians about -2.06 from a good start (from another start often only about -2.3); the true distribution -1.94
+ok   a difference of 1 in log p is a factor e ≈ 2.7 in density
+ok   figure 1: training / test scores of the three one-dimensional fits: -1.64 / -1.66, -0.74 / -1.14, +0.91 / -5.31
+ok   figure 1: the area under each of the three curves is 1
+ok   summary quiz: memorising drops the test score from about -2 to below -80
+-- step 2 · text
+ok   card: at z = 0 the stretch is 0.48 and the density goes from 0.40 to 0.40 ÷ 0.48 ≈ 0.83; near z = -0.32 a sliver of z is stretched about 70-fold
+ok   card: 10 layers, each with a two-layer network of 32 units for s and t: 10 × (64 + 1056 + 66) = 11 860 parameters; test score -2.27 against -2.06
+-- step 3 · text
+ok   card: training minimises squared error + β × KL with β = 2σ²; at β = 0.3 the readout σ is 0.39, the KL about 2.5 and the reconstruction error about 0.23
+ok   card: at β = 10 the KL drops to 0 and the reconstruction error is about 4.1, close to the mean squared distance of the data from the centre, about 4.2 (2² + 0.42² + 0.12² = 4.19; 100 000 samples: 4.19)
+ok   Stable Diffusion compresses an image to 1/48: 512 × 512 × 3 numbers into 64 × 64 × 4
+-- step 4 · the legend against the interactive’s own code
+ok   learning rates 0.001 / 0.001 (matched), 0.005 / 0.0005 (impatient, with and without pairs); batches of 128; two layers of 32 units
+-- step 5 · text
+ok   card: the classification head puts 96% of the samples on a petal, the Gaussian head only about 45%
+ok   the plane is cut into 48 × 48 cells
+-- step 6 · text
+ok   card: step size η = 0.003, so each step’s random jiggle is about √0.003 ≈ 0.055, against a petal’s sideways 0.12
+ok   card: with σ = 0.1 the target -ε/σ has length about |ε|/σ ≈ 10
+ok   legend: 10 noise levels from 3 to 0.1; 600 Langevin steps at the smallest, or 60 at each of the 10 levels; 400 particles
+-- step 7 · text
+ok   card: at σ = 0.6, α = 0.8, and a point 2 from the centre is shrunk to 1.6; it corresponds to 0.75 in the notation of step 6
+ok   card: 1 step 0% on a petal, 3 steps about 50%, 10 steps about 94%
+ok   card: Tweedie’s formula E[x | xσ] = (xσ + σ² ∇log pσ) ÷ α holds for the engine’s denoiser and score (three test points)
+ok   the first step: every point first moves in a little towards the centre (all 400 at 10 steps, same loop as the interactive)
+ok   legend: noise levels σ = sin(90° × u); step counts 1, 2, 3, 5, 10, 20, 50, 100
+ok   figure (the two directions): 72 points per panel, 8 petals × 9 (5 panels, at most 360 dots)
+-- step 8 · text
+ok   card: the route is about 1.5 times the straight distance; diffusion 1.18 times, flow matching 1.54 times
+ok   reflow: one step puts about three quarters on a petal (the original: 0); 64 steps only 86% against the original’s 94%
+ok   the line is a diffusion path in other units: σ = (1 - t) ÷ t, and v = (D - xt) ÷ (1 - t) holds for the engine’s velocity and denoiser (three test points)
+ok   summary quiz: the route is about 1.5 times the straight distance
+-- step 9 · text and figure
+ok   in 10 000 dimensions: samples are about 100 from the centre, give or take about 0.7, and more than 99% lie between 98 and 102
+ok   figure (distance from the centre): at d = 10 000 the radius is 100, give or take about 0.7
+ok   a rough answer: about two thirds on a petal with 1 step and nearly nine tenths with 2; from a Gaussian it takes about 8 steps to get there
+ok   legend: a uniform square of side 3.6 made of 36 small Gaussians; a rough answer = a data point plus noise of standard deviation 0.6; step counts 1 … 64
+-- step 10 · text
+ok   a 512 × 512 colour image is more than 780 thousand numbers; a 64 × 64 × 4 latent is about 16 thousand
+ok   card: w = 1: 96% on the petal, width 0.10 (true 0.12); w = 2.5: width 0.04, 2.55 from the centre; w = 5: about two thirds pushed off
+ok   legend: 40 steps, 400 samples
+-- step 11 · text and figure
+ok   card and figure agree on the Diffusion Policy setup they quote: generate 16 time steps, execute the first 8; π0: 50 time steps at up to 50 per second = one second
+ok   legend: 16 demonstrations, 8 on each side; a chunk is 8 steps
+-- step 12 · text
+ok   the map holds 64 methods
+
+130 checks, 0 failed; page errors: 0
