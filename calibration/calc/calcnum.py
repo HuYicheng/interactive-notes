@@ -179,4 +179,23 @@ say(f'  arm left on the nominal model, everything else calibrated: b = 5 mm -> P
 say('  largest residual bias that keeps P >= 0.99 with sigma ' + f'{sa:.2f}: ' + ', '.join(f'b {b} -> {p_ok(b, sa):.4f}' for b in (1.0, 1.5, 1.53, 2.0)))
 say(f'  skip the hand-eye: bias {bN:.2f} and the old extrinsic sigma (2.0 mm, 0.2 deg) -> sigma {S_NEAR} -> P = {p_ok(bN, S_NEAR):.4f}; with sigma {sa:.2f} it would be {p_ok(bN, sa):.4f}')
 
+say('\n## extra: the worked example of the success-rate card, the figures, and small numbers quoted in the text')
+for b, sg in ((bN, S_NEAR), (0.0, S_NEAR)):
+    z1, z2 = (10 - b) / sg, (-10 - b) / sg
+    say(f'  b = {b:.2f}, sigma = {sg}: (10-b)/s = {z1:.3f}, Phi = {Phi(z1):.4f}; (-10-b)/s = {z2:.3f}, Phi = {Phi(z2):.4f}; P = {p_ok(b, sg):.3f}; misses {1 - p_ok(b, sg):.3f}')
+say(f'  Phi(0) = {Phi(0):.3f}, Phi(1) = {Phi(1):.3f}, Phi(2) = {Phi(2):.3f}')
+say(f'  100 grasps before the remount: about {100 * p_ok(0, S_NEAR):.0f} hold')
+f_px = 640 / math.tan(math.radians(34.5))
+say(f'  principal point 4 px off, f = {f_px:.0f} px: {4 / f_px * 800:.2f} mm at 0.8 m, {4 / f_px * 550:.2f} mm at 0.55 m')
+say(f'  0.5 deg on a 0.20 m lever arm: {200 * math.tan(math.radians(0.5)):.2f} mm')
+say(f'  track width 1 % too large: one "full turn" of odometry is really {360 / 1.01:.1f} deg')
+e2 = 550 * math.tan(math.radians(0.05))
+say(f'  extrinsics after calibration at cup A: 0.5 mm and 0.05 deg ({e2:.2f} mm) -> {math.hypot(0.5, e2):.2f} mm')
+say(f'  Earth rotation: 360.9856 deg per 24 h = {360.9856 / 24:.2f} deg/h = {360.9856 / 86400:.4f} deg/s')
+s1, s2 = 2.0, 550 * math.tan(math.radians(0.2))
+for rho in (0.0, 1.0, -0.9):
+    say(f'  figure, two terms at 0.55 m ({s1:.1f} and {s2:.2f} mm), rho = {rho}: sigma = {math.sqrt(s1*s1 + s2*s2 + 2*rho*s1*s2):.2f} mm')
+say(f'  pivot calibration, cone half-angle 2 deg vs 60 deg (read off the interactive): 1.433 / 0.053 = {1.433 / 0.053:.0f} times')
+say(f'  plan: intrinsics and TCP skipped, biases add: {4 / f_px * 550:.2f} + 2.00 = {4 / f_px * 550 + 2.0:.2f} mm')
+
 print('\n'.join(out))

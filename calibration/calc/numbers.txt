@@ -114,3 +114,19 @@ noise per reading: sigma_z(z) from the D435 formula plus 0.5 mm for placing the 
   arm left on the nominal model, everything else calibrated: b = 5 mm -> P = 0.918; b = 3 mm -> 0.974
   largest residual bias that keeps P >= 0.99 with sigma 3.60: b 1.0 -> 0.9927, b 1.5 -> 0.9902, b 1.53 -> 0.9900, b 2.0 -> 0.9864
   skip the hand-eye: bias 5.80 and the old extrinsic sigma (2.0 mm, 0.2 deg) -> sigma 4.49 -> P = 0.8250; with sigma 3.60 it would be 0.8783
+
+## extra: the worked example of the success-rate card, the figures, and small numbers quoted in the text
+  b = 5.80, sigma = 4.49: (10-b)/s = 0.935, Phi = 0.8252; (-10-b)/s = -3.519, Phi = 0.0002; P = 0.825; misses 0.175
+  b = 0.00, sigma = 4.49: (10-b)/s = 2.227, Phi = 0.9870; (-10-b)/s = -2.227, Phi = 0.0130; P = 0.974; misses 0.026
+  Phi(0) = 0.500, Phi(1) = 0.841, Phi(2) = 0.977
+  100 grasps before the remount: about 97 hold
+  principal point 4 px off, f = 931 px: 3.44 mm at 0.8 m, 2.36 mm at 0.55 m
+  0.5 deg on a 0.20 m lever arm: 1.75 mm
+  track width 1 % too large: one "full turn" of odometry is really 356.4 deg
+  extrinsics after calibration at cup A: 0.5 mm and 0.05 deg (0.48 mm) -> 0.69 mm
+  Earth rotation: 360.9856 deg per 24 h = 15.04 deg/h = 0.0042 deg/s
+  figure, two terms at 0.55 m (2.0 and 1.92 mm), rho = 0.0: sigma = 2.77 mm
+  figure, two terms at 0.55 m (2.0 and 1.92 mm), rho = 1.0: sigma = 3.92 mm
+  figure, two terms at 0.55 m (2.0 and 1.92 mm), rho = -0.9: sigma = 0.88 mm
+  pivot calibration, cone half-angle 2 deg vs 60 deg (read off the interactive): 1.433 / 0.053 = 27 times
+  plan: intrinsics and TCP skipped, biases add: 2.36 + 2.00 = 4.36 mm
