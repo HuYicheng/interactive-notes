@@ -1,0 +1,93 @@
+ok   robot: 11 streams, 2,490 messages, about 141.4 MB a second; camera 138.2, FCI 2.74, lidar 0.35, other 6 about 0.08 MB
+ok   robot: the camera is 97.7 % of the data
+ok   robot: 27 programs in the readout
+ok   robot step 3: on the 100 ms ruler the arm makes 100 exchanges, each image stream 3 frames; fastest/slowest = 100×
+ok   robot: 33 exchanges between two camera frames (1000 Hz ÷ 30 Hz)
+ok   robot: the lidar feeds urg_node on the Thor, which publishes /scan
+ok   robot: the lidar cable is 100BASE-TX and the lidar uses about 3 % of it
+ok   robot step 5: 27 programs = Thor 23 + RT PC 2 + MCU 1 + workstation 1
+ok   robot: its list of 27 names includes slam_toolbox and rmw_zenohd, but no train.py and no Zenoh bridge
+ok   bus: classic CAN + 7-joint command: 7 + 7 frames, 151.2 % busy, does not fit
+ok   bus: 14 × 108 bit = 1,512 bit = 1.512 ms on 1 Mbit/s
+ok   bus: Gigabit Ethernet + colour + depth: 3,132 frames per 33.3 ms, busy 38.5 ms = 115.6 %, does not fit
+ok   bus: colour only: 1,879 frames, 23.11 ms, 69.3 %, fits
+ok   bus: 100BASE-TX + one lidar scan: 8,648 B in 6 frames, 0.72 ms of every 25 ms = 2.89 %
+ok   ipc: pipe + one image: 2 copies, about 86 wake-ups, median round trip 2,069 µs
+ok   ipc: the 64 KiB pipe needs 43 rounds for 2,764,800 bytes
+ok   ipc (one image): pipe 2,069, Unix socket 526, TCP loopback 1,085, shm copy-in 501, shm in place 107 µs
+ok   ipc: slowest ÷ fastest is about 19
+ok   ipc (64 B): all five between 21.7 and 31.1 µs
+ok   wires: N = 8: 28 connections pairwise, 7 programs to change; shared bus 8 connections, 1 change
+ok   wires: after "swap the camera" still 7 against 1
+ok   wires: MIT 2007, 70 modules: 2,415 connections and 69 programs pairwise; 70 and 1 on a shared bus
+ok   ros1 steps 1–5: master on port 11311, register publisher, register subscriber, agree a port, TCP + md5
+ok   ros1 step 6: 4 + 2,764,867 bytes per message, 30 a second, about 82.9 MB/s
+ok   ros1 step 7: 2 TCP connections, /camera sends 2 × 82.9 = 165.9 MB/s
+ok   ros1: "do images pass through the master?" says never at every step
+ok   ros1: master killed: the /camera → /detector stream keeps flowing, 1 connection instead of 2
+ok   ros1: a comment leaves the fingerprint at 0600…4743 and the connection is accepted
+ok   ros1: one more field gives 5be3…6790 and /camera refuses /detector
+ok   dds discovery: 4 participants multicast to 239.255.0.1:7400; then N(N−1) = 12 endpoint exchanges; then 2 matched connections
+ok   dds discovery: rviz2 joins: 5 participants, 4 connections; "master: none" at every step
+ok   dds QoS: sensor-data publisher + default subscriber: incompatible, 0 of 300 arrive
+ok   dds QoS: both default, loss 20 %: 300 / 300, 63 resent, mean 24.8 ms, longest 156 ms
+ok   dds QoS: both sensor data, loss 20 %: 249 received, 51 lost, nothing resent, mean 8.0 ms
+ok   exec single-threaded: U = 0.37, control timer up to 39.5 ms late, 320 / 1000 deadlines missed
+ok   exec: the three callbacks use 0.05 + 0.24 + 0.08 = 0.37 of the thread
+ok   exec: planner callback 100 ms: up to 99.5 ms late, 440 / 1000
+ok   exec: multi-threaded, one mutually exclusive group: 2 threads, still 99.5 ms and 440
+ok   exec: separate callback groups: 0 ms late, 0 / 1000
+ok   exec: + written in Python: up to 21.3 ms late, 465 / 1000; one GC pause 21.6 ms
+ok   stack: 11 layers: Linux owns 2, third-party middleware 1, ROS 5
+ok   stack: Cyclone DDS: middleware layer, from Eclipse, not used on this robot
+ok   stack: rclcpp: client-library layer, 100 % C++ (counted)
+ok   stack: "pick up the cup" takes 8 steps; ROS communication only in ①, ③, ④
+ok   stack: steps ③ and ④ cross the kernel (UDP between the computers)
+ok   stack: step ⑤ repeats every 1 ms with no topics and no DDS
+ok   stack: steps ⑥ and ⑦: libfranka sends UDP packets through the Linux network stack to the control cabinet
+ok   rtloop C under load: median 69.4 µs, p99 138.0 µs; 315 commands dropped a minute; longest run 7
+ok   rtloop C under load + SCHED_FIFO: median 18.3 µs, p99 50.1 µs; limit 700 µs; 90 a minute; longest run 8
+ok   rtloop: p99 improves about 2.8 times (138.0 ÷ 50.1)
+ok   rtloop C idle: longest run 24 → the robot would stop; worst wake-up 23,550 µs: the host paused the VM for 23.5 ms
+ok   rtloop: playing the slowest moment ends with the robot stopped after 20 drops in a row
+ok   plan: sample 1: the start tree steps 0.15 rad, the goal tree is stopped by the cup; sample 2 adds nothing; 31 checks after sample 6
+ok   plan (seed 14): the trees connect at sample 96 (41 · 19 nodes) after 294 collision checks; 18 waypoints, 2.48 rad
+ok   plan (seed 14) to the end: 511 checks, 18 → 3 waypoints, 2.48 → 1.90 rad, 2.75 s, 2,752 controller points
+ok   plan: shortcutting cost 511 − 294 = 217 checks
+ok   plan: the next seed (6): 20 → 3 waypoints, 2.79 → 2.15 rad, 2.87 s
+ok   tf: the cup through five edges: (0.80, −0.05, −0.10) → (0.80, −0.03, −0.10) → (0.79, −0.03, 0.95) → (1.77, 2.42, 0.95) → (2.32, 3.20, 0.95) in map
+ok   tf: 1 rad/s, looked up at the image stamp: still (2.32, 3.20, 0.95)
+ok   tf: looked up at "now": newest sample 8 ms old, image 80 ms old, 72 ms apart, 4.13°, 0.79 m from the axis → 5.7 cm off
+ok   tf: at 0.5 rad/s the same mistake costs 2.9 cm
+ok   tf: odometry alone: 22.5 m driven, odom drift 54.2 cm, error in map 54.2 cm, map→odom never rewritten
+ok   tf: with AMCL: odom still drifts to 54.2 cm, error in map 2.4 cm, map→odom rewritten 149 times
+ok   distro Humble → Jazzy: 8 of 9 things change; 396 of 2,401 packages (16.5 %) missing; the robot loses franka_ros2 and gazebo_ros_pkgs
+ok   distro: Ubuntu 22.04 → 24.04, Python 3.10.4 → 3.12.3, default middleware unchanged, ours 26 / 27 → 24 / 27
+ok   distro Humble → Lyrical: 8 of 9; 844 packages (35.2 %) missing; Qt 5 → 6, C++20; the same 2 lost
+ok   distro Humble → Lyrical: p = 1,557 / 2,401 = 0.648; P = 11 %, 1.3 %, 0.017 %, 0.000003 % for k = 5, 10, 20, 40
+ok   distro Humble → Jazzy: p = 2,005 / 2,401 = 0.835; P = 41 %, 16 %, 2.7 % for k = 5, 10, 20
+ok   lang: 30 Hz image → Python list: 18.7 ms a frame, 561 ms a second, 56 % of a core, 84× C++ (224 µs, 0.67 %)
+ok   lang: one GC with 100,000 live objects pauses 21.6 ms = 21–22 deadlines at 1 kHz; the Franka stops at 20
+ok   lang: numpy view: 0.46 µs, 0.0014 % of a core
+ok   lang: 1 kHz joint states: Python 2,523 ns (257× C++’s 9.8 ns), still only 0.25 % of a core
+ok   landscape ROS 2 vs LeRobot: 6 rows only ROS 2 covers fully, 1 row only LeRobot, 1 row neither
+ok   landscape hard real-time row: full = vendor controllers, PLC, OROCOS, micro-ROS, AUTOSAR; ROS 2 only partial
+ok   landscape: 18 approaches × 10 rows; ROS 2 fills most: 7 full, 2 partial, 1 none; nobody fills all 10
+ok   arch: 28 / 28 programs: MCU 1, RT PC 2, Thor 22, workstation 3
+ok   arch Wi-Fi down: 27 / 28, only rviz2 stops, the 25 programs on the robot carry on
+ok   arch Wi-Fi back: nothing needs restarting
+ok   arch RT PC overloaded: 20 packets in a row (20 ms): ros2_control_node and the arm stop first; task_manager and move_group wait
+ok   arch swap the arm: 4 programs + 1 item to change
+ok   arch swap the arm, last step: the policy has to be retrained: 5 programs + 2 items
+ok   sum of the 11 message rates is 2,490 a second
+ok   8 × 7 ÷ 2 = 28
+ok   4 participants exchange 4 × 3 = 12 endpoint sets; 5 would exchange 20
+ok   budget: 1 ms − 0.10 ms − 0.20 ms leaves 700 µs; 105 and 30 drops in 20 s are 315 and 90 a minute
+ok   velocity figure: d = 1.5 rad: 0.5 s up, 1.0 s flat, 0.5 s down, 2.0 s in all
+ok   velocity figure: d = 0.2 rad: 0.63 s in all, peak 0.63 rad/s
+ok   list figure: 2,764,800 pointers × 8 B ≈ 22 MB; 18.7 ms ÷ 0.46 µs ≈ 40,000; 30 × 18.7 ms = 561 ms
+ok   distributions: 396 / 2,401 = 16.5 %, 844 / 2,401 = 35.2 %, 2,005 / 2,401 = 0.835, 1,557 / 2,401 = 0.648
+ok   P = p^k: 0.835 → 41 %, 16 %, 2.7 % (k = 5, 10, 20); 0.648 → 11 %, 1.3 %, 0.017 %, 0.000003 % (k = 5, 10, 20, 40)
+ok   programs: 27 names − slam_toolbox + the workstation’s Zenoh bridge and train.py = 28 running
+
+91 checks, 0 failed; page errors: 0
