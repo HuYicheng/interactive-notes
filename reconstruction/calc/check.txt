@@ -1,0 +1,109 @@
+-- step 0 · task
+ok   task, after Play: 24 / 24 photos, the last one from 345.0° at (30.9, -8.3) cm, 96 × 72 pixels
+ok   task, "The angle nobody shot": camera at 37.5°, between photos 3 and 4, at (25.4, 19.5) cm
+ok   task (engine): photo 13 is taken from 180°; its stripes are 1 4 6 9 9 6 4 1 pixels wide (the two middle ones 9, then 6, 4, 1 towards either edge)
+ok   task (engine): photo 1 shows no blue stripe at all, only cream glaze and the handle
+ok   task (engine): the highlight sits at 22° on the mug in photo 1 (plain glaze) and at 94° in photo 10 (on the first blue stripe): about 70° for 135° of camera travel
+ok   figure of step 0: outer diameter 9 cm, wall 5 mm, handle 1.2 cm thick, gap 1.9 cm, camera circle 32 cm with 24 positions, 96 pixels opening 37.8°
+ok   figure of step 0: in photo 1 the mug falls on 40 of the 96 pixels
+-- step 1 · tri
+ok   tri, stripe edge, 1 px: 1 photo on 16.7° ± 14.5 mm; 2 on 33.9° ± 6.7 mm; 4 on 68.7° ± 2.9 mm
+ok   tri: smallest at 5 photos on (85.9°, ± 2.2 mm), back to ± 5.1 mm at 8 (134.3°)
+ok   tri: sideways error ± 2.1 mm at every spacing
+ok   tri, plain glaze with B still 8 photos on: hidden by the mug itself (also at 7); readouts "—"
+ok   tri, plain glaze: 3 look-alike pixels at 6 photos on, 4 from 2 to 5, 5 at 1
+-- step 2 · mvs
+ok   mvs, default pixel (photo 10, on the stripes): 28.6 cm estimated, 28.4 cm true, 2.3 mm apart, status green
+ok   mvs, dragging left over the stripes (pixels 62 to 41): green more often than red (14 against 8)
+ok   mvs: red pixels 47, 48 and 56 touch a boundary between two stripes (within half a pixel); red pixels 52 and 53 lie in the middle of the wide blue stripe (pixels 48 to 56), more than 2.5 pixels from either boundary
+ok   mvs, the highlight (pixels 33 to 35, on the first blue stripe): red, the readout 6.6, 10.6 and 15.3 mm off (the "7 to 15 mm")
+ok   mvs, the plain glaze at the far left (pixels 28 to 30): "no clear depth"
+ok   mvs, "All 24 photos": 319 points within 3 mm, 166 farther
+ok   mvs (engine, same loop as the widget): 319 blue, 166 red, and 120 of the red rings on the plain half with the handle
+ok   mvs, "Visual hull": the hollow always lies inside the outline, so it is never carved
+ok   mvs (engine): every sample point of the hollow survives the carving (2828 of 2828)
+-- step 3 · tsdf
+ok   tsdf, first frame (noise 1.5 mm): 38 of 96 pixels measured, surface 0.83 mm RMS from the truth
+ok   tsdf, 24 frames: 0.29 mm, about a third of the single-frame error; the inside of the mug is never measured
+ok   tsdf: moving the noise slider starts the fusion again
+ok   tsdf, noise 5 mm: 1.67 mm after one frame, 1.52 mm after 24
+ok   tsdf (engine, same loop as the widget), noise 5 mm: after 24 frames the outer wall sits 2.2 mm too far in on average; with 1.5 mm noise only 0.02 mm
+ok   tsdf (engine): with 1.5 mm noise none of the 1624 cells well inside the mug is ever updated; cells are 1.5 mm, the truncation distance 6 mm is 4 times the 1.5 mm noise
+ok   figure of step 3: the three illustrative readings +1.5, -1.2 and +0.6 mm average to 0.3 mm
+-- step 4 · ray
+ok   ray, 128 samples: 1.3 mm apart, the colour equals the photo (0.0%), the first one or two samples in the wall block the light
+ok   ray, 64 samples (2.6 mm) 0.1% off; 32 samples (5.3 mm) 0.8% off
+ok   ray, 16 samples: 10.6 mm apart, T stays at 100.0%, the pixel is the background (10.4% off), "missed"; 8 and 4 samples miss too
+ok   ray, back at 128 samples with fog: 1.3 mm apart, the pixel 7.1% off the fog-free colour
+ok   ray (engine, same field and march as the widget): 22 samples in the fog, each blocking less than 5% (4.1% at most), T down to 50% at the wall, the fog holding 50% of the pixel
+ok   ray (engine): at 128 samples 4 samples fall inside the front wall ("several")
+-- step 5 · nerf
+ok   nerf, untrained network: 2 476 parameters, the new view at 8.8 dB
+ok   nerf, network paused after about three hundred steps (306): between 21 and 24 dB (21.5)
+ok   nerf, positional encoding off: 1 708 parameters
+ok   nerf, without positional encoding: never reaches 25 dB, 22.5 dB after the full 2400 steps, "the field stays blurry"
+ok   nerf, grid: 40 960 parameters
+ok   nerf, grid: first reading above 25 dB within about 160 steps (shown at step 150), 25.7 dB after 2400 steps, "stray specks"
+ok   nerf, back to the network: positional encoding is on again (2 476 parameters)
+ok   nerf, network: first reading above 25 dB at about 520 steps (shown at step 519), 29.9 dB after 2400 steps
+ok   nerf (engine, same loop as the widget): the grid first passes 25 dB at step 160 and the network at step 520 (checked every 10 steps)
+ok   nerf (engine): network 21.5 dB at step 300 and 24.2 dB at step 400 (the "21 to 24 dB"); 29.9 dB at 2400; start 8.8 dB
+ok   nerf (engine): grid 27 dB by step 200 (27.3), best 28.5 dB on the way, 25.7 dB at 2400; the network reaches 27 dB at step 920 ("about a thousand")
+ok   nerf (engine): 2476 and 40 960 parameters; a grid step takes 8.3 ms and a network step 19.3 ms on this machine (text: seven or eight against about twenty, on the machine that ran this check)
+-- step 6 · gs
+ok   gs, start from the SfM points: 53 Gaussians (795 numbers), the new view at 19.0 dB
+ok   gs, SfM start: 38.0 dB after 2500 steps with 195 Gaussians (170 added, 28 removed)
+ok   gs, "Add and remove Gaussians" off: the count stays at 53, 31.2 dB
+ok   gs, back on, "Colour changes with direction" off: 35.8 dB, "the highlight that moves with the camera cannot be learned"
+ok   gs, "Random": 100 Gaussians, 13.5 dB before training
+ok   gs, random start: 36.5 dB with 204 Gaussians (161 added, 57 removed), 1.5 dB below the SfM start
+ok   gs (engine, same loop as the widget): the 53 starting points are 44 on the striped half, 5 on the plain half and 4 on the handle
+ok   gs (engine): from the SfM points the new view first passes 35 dB at step 990 (checked every 10 steps); final 38.0 dB
+ok   gs (engine): without adding Gaussians the mean error at the handle, the highlight and the stripe pixels of the new view is about three times as large (2.7, 3.1, 3.0 times)
+ok   gs (engine): without view-dependent colour the largest error among the highlight pixels rises from 2.7% to 5.1%; final 35.8 dB
+ok   gs (engine): random start: 54 of the 100 Gaussians begin outside the mug’s outline; after training only 1 visible Gaussian is still outside; 204 Gaussians, 36.5 dB
+ok   gs (engine): a Gaussian step takes 0.49 ms on this machine (text: about half a millisecond) against 19.3 ms for a network step; the whole network training takes 38 times as long ("dozens of times")
+ok   figure of step 6: 140 × 2 / 280 = 1.0 pixel; shares 0.60, 0.4 × 0.8 = 0.32 and 0.08
+-- step 7 · surf
+ok   surf, photos only: 1017 points, 438 (43%) more than 3 mm off, 333 inside the mug, new view 38.0 dB, handle centre 1.0 mm off
+ok   surf, photos + depth camera: 69 (7%) more than 3 mm off, 7 inside, 32.8 dB (5.2 dB lower), handle centre 0.8 mm off
+ok   surf (engine, same loop as the widget): of the 438 red rings 293 (two thirds) are on the plain half; the handle shows in 19 of the 24 photos
+ok   figure of step 7: from the camera at 0° the handle spans 24.4 to 25.6 cm and the wall starts at 27.5 cm; 0.55 × 24.4 + 0.45 × 27.5 = 25.8 cm, inside the gap
+-- step 8 · few
+ok   few, 3 photos: photographed angles 47.9 dB, angles in between 21.2 dB, back of the mug 11.2 dB
+ok   few, 3 photos with the prior: in between 25.4 dB, a gain of 4.2 dB; the back still 11.7 dB
+ok   few, 7 photos without the prior: in between already 38.2 dB, back 11.5 dB
+ok   few, 7 photos with the prior: in between 32.6 dB, 5.6 dB lower; back 11.3 dB (all four backs about 11 dB)
+-- step 9 · sp
+ok   sp, "Stored as": the two largest groups are "Gaussians and other primitives" (24) and "Radiance fields: networks" (19)
+ok   sp: in the Gaussian group only surfels (2000) and EWA splatting (2001) are older than 2023; 3DGS itself is 2023
+ok   sp, "Solved by": "One forward pass" has 22 methods, the earliest from 2014 (depth from a deep network), 11 of them from 2024 or later
+ok   sp, "Era": 4 before 1990, 14 in 1990–2009, 16 in 2010–2019, 25 in 2020–2022, 42 from 2023
+ok   sp (the widget’s data): 104 methods; 1990–2009: 10 of 14 solve directly; 2010–2019: 6 one-pass networks and 5 per-scene optimisations
+ok   sp (the widget’s data): 2020–2022: 15 of 25 store a radiance field in a network and 21 are optimised per scene; from 2023: 22 of 42 are stored as Gaussians
+-- text · numbers recomputed with the engine
+ok   step 0 text: mug 9 cm across, 10 cm high, wall 5 mm; handle 1.2 cm thick with a 1.9 cm gap; stripes 22.5°
+ok   step 0 text: camera 32 cm from the axis, 5 cm above the table, a photo every 15°, 24 photos of 96 × 72 pixels
+ok   step 0 text: the slice is a ring of radii 4.5 and 4.0 cm plus a disc of radius 6 mm centred 7 cm from the axis
+ok   step 1 card: f = 140 pixels, so a point 1 m away and 1 cm off axis lands 1.4 pixels off centre
+ok   step 1 card: handle centre in photo 2 (15°): z = 25.2 cm, x = -1.81 cm, u = 48 - 10.06 = 37.94 (exactly 37.95)
+ok   step 1 card: e = 0.29 × 1 / 140 = 2.1 mm; at 34° the factor is 3.3 and the error about 6.8 mm; about 14 mm at 17°, about 3 mm at 69°; the factor is 1 at 90°
+ok   step 1 card: the widget’s 2.2 mm at 5 photos on (86°) and 5.1 mm at 8 (134°)
+ok   step 2 card: 100 photos, 50 000 points seen 4 times each: 150 600 unknowns, 200 000 observations, 400 000 equations
+ok   step 2 card: the default pixel of the widget, 28.4 cm true, dip at 28.6 cm, 2.3 mm apart (checked on the widget above)
+ok   step 3 card: 4.5 / 6 = 0.75; (3 × 0.52 + 0.75) / 4 = 0.58
+ok   step 3 legend: 128 × 128 cells of 1.5 mm; no depth beyond 70° of incidence
+ok   step 4 card: wall density 2000 /m, so α ≈ 1 at 5.3 mm spacing; fog 32 /m, α = 1 - e^-0.17 = 0.16
+ok   step 5 card: the widget’s network has 2476 parameters, 24 samples per ray, 64 rays per batch, L = 6
+ok   step 5 card: γ(0.3) with L = 2 is (0.81, 0.59, 0.95, -0.31); at 0.35 the last term is -0.59 and the first 0.89
+ok   step 5 text: grid at 27 dB after 200 steps, the network after about a thousand; 192 against 64 rays; 1536 samples a step; the grid hovers at 27–28 dB and ends below 26 dB, the network climbs to about 30 dB
+ok   step 5 text: the grid is 64 × 64 cells with 10 numbers each, 40 960 numbers against the network’s 2476
+ok   step 6 card: a 2 mm Gaussian 28 cm away projects to 140 × 0.002 / 0.28 = 1.0 pixel; one pixel from the centre α = e^-0.5 o = 0.61 o
+ok   step 6 text: Gaussians are added or removed every 100 steps; the random start scatters 100 of them within 8.5 cm; a step takes about half a millisecond against about twenty
+ok   step 7 card: 0.55 × 24.4 + 0.45 × 27.5 = 25.8 cm; the gap runs from 25.6 to 27.5 cm; the median depth is 24.4 cm
+ok   step 7 card: with β = 1 mm, Ψ(-3 mm) = ½ e^-3 ≈ 0.025 and Ψ(+3 mm) ≈ 0.975
+ok   step 9 text: 104 methods; 50 optimised per scene, all from 2019 on; 30 compared with a learned prior, all from 2014 on except Make3D (2009)
+ok   step 9 text: of the 42 methods from 2023 on, 24 optimise per scene, 12 run one forward pass and 5 generate; 14 compare geometry only, none after 2016 except one of 2019
+ok   step 9 text: 24 Gaussian-type methods, all from 2023 on but two (2000, 2001); 31 radiance-field methods, most (26) from 2019 to 2023; 60 output new views; 9 methods from 2023 on output camera poses, more than in any earlier era
+
+96 checks, 0 failed; page errors: 0
