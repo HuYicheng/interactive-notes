@@ -1,0 +1,89 @@
+# node check.js <world-models/index.html>
+ok   try: real final distance 3.1 to 6.0 cm in the four layouts   [5.1 3.1 6 5.2]
+ok   try: all four end inside the ring (< 7 cm)   [5.1 3.1 6 5.2]
+ok   try: imagined vs real stopping point differ by 0.9 to 3.3 cm   [0.9 3.3 2.6 3.1]
+ok   roll 10 000: one-step error 1.9 mm   [1.9]
+ok   roll 10 000: 10 steps 1.1 cm   [1.1]
+ok   roll: 5 124 parameters   [5124]
+ok   roll 10 000: 50 steps 14.1 cm   [14.1]
+ok   roll: status says 73 times   [的接着往下想：到第 50 步，平均偏了 14.1 cm，是一步误差的 73 倍。]
+ok   roll 10 000, restart each step: stays near 2 mm at step 50   [0.2]
+ok   roll: status says 1.9 mm
+ok   roll 1 000: one-step 4.2 mm   [4.2]
+ok   roll 1 000: 10 steps 7.1 cm   [7.1]
+ok   roll 1 000: 50 steps 28.3 cm   [28.3]
+ok   roll 100 000: one-step 1.4 mm   [1.4]
+ok   roll 100 000: 10 steps about 0.55 cm   [0.6]
+ok   roll 100 000: 50 steps about 14 cm   [13.9]
+ok   roll: the script reproduces 14.1 cm at step 50   [14.08]
+ok   roll: finger touches the puck in 36% of the steps   [36.0]
+ok   roll: those steps carry 67% of the error growth   [67.0]
+ok   push 1 mm off centre: sideways 4.2, 10.4, 23.9, 51.2 mm at steps 8, 12, 16, 20   [4.19 10.42 23.89 51.22]
+ok   push 1 mm off centre: ends 6.4 cm off sideways   [6.40]
+ok   1 + d/R = 1.23   [1.227]
+ok   ens: one model picks 0.97   [下一次打算用的力度 0.97 模型说会滑出去 16.0 cm 五个模型的猜测范围 12.3 – 22.1 cm 已经试了]
+ok   ens: guesses range 12.3 to 22.1 cm
+ok   ens: mean of five picks 0.93
+ok   ens: optimistic picks 0.94
+ok   ens: pessimistic picks 0.93
+ok   ens: a real push at 0.93 slides 17.0 cm   [– 18.2 cm 已经试了 1（上次滑了 17.0 cm）]
+ok   ens: 24 cm is out of reach, full strength gives 18.3 cm   [全力推也只能滑 18.3 cm，目标根本到不了。模型一开始并不知道这一点，要试过]
+ok   blur frame 5: 1 – 25 cm, errors 28.2 and 56.3   [模型觉得还可能滑 1 – 25 cm 真实会滑 14 cm 12 步后的平均像素误差：糊的 28.2 12 步后的平均像素误差：抽样 56.3]
+ok   blur frame 8: 11 – 19 cm, errors 5.4 and 10.9   [模型觉得还可能滑 11 – 19 cm 真实会滑 14 cm 12 步后的平均像素误差：糊的 5.4 12 步后的平均像素误差：抽样 10.9]
+ok   blur frame 10: 13 – 16 cm   [模型觉得还可能滑 13 – 16 cm 真实会滑 14 cm 12 步后的平均像素误差：糊的 1.6 12 步后的平均像素误差：抽样 3.1]
+ok   lat no background: value keeps 53% of the puck
+ok   lat flicker 1.0: redraw keeps 34%   [背景一比物体显眼，"重建画面"就把 4 个数先让给背景：它要把画面画回来，背景占的像素多，就先画背景]
+ok   lat flicker 1.2: redraw keeps 1%
+ok   lat drifting: predict-next keeps 42%
+ok   col prediction only: spread about 0.01   [预测误差 1.4e−7 散开程度 0.012]
+ok   col + keep spread: error about 0.0004, spread about 1   [预测误差 0.0004 散开程度 0.981]
+ok   col + value: error about 0.0008, spread about 0.28   [预测误差 0.0008 散开程度 0.281]
+ok   use MPC: 768 calls, 98.5%   [每走一步，调用模型 768 每步想多久（你的浏览器） — 200 个开局里推进去 98.5% 平均用几步 38]
+ok   use tree: 216 calls, 93.5%   [每走一步，调用模型 216 每步想多久（你的浏览器） — 200 个开局里推进去 93.5% 平均用几步 38]
+ok   use policy: 97.5% real, 99.5% in the model   [每走一步，调用模型 0（策略网络 1 次） 每步想多久（你的浏览器） — 200 个开局里推进去 97.5% 在模型里（想象中）推进去 99.5%]
+ok   use policy, 1 000-step model: 4.5% real, 27% in the model   [每走一步，调用模型 0（策略网络 1 次） 每步想多久（你的浏览器） — 200 个开局里推进去 4.5% 在模型里（想象中）推进去 27%]
+ok   use MPC, 1 000-step model: 11%   [每走一步，调用模型 768 每步想多久（你的浏览器） — 200 个开局里推进去 11% 平均用几步 46]
+ok   use tree, 1 000-step model: 22.5%   [每走一步，调用模型 216 每步想多久（你的浏览器） — 200 个开局里推进去 22.5% 平均用几步 41]
+ok   drift: after twenty-odd steps the plain dream has several fingers (> 250%)   [从上次同步起做了几步梦 31 普通训练：圆盘 / 手指有多少（真实 = 100%） 129% / 455% 加噪训练：圆盘 / 手指有多少（真实 = 100%） 102% / 128%]
+ok   drift: the noise-augmented dream stays within 85% to 135%   [129 455 102 128]
+ok   cf action-blind: 0 against 61 cm   [四种动作后，手指停的地方彼此差多远：模型 / 真实 0 / 61 cm 最多穿出桌边 0 cm 最后圆盘离真实位置（4 种平均） 22.5 cm]
+ok   cf never saw the rim, against the wall: 29 cm through   [四种动作后，手指停的地方彼此差多远：模型 / 真实 64 / 55 cm 最多穿出桌边 29 cm 最后圆盘离真实位置（4 种平均） 7.6 cm]
+ok   cf saw it all, against the wall: 5 cm through   [四种动作后，手指停的地方彼此差多远：模型 / 真实 59 / 55 cm 最多穿出桌边 5 cm 最后圆盘离真实位置（4 种平均） 3.5 cm]
+ok   eval 100 000: rank correlation 0.98, policy 8 is 98% / 82%   [两种排名有多一致（秩相关，1 = 完全一致） 0.98 按模型会挑第几种；它在真实世界排第几 第 8 种；第 1 名 第 8 种：模型里 / 真实 98% / 82%]
+ok   eval: score table lists 8 policies   [ 策略 模型里（名次） 真实（名次） 1 乱走 0%（8） 0%（7） 2 手指直奔目标 2%（6） 0%（7） 3 手指直奔圆盘 2%（6） 2%（6） 4 ]
+ok   eval 10 000: rank correlation 0.99, policy 8 is 57% / 82%   [两种排名有多一致（秩相关，1 = 完全一致） 0.99 按模型会挑第几种；它在真实世界排第几 第 8 种；第 1 名 第 8 种：模型里 / 真实 57% / 82%]
+ok   eval 1 000: rank correlation 0.68; picks policy 7, real rank 2; policy 8 is 8% / 82%   [两种排名有多一致（秩相关，1 = 完全一致） 0.68 按模型会挑第几种；它在真实世界排第几 第 7 种；第 2 名 第 8 种：模型里 / 真实 8% / 82%]
+ok   eval 1 000: squared rank differences add up to 25, simple formula gives 0.70   [25 0.702]
+ok   eval 100 000: squared rank differences add up to 1.5   [1.5]
+ok   map: 49 methods   [49]
+ok   no page errors   []
+
+ALL 58 CHECKS OK
+
+# node ensstat.js <world-models/index.html>
+
+one model (goal 16 cm, 12 restarts)
+  first try, strength:           0.77 1.00 1.00 0.80 0.43 0.80 1.00 0.94 0.78 0.76 0.55 0.79
+  first try, predicted / actual: 16.0/14.0  11.3/18.3  13.8/18.3  16.1/14.6  7.4/7.7  16.1/14.6  11.9/18.3  16.0/17.2  9.6/14.2  9.8/13.8  7.9/9.9  9.4/14.4
+  first try, |predicted - actual|: mean 3.3 cm, max 7.0 cm;  |actual - 16|: mean 2.7 cm
+  tries needed to stop within 1 cm of the goal: 2 2 2 2 3 2 2 2 2 2 3 2   (max 3)
+
+mean of five (goal 16 cm, 12 restarts)
+  first try, strength:           1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 0.85 1.00 1.00
+  first try, predicted / actual: 9.9/18.3  13.8/18.3  13.8/18.3  12.3/18.3  12.9/18.3  14.6/18.3  14.1/18.3  11.1/18.3  12.9/18.3  16.1/15.5  12.4/18.3  12.2/18.3
+  first try, |predicted - actual|: mean 5.2 cm, max 8.4 cm;  |actual - 16|: mean 2.2 cm
+  tries needed to stop within 1 cm of the goal: 2 4 3 4 2 2 2 3 3 1 2 2   (max 4)
+
+five, pessimistic (goal 16 cm, 12 restarts)
+  first try, strength:           0.69 1.00 1.00 0.93 0.86 0.87 0.77 1.00 1.00 0.66 1.00 0.57
+  first try, predicted / actual: 9.2/12.5  14.7/18.3  14.1/18.3  16.0/17.0  15.9/15.7  16.0/15.9  14.0/14.0  15.5/18.3  12.7/18.3  9.9/12.0  12.7/18.3  8.5/10.3
+  first try, |predicted - actual|: mean 2.5 cm, max 5.6 cm;  |actual - 16|: mean 2.3 cm
+  tries needed to stop within 1 cm of the goal: 2 4 3 1 1 1 2 2 4 2 2 2   (max 4)
+
+five, optimistic (goal 16 cm, 12 restarts)
+  first try, strength:           1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+  first try, predicted / actual: 11.4/18.3  12.5/18.3  11.1/18.3  12.5/18.3  13.9/18.3  12.4/18.3  12.8/18.3  13.0/18.3  13.4/18.3  11.7/18.3  12.7/18.3  14.3/18.3
+  first try, |predicted - actual|: mean 5.7 cm, max 7.2 cm;  |actual - 16|: mean 2.3 cm
+  tries needed to stop within 1 cm of the goal: 3 3 4 2 3 3 2 2 2 3 3 2   (max 4)
+
+claims hold: every rule reaches the goal in 1 to 4 tries; "optimistic" always tries full strength first
