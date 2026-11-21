@@ -1,0 +1,151 @@
+-- step 0 · one
+ok   one ③, window 1 s: 163 MB of raw data, 120 camera frames
+ok   one ③, 1 s: a large model starts 10 times (the action model), whole-body control runs 1000 times, the current loops 420000 times for 21 joints
+ok   one: 420000 ÷ 21 = 20000 per joint, 2000 times the action model's 10
+ok   one ③, 0.1 ms: 8 B of data, 0 camera frames, whole-body control 0, current loops 42 (2 per joint)
+ok   one ③, 0.1 ms: the only rows with an event in that window are the microphones, the current loops and the power switches (12 rows in all)
+ok   one ③, 1 s: of the rows that compute, the action model runs least (10) and a current loop most (20000 per joint)
+ok   one ①, window back at 1 s: the second around t = 1.40 s
+ok   one ②: the second around t = 2.20 s
+ok   one ① and ②: the planner (purple bars) starts at 1.45 s and runs 0.45 s, then starts at 2.05 s and runs 0.6 s; both bars lie inside those windows
+-- step 1 · gate
+ok   gate, NAND: the output is 0 only for A = 1, B = 1 (then it is tied to ground); 4 transistors
+ok   gate, adder: it opens with 5 + 3 = 8
+ok   gate, adder: 7 + 9 = 16; the carry travels 4 stages and leaves at the top as the 5th bit of the sum
+ok   gate, adder step by step: 3 gate delays for the first stage, 2 more for each further stage, 9 in all
+ok   gate, clock: opens at 2.0 GHz (slider 0.5 to 5.0 GHz): one period is 500 ps, 150 ps more than the 350 ps path
+ok   gate, clock at 2.8 GHz: 357 ps, 7 ps to spare
+ok   gate, clock, dragging up in steps of 0.1 GHz: the first failure is at 2.9 GHz (period 345 ps, 5 ps short): the register latches an unfinished result
+ok   gate, clock at 2.9 GHz: speed ×1.45, power ×2.18 of 2 GHz; the limit is 1 / 350 ps ≈ 2.86 GHz; the voltage is marked as illustrative
+ok   gate: 1 ÷ 350 ps = 2.857 GHz; 2.9 ÷ 2.0 = 1.45; 1 ÷ 2.9 GHz = 345 ps
+-- step 2 · stack
+ok   stack, toy CPU stepped to the end: 6 instructions in 24 clock ticks, 4 ticks each, 12 ns at 2 GHz
+ok   stack, toy CPU: y = 3 × 2 + 1 = 7 is written back to memory
+ok   stack: 24 ÷ 6 = 4; 24 ticks ÷ 2 GHz = 12 ns
+ok   stack, PyTorch, 4096 × 4096 (H100): the GPU computes 10.0 µs per call, a command takes 0.90 µs, 4 calls 41.1 µs, the GPU waits for commands 2.2% of the time
+ok   stack, PyTorch, smallest matrix 256 × 256: 0.04 µs of GPU work per call; the GPU waits for commands 95% of the time
+ok   stack, 4096 × 4096 with the weights NOT kept in GPU memory: moving W over PCIe takes 524 µs per call; 4 calls 2.14 ms, ×52 slower
+ok   stack: 524 µs ÷ 10.0 µs = 52; 2.14 ms ÷ 41.1 µs = 52; 4096² × 2 bytes = 33.6 MB
+ok   stack, 1024 × 1024 (slider at 2¹⁰) with the weights not kept: ×32 slower
+-- step 3 · mem
+ok   mem, 8B FP8 = 8 GB: fits the robot's 128 GB (273 GB/s), one read 29 ms, at most 34 tokens a second; one B200 (180 GB, 8 TB/s): 1 ms, 1000 a second
+ok   mem, 70B FP8 = 70 GB: still fits the robot; one read 0.26 s, 3.9 tokens a second; 114 on a B200
+ok   mem, 405B FP8 = 405 GB: fits neither; at least 3 B200s
+ok   mem, human scale (1 ns → 1 s): register 0.02 s, L1 cache 1 s, memory 80 s, SSD 1.2 days, network about 5 months
+ok   mem: 8 ÷ 273 = 29 ms; 273 ÷ 8 = 34; 8000 ÷ 8 = 1000; 70 ÷ 273 = 0.26 s; 273 ÷ 70 = 3.9; 8000 ÷ 70 = 114; ⌈405 ÷ 180⌉ = 3
+-- step 4 · energy
+ok   energy: one 32-bit read from off-chip DRAM costs 640 pJ = 1032 16-bit integer multiplies (0.62 pJ each)
+ok   energy: … = 6400 32-bit integer additions (0.1 pJ each)
+ok   energy: π stored as FP8 is 3.25 (+3.5%): 3 mantissa bits, steps of 0.25 between 2 and 4
+ok   energy: π stored as FP4 is 3 (−4.5%); 4 bits have only 15 distinct values
+ok   energy, bottom, 8B FP8: computing one token 6.4 mJ, moving 6.4 × 10¹⁰ bits 1.3 J, ratio 200
+ok   energy: 640 ÷ 0.62 = 1032; 640 ÷ 0.1 = 6400; 640 pJ ÷ 32 bits = 20 pJ per bit; 8 × 10⁹ × 0.8 pJ = 6.4 mJ; 6.4 × 10¹⁰ × 20 pJ = 1.28 J; 1.28 ÷ 0.0064 = 200; |3.25 − π| ÷ π = 3.5%; |3 − π| ÷ π = 4.5%
+-- step 5 · arch
+ok   arch, 512 multiply-adds: systolic array 22 cycles, CPU 512, GPU 8, FPGA 67, microcontroller 1536
+ok   arch, systolic array: the rows of A enter from the left, the columns of B from the top
+ok   arch, systolic array stepped to the end: 22 of 22 cycles, 64 units
+ok   arch: 3 × 8 − 2 = 22; 8 × 8 × 8 = 512; 64 + 3 = 67; 3 × 512 = 1536
+ok   arch, code full of ifs: CPU 192 cycles, microcontroller 576, GPU 17 with utilisation 53%
+ok   arch, code full of ifs: the systolic array cannot do it; the FPGA has to be rewired
+-- step 6 · cuda
+ok   cuda, N = 1 million, 256 threads per block: 3907 blocks, 8 warps per block, 1,000,192 threads
+ok   cuda, B200: 148 SMs × 8 blocks at a time (assumed) = 1184 blocks per wave → 4 waves
+ok   cuda: ⌈1 000 000 ÷ 256⌉ = 3907; 3907 × 256 − 1 000 000 = 192 idle threads; 256 ÷ 32 = 8; 148 × 8 = 1184; ⌈3907 ÷ 1184⌉ = 4
+ok   cuda, dealing out the blocks: ⌈3907 ÷ 1184⌉ = 4 waves
+ok   cuda, default (all take the if): 3 steps, warp efficiency 100%
+ok   cuda, half if / half else: 6 steps, warp efficiency 50%, time ×2
+ok   cuda, layers: PyTorch is a framework, the top layer
+-- step 7 · roof
+ok   roof, B200, 8B FP8, one user decoding: intensity 2, 16 TFLOPS = 0.4% of the peak, memory-bound
+ok   roof, B200: FP8 dense peak 4.5 PFLOPS, 8 TB/s, ridge point ≈ 560 FLOP/byte; about 280 users reach it
+ok   roof, decoding as a batch, default batch 16: intensity 32, 5.7% of the peak
+ok   roof, dragging the batch up: at 266 users still memory-bound (95%); at 280 users intensity 560 = the ridge point, 100% of the peak
+ok   roof, Thor: bandwidth 273 GB/s, ridge point ≈ 7600 FLOP/byte
+ok   roof, Thor, one user decoding: 0.03% of the peak, 34 tokens a second
+ok   roof, Thor, one call of the action model: 800 tokens prefilled together, intensity ≈ 1600, left of the ridge point, memory-bound, at least 11 ms
+ok   roof, B200, the same call: right of the ridge point, compute-bound, at least 1.1 ms
+ok   roof: 4.5 × 10¹⁵ ÷ 8 × 10¹² = 562 ≈ 560; 560 ÷ 2 = 280; 2 × 8 TB/s = 16 TFLOPS = 0.36% of 4.5 PFLOPS; 2 × 16 = 32; 2070 × 10¹² ÷ 273 × 10⁹ = 7582 ≈ 7600; 2 × 800 = 1600; 273 ÷ 8 = 34
+-- step 8 · token
+ok   token, 70B on one B200: 8.83 ms per token, 113 tokens a second; reading the 70 GB of parameters is 8.75 ms (99%), computing 32 µs
+ok   token, 70B on 8 B200s: each reads its 1/8 in 1.09 ms; KV cache 0.01 ms; 160 all-reduces × 5 µs (assumed) = 0.80 ms; 1.90 ms per token, 525 tokens a second
+ok   token, context dragged to 128 000 tokens: reading the KV cache grows to 0.66 ms; 2.55 ms per token
+ok   token, the same 8 GPUs with a batch of 64: 392 tokens a second per user (25% slower than 525), 25 100 in all (48 times one user)
+ok   token: 70 GB ÷ 8 TB/s = 8.75 ms; 8.83 ÷ 1.90 = 4.6; 2 × 80 layers = 160; 160 × 5 µs = 0.80 ms; 1.09 + 0.01 + 0.80 = 1.90; 1 − 392 ÷ 525 = 25%; 25 100 ÷ 525 = 48; 1000 ÷ 1.90 = 526
+-- step 9 · dc
+ok   dc, 70B, 15 trillion tokens, 10 000 B200s: 6.3 × 10²⁴ operations; one GPU 222 years; 10 000 GPUs 8.1 days
+ok   dc, one all-reduce: 0.31 s inside a rack, 2.8 s across racks, 9 times slower
+ok   dc, fitting: training state 1.12 TB (16 bytes per parameter) → at least 7 B200s
+ok   dc, 100 000 GPUs: 19 hours; 1 389 racks, 183 MW; 600 000 transceivers (6 per GPU, 10 W each, assumed) = 6 MW = 3.2%
+ok   dc: 6 × 7 × 10¹⁰ × 1.5 × 10¹³ = 6.3 × 10²⁴; ÷ (2.25 PFLOPS × 40%) = 7 × 10⁹ s = 222 years; ÷ 10 000 = 8.1 days; ÷ 100 000 = 19 hours
+ok   dc: ⌈100 000 ÷ 72⌉ = 1389 racks × 132 kW = 183 MW; 600 000 × 10 W = 6 MW; 6 ÷ (183.3 + 6) = 3.2%; 16 bytes × 7 × 10¹⁰ = 1.12 TB; ⌈1120 ÷ 180⌉ = 7; 2.8 ÷ 0.31 = 9
+-- step 10 · scale
+ok   scale, compute 10²¹: best model 2.9B, loss 2.306, about 95 tokens a second on the robot's module
+ok   scale, compute 10²⁴: best model 91B, 3.0 tokens a second on the robot
+ok   scale, compute 10²⁵: best model 289B, loss 1.912 (floor 1.82); 289 GB of weights fit neither the robot's 128 GB nor one B200
+ok   scale: 2.306 − 1.912 = 0.39; 289 ÷ 2.9 = 100; √10 = 3.2; 273 ÷ 2.9 = 94 ≈ 95 (the page uses unrounded N); 273 ÷ 91 = 3.0
+-- step 11 · sense
+ok   sense, the opening set-up: 163.1 MB/s, cameras 99.7%, 587 GB an hour
+ok   sense, cameras at 1080p and 60 fps: 1.17 GB/s, 4.21 TB an hour, 101 TB a day
+ok   sense, the model looks 30 times a second and remembers 10 minutes: 23 040 tokens a second; KV cache 1.81 TB, 14 times the robot's 128 GB
+ok   sense, remembering 1 minute: 181 GB
+ok   sense, clocks (camera +20 ppm, IMU −20 ppm) synced once at power-on: 40 µs apart per second; 2.4 ms after a minute, 144 ms after an hour = 14.4 cm at 1 m/s
+ok   sense, PTP once a second: at most 40.2 µs apart (0.04 mm at 1 m/s)
+ok   sense, hardware trigger: 20.1 µs
+ok   sense: cameras (1280 × 720 × 3 + 2 × 640 × 480 × 3 + 848 × 480 × 2) × 30 = 162.7 MB/s; with microphones, IMU and joints 163.1 MB/s; cameras 99.7%; × 3600 = 587 GB
+ok   sense: 3 × 256 × 30 = 23 040; × 600 s × 131 072 bytes = 1.81 TB; (1.81 TB + 16 GB) ÷ 128 GB = 14; × 60 s = 181 GB; 40 ppm × 60 s = 2.4 ms; × 3600 s = 144 ms; 0.144 s × 1 m/s = 14.4 cm
+-- step 12 · budget
+ok   budget, an action model like π0 (3B, FP8, Thor, 10 Hz): about 29.5 ms of a 100 ms period (30%), keeps up
+ok   budget, π0-like: prefilling 800 tokens 18.6 ms; the action expert 11 ms; measured GR00T N1.7 (3B) on Thor at FP8: 44 ms
+ok   budget, the same at FP4: about 14.8 ms
+ok   budget, asking a 70B model in the cloud (20 tokens out): about 282 ms; the largest part is bandwidth
+ok   budget, network round trip dragged to 200 ms: 432 ms; the largest part is now the network
+ok   budget, future: 70B on board (FP4, 10 Hz, 5 tokens out): about 912 ms against 100 ms, 9.1 times too slow, bandwidth-bound: 5 × 128 ms = 641 ms to read 35 GB five times
+ok   budget: 2 × 3 × 10⁹ × 800 = 4.8 × 10¹² operations ÷ (517.5 TFLOPS × 0.5) = 18.6 ms; 10 × 0.3 GB ÷ 273 GB/s = 11 ms; 18.6 + 11 = 29.5; 29.5 ÷ 14.8 = 2.0; 35 GB ÷ 273 GB/s = 128 ms; 912 ÷ 100 = 9.1; 282 + 150 = 432
+-- step 13 · body
+ok   body, coloured by layer: sensing has the most chips, 33; control is 21 microcontrollers plus the SoC, actuation 21 sets of power transistors; perception, decision and planning share the one SoC
+ok   body: 4 cameras + 4 microphones + 1 IMU + 2 force sensors + 21 joint encoders + 1 FPGA = 33
+ok   body, coloured by clock: 32 free-running clocks; the FPGA is the master clock
+ok   body, the handover reflex, worst case: ≤ 1 ms + ≤ 1 ms + ≤ 1 ms + 50 µs → the current changes within 3.05 ms; force sensor → real-time core → microcontroller → power transistors
+ok   body, the same reaction via the action model: about 146 ms, 48 times slower
+ok   body, via the cloud: about 352 ms
+ok   body: 1 + 1 + 1 + 0.05 = 3.05 ms; 146 ÷ 3.05 = 48
+-- step 14 · trend
+ok   trend, V100 (2017) → Rubin (2026): compute ×280, memory bandwidth ×21, NVLink ×10, memory capacity ×9
+ok   trend: the ridge point rises from 139 to 1823 operations per byte
+ok   trend, the robot's module: Thor's bandwidth is 29 times behind the B300 of the same year and 70 times behind Rubin
+ok   trend, at the same precision (16 bits): compute ×32; the other 8.75× (280 ÷ 32) came from going from 16 bits to 4
+ok   trend: 280 ÷ 32 = 8.75; 280 ÷ 21 = 13 ("more than ten times faster than bandwidth"); 19.2 TB/s ÷ 273 GB/s = 70
+-- step 15 · radar
+ok   radar, column "memory bandwidth": 2 routes aim at it: analogue in-memory computing and digital near-memory computing
+ok   radar, column "interconnect": 2 routes: optical interconnect with co-packaged optics, and computing in the sensor; the two closest to deployment
+ok   radar, "for the kitchen robot": most useful would be analogue in-memory computing once mature; a 3B action model needs about three hundred IBM-type chips; usable today: computing in the sensor
+ok   radar: 3 × 10⁹ weights × 2 to 4 devices ÷ 3.6 × 10⁷ devices per chip = 170 to 330 chips ("about three hundred")
+-- step 16 · sp
+ok   sp: 96 items in all; grouped by "what it is for", the group 传 (moving data) has 11
+ok   sp, the 11 items of 传 by layer: interconnect and networks 6, storage 3, devices and manufacturing 1, systems and data centres 1
+ok   sp, 传: storage = the memory wall, HBM, digital near-memory computing; devices = silicon-interposer packaging; systems = the rack-scale NVLink domain; interconnect includes NVLink, ring all-reduce, optical I/O, co-packaged optics
+ok   sp, grouped by era: 48 of the 96 items are from 2020 onwards, exactly half
+ok   sp, tile "the memory wall": 7 related items get a dashed frame
+ok   sp, the memory wall: 4 routes aim at it (analogue in-memory, digital near-memory, wafer-scale chips, SRAM-only inference chips); HBM is the most direct remedy
+-- text
+ok   page: 17 interactives, each in its own step with one "先玩" prompt and one "你会看到" line; 7 figures
+ok   figure (HBM stack) agrees with the text of step 3: 8 to 16 DRAM dies in a stack; 1024 data lines per HBM3E stack
+ok   figure (ring all-reduce) and its card: 2(n − 1) steps; each GPU sends 2(n − 1) × M ÷ n bytes: 1.5 M for the 4 drawn, 1.97 M for 72, so "about 2M"
+ok   figure (action chunks) agrees with step 12 and the quiz: 50 actions per chunk at 50 a second = 1 s; a new chunk every 25 actions = 0.5 s = twice a second
+ok   step 4 card: 16-bit multiply 0.62 pJ + add 0.18 pJ = 0.8 pJ per multiply-add
+ok   quiz 1: 1 ÷ 350 ps ≈ 2.86 GHz; at 3 GHz a period is 333 ps
+ok   quiz 2: (1.0 ÷ 0.8)² × (3 ÷ 2) = 2.34
+ok   quiz 3: 1 ÷ (0.05 + 0.95 ÷ 100) = 16.8; the limit is 20
+ok   quiz 4: ⌈10 000 ÷ 128⌉ = 79 blocks, 10 112 threads, 112 idle
+ok   quiz 5: 273 ÷ 70 = 3.9 tokens a second
+ok   quiz 6: 1979 ÷ 3.35 = 590; 2 × 3.35 = 6.7 TFLOPS = 0.34%
+ok   quiz 7: 2 × 32 × 8 × 128 × 2 = 131 072 bytes per token; × 32 000 = 4.2 GB
+ok   quiz 8: 2 × 80 × 5 µs = 0.8 ms
+ok   quiz 9: 16 × 8 × 10⁹ bytes = 128 GB, less than a B200's 180 GB
+ok   quiz 10: D = 20 × 10⁹ = 2 × 10¹⁰ tokens; C = 6 × 10⁹ × 2 × 10¹⁰ = 1.2 × 10²⁰
+ok   quiz 11: 1280 × 720 × 3 × 30 = 82.9 MB/s = 299 GB an hour, more than half of 163.1 MB/s
+ok   quiz 12: 20 ppm = 20 µs a second; 1 ms ÷ 20 µs = 50 s
+ok   quiz 13: 50 ÷ 25 = 2 calls a second; 25 actions = 0.5 s
+ok   quiz 14: 130 W ÷ 2.07 × 10¹⁵ = 0.063 pJ; 1 ÷ 12.4 = 0.081 pJ
+
+131 checks, 0 failed; page errors: 0
