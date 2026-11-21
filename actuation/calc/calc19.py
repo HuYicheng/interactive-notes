@@ -82,8 +82,8 @@ def sim_heat(Ifun, T_end, dt=0.01, Ta=25.0):
         Tw += dTw * dt; Th += dTh * dt; t += dt
         if hit is None and Tw >= Tmax: hit = t
     return Tw, Th, hit
-Tw, Th, hit = sim_heat(lambda t: 11.17, 120)
-p('first design holding at 11.17 A (if the drive allowed it): winding reaches 125 °C after %.1f s' % hit)
+Tw, Th, hit = sim_heat(lambda t: 11.16, 120)
+p('first design holding at 11.16 A (if the drive allowed it): winding reaches 125 °C after %.1f s' % hit)
 Tw, Th, hit = sim_heat(lambda t: 3.29, 3000)
 p('3.29 A for 3000 s: T_w %.1f °C, T_h %.1f °C' % (Tw, Th))
 Tw, Th, hit = sim_heat(lambda t: 1.77, 3000)
@@ -327,9 +327,9 @@ best = max(((state(24.0, t / 1000)[2] / state(24.0, t / 1000)[4], t / 1000) for 
 p('max efficiency at 24 V (model): %.1f%% at %.3f N·m (sheet 85%%)' % (100 * best[0], best[1]))
 
 hdr('§2b heat widget profiles (25 °C ambient)')
-def drive_limited(t): return 11.17 if t < 3.0 else 5.0
+def drive_limited(t): return 11.16 if t < 3.0 else 5.0
 Tw, Th, hit = sim_heat(drive_limited, 600)
-p('11.17 A for 3 s then 5 A: after 600 s T_w %.0f °C; 125 °C reached at %s s' % (Tw, '%.1f' % hit if hit else 'never'))
+p('11.16 A for 3 s then 5 A: after 600 s T_w %.0f °C; 125 °C reached at %s s' % (Tw, '%.1f' % hit if hit else 'never'))
 def duty(t):
     tt = t % 58.6
     acc = 0
@@ -339,7 +339,7 @@ def duty(t):
     return 0.0
 Tw, Th, hit = sim_heat(duty, 3600)
 p('design-2 duty cycle for 1 h: T_w %.1f °C (end), hit %s' % (Tw, hit))
-for I in [1.77, 3.29, 11.17]:
+for I in [1.77, 3.29, 11.16]:
     for Ta in [25.0, 45.0]:
         Tw, Th, hit = sim_heat(lambda t, I=I: I, 1200, Ta=Ta)
         p('I %.2f A, ambient %.0f °C: T_w after 20 min %s; 125 °C at %s' % (I, Ta, ('%.1f °C' % Tw) if Tw < 300 else '> 300 °C (runaway)', ('%.1f s' % hit) if hit else 'never'))
@@ -440,3 +440,55 @@ I_rr = (tau_rr_m + tf) / kt
 n_rr = (23.04 - R * I_rr) * kn
 p('wheel top speed at 23.04 V (25.6 V bus), rolling resistance only: motor %.4f N·m, %.2f A, %.0f rpm → wheel %.1f rpm → %.3f m/s (ratio widget)' %
   (tau_rr_m, I_rr, n_rr, n_rr / N_wh, rad(n_rr) / N_wh * r_w))
+
+hdr('§18 revision of the page: human-scale anchors, the energy ledger, short-time heating, the voltage budget')
+for name, tq in [('1 A (k_t)', kt), ('design 2 raising', 0.0716), ('nominal', tauN), ('design 1 raising', 0.451), ('stall', tau_st)]:
+    p('%s: %.4f N·m = %.2f N at 0.10 m = a mass of %.0f g hung on the end of a 10 cm spanner' % (name, tq, tq / 0.10, tq / 0.10 / g * 1000))
+E1 = F_lift * 0.010
+p('design 1, one screw turn: F·L = %.2f × 0.010 = %.3f J; ÷ 2π = %.4f N·m with no loss; ÷ 0.9 = %.4f N·m' % (F_lift, E1, E1 / (2 * pi), E1 / (2 * pi) / 0.9))
+E2 = F_lift * 0.005 / 3.5
+p('design 2, one motor turn: carriage rises 5/3.5 = %.3f mm: %.4f J; ÷ 2π = %.4f N·m with no loss; ÷ (0.9 × 0.9) = %.4f N·m' %
+  (5 / 3.5, E2, E2 / (2 * pi), E2 / (2 * pi) / 0.81))
+I1 = F_lift * 0.010 / (2 * pi * 0.9) / kt
+p('design 1 raising current = %.2f A = %.2f × nominal; copper loss = %.1f × nominal (cold: %.1f W vs %.2f W)' %
+  (I1, I1 / IN, (I1 / IN)**2, I1 * I1 * R, IN * IN * R))
+Cw = tw / Rth1
+p('winding heat capacity C_w = τ_w / R_th1 = %.2f J/K' % Cw)
+for I in (I1, 8.04, IN):
+    P0 = I * I * R
+    Tw_, Th_, hit_ = sim_heat(lambda t, I=I: I, 300)
+    p('  %.2f A: cold copper loss %.1f W → %.2f K/s at first → 100 K in %.1f s if nothing leaked; two-node model: %s' %
+      (I, P0, P0 / Cw, 100 / (P0 / Cw), ('125 °C after %.1f s' % hit_) if hit_ else 'never reaches 125 °C (%.1f °C after 300 s)' % Tw_))
+p('voltage budget at 24 V (speed part k_e·ω + torque part R·I):')
+for name, tq in [('no load', 0.0), ('0.0716 N·m', 0.0716), ('nominal 0.134 N·m', 0.134), ('max power 0.841 N·m', tau_half)]:
+    w, I, Pm, Pcu, Pin = state(24.0, tq)
+    p('  %-20s %5.0f rpm, %5.2f A: k_e·ω = %5.2f V, R·I = %5.2f V' % (name, rpm(w), I, ke * w, R * I))
+p('  stall: 0 rpm, %.1f A: k_e·ω = 0 V, R·I = 24.00 V' % (24 / R))
+w = rad(4200); I = (0.0716 + tf) / kt
+p('lift raising at 4200 rpm: k_e·ω = %.2f V + R·I = %.2f V = %.2f V; duty at 25.6 V = %.0f %%' % (ke * w, R * I, ke * w + R * I, 100 * (ke * w + R * I) / 25.6))
+Vh = R * 1.77
+p('holding at 1.77 A: V = %.2f V, duty at 25.6 V = %.1f %%, battery current ≈ D·I = %.2f A' % (Vh, 100 * Vh / 25.6, Vh / 25.6 * 1.77))
+Ibase = 251.0 / 25.6
+p('base load 251 W at 25.6 V = %.2f A → sag %.2f V at 30 mΩ' % (Ibase, Ibase * 0.030))
+I_brk2 = 22.0 * 0.72 / (N_wh * kt)
+wm = 0.3 / r_w * N_wh
+Vm = R * I_brk2 + ke * wm
+p('wheel current limit %.2f A (covers braking); at 0.3 m/s the motor turns %.0f rpm: V = %.2f V, %.1f W per motor; two motors draw %.2f A from a 25.6 V bus → extra sag %.2f V' %
+  (I_brk2, rpm(wm), Vm, Vm * I_brk2, 2 * Vm * I_brk2 / 25.6, 2 * Vm * I_brk2 / 25.6 * 0.030))
+p('wheel torque at %.2f A while driving: %.1f N·m (gearhead continuous 15, intermittent 22)' % (I_brk2, I_brk2 * kt * N_wh * eta_wh))
+p('free fall through 0.40 m: %.2f s; design 2 slide: a = %.3f m/s² → %.2f s (felt mass %.0f kg, net force %.1f N)' %
+  (math.sqrt(2 * 0.40 / g), a2, math.sqrt(2 * 0.40 / a2), m_eff2, Fd2))
+for r_ in (0.08, 0.6):
+    p('1.0° at a radius of %.2f m = %.2f mm' % (r_, r_ * math.radians(1.0) * 1000))
+p('CSD-20-80 twist at 22 N·m: %.2f mrad → %.2f mm at 0.6 m; at 51 N·m: %.2f mrad → %.2f mm' %
+  (twist(22.0) * 1e3, twist(22.0) * 600, twist(51.0) * 1e3, twist(51.0) * 600))
+p('brake sizing without friction: design 1 %.3f N·m, design 2 %.4f N·m' % (F_lift * 0.010 / (2 * pi), F_lift * 0.005 / (2 * pi * 3.5)))
+p('primer anchor: 100 g on the end of a 10 cm spanner = %.4f N·m (≈ 0.1 N·m)' % (0.100 * g * 0.10))
+p('electrical time constant L/R = %.3f ms' % (Lh / R * 1e3))
+p('design 1 raising with motor friction: (0.451 + %.4f)/k_t = %.2f A' % (tf, (0.451 + tf) / kt))
+for bits in (14, 20):
+    cnt = 2 * pi / 2 ** bits
+    p('joint-side %d-bit encoder: one count = %.4f mrad; × K1 1.3e4 N·m/rad = %.2f N·m of torque per count' % (bits, cnt * 1e3, cnt * 1.3e4))
+p("CSD-20-80 transmission error 1' × K1 = %.2f N·m of false torque" % (math.radians(1 / 60) * 1.3e4))
+p('rated current vs design 1: %.2f / 3.29 = %.2f; squared = %.1f' % (0.451 / kt, 0.451 / kt / 3.29, (0.451 / kt / 3.29) ** 2))
+p('wheel braking at the driving limit: 10.2 A × k_t × 74 / 0.72 = %.1f N·m at the wheel' % (10.2 * kt * N_wh / 0.72))

@@ -582,7 +582,7 @@ A robot's actuation layer and sensor hardware explained from the bottom up, arou
 
 机器人的执行层和传感器硬件，从下往上讲，例子还是第 15–18 篇那台厨房机器人（差速底盘、Franka Research 3 手臂、Jetson AGX Thor）：为了够到吊柜，给它的手臂下面加一根滚珠丝杠的升降柱。第一版停在顶上三秒就连着手臂一起滑了下来；第二版托得住了，可按下急停时力矩被拿走，又滑了下来；轮子每换一次向，里程计还会差一点。这一篇能单独读：从磁场里一根导线受的力讲起（力矩常数、反电动势、k_e = k_t、力矩–转速线、无刷电机和换相），讲清楚连续力矩为什么比堵转力矩小得多（铜损、热阻和热时间常数、均方根电流、驱动器的电流上限和 I²t），再顺着能量从电池（磷酸铁锂电芯、内阻和压降、耗电的分账）经过驱动器（PWM、半桥、电流环、电压上限、回馈和制动电阻）走到电机。然后是机械：减速比（力矩乘 N、转速除 N、转子惯量乘 N²、转动变直线、惯量匹配），行星、谐波、摆线减速器，滚珠、梯形和行星滚柱丝杠（正反两个效率、自锁），回差、摩擦和柔性，能不能反驱。传感器：装在电机侧或关节侧的增量式、绝对式编码器，从电流、应变片或者一根弹簧量力矩。驱动器里套着的控制环、电流上限和报错，CiA 402 状态机；急停在硬件上怎么切断动力（停止类别、接触器、STO、弹簧制动器、双通道安全继电器、ISO 13849 的类别）。最后一行行读一份真的电机规格书和一份驱动器的接口说明，把升降柱从需求选到零件，再拿同样的问题去问别的机器人（Mini Cheetah、Unitree H1、Dynamixel、RV 关节、人形机器人的直线关节）。零件和它们的数据是真的（maxon EC 45 flat、GP 42 C、EPOS4，Harmonic Drive，Franka）；升降柱、电池和急停回路的设计是示意的。我们自己算的数在 `actuation/calc/`。
 
-0. The first lift column: three symptoms, the chain from battery to carriage, where the watts go, twelve questions
+0. The first lift column: three symptoms, the chain from battery to carriage, where the watts go, the power ledger and τ·2π·η = F·L, a road map in four parts
 1. The motor: force on a wire, τ = k_t I, back-EMF and k_e = k_t, the torque–speed line, brushless motors
 2. Heat: copper loss, thermal resistance, continuous vs peak torque, thermal time constants, RMS current, I²t
 3. Battery and drive: cells, sag, the power budget, PWM, the current loop, the voltage limit, regeneration
@@ -601,9 +601,9 @@ A robot's actuation layer and sensor hardware explained from the bottom up, arou
 16. Another robot: Mini Cheetah, Unitree H1, Dynamixel, RV joints, humanoid linear actuators, NEO
 17. Summary and further reading
 
-Conventions: "our arithmetic" comes from `actuation/calc/calc19.py`; "est." marks an order-of-magnitude estimate without a source and "illustrative" a design choice or made-up example value (the lift, battery and E-stop design); specifications as of November 2026.
+Conventions: "our arithmetic" comes from `actuation/calc/calc19.py`; "est." marks an order-of-magnitude estimate without a source and "illustrative" a design choice or made-up example value (the lift, battery and E-stop design); specifications as of November 2026. Each step keeps a short main line (a question from the story, a small figure, the core formula cards, then the widget with a guess-first prompt and a "what you will see" line) and puts details, cross-checks and sources in "Going deeper" folds; after a number, the small mark "calc" stands for our arithmetic and "illus." for illustrative.
 
-约定："我们算的"来自 `actuation/calc/calc19.py`；"估"是没有出处的数量级估计，"示意"是为了讲清楚而定的设计或编的数（升降柱、电池和急停回路的设计）；规格以 2026 年 11 月为准。
+约定："我们算的"来自 `actuation/calc/calc19.py`；"估"是没有出处的数量级估计，"示意"是为了讲清楚而定的设计或编的数（升降柱、电池和急停回路的设计）；规格以 2026 年 11 月为准。每一步的主线是：从故事里来的一个问题、一张小图、核心公式卡，然后是交互（先猜再试，后面一句"你会看到"）；细节、验算和出处收在"想深一步"的折叠里。数字后面的小字"算"就是"我们算的"，"示"就是"示意"。
 
 ## Adding a page · 新加一篇
 

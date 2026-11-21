@@ -1,6 +1,7 @@
 # Arithmetic quoted on page 19 · 第 19 篇里"我们算的"那些数
 
-- `calc19.py` → `numbers.txt`: every number the page marks as "我们算的 / our arithmetic": consistency checks of the
+- `calc19.py` → `numbers.txt`: every number the page marks as "我们算的 / our arithmetic" (after a number the page
+  shows it as the small mark 算 / calc): consistency checks of the
   maxon EC 45 flat 70 W (24 V) datasheet (k_e vs k_t, stall current and torque, speed/torque gradient, mechanical time
   constant) and operating points of the lift motor; a two-node thermal model (winding and housing, copper loss only) with
   temperature-dependent resistance: steady temperatures, time to 125 °C, runaway current, an RMS duty cycle; the battery
@@ -10,7 +11,10 @@
   from the three-segment stiffness; encoder resolution at the carriage, wheel and joint; torque from current and a strain
   bridge; drive voltage and current limits (including the wheel's limit while braking); stopping distances for the E-stop,
   also while the lift is lowering; the exact 147/2 wheel ratio in the odometry; the average power and pack voltage quoted
-  for other robots.
+  for other robots; and, for the revised page (§18), torques as weights on a 10 cm spanner, the one-turn energy balance
+  τ·2π·η = F·L, short-time heating from the winding's heat capacity, the 24 V "voltage budget", the PWM duty cycle and
+  battery current, the wheel current limit of 5.3 A and the sag it causes, and the torque per encoder count when a
+  strain wave gear is used as the spring.
   Run: `python3 calc19.py > numbers.txt` (pure Python, no dependencies).
 
 The kitchen and the robot are fictional; the parts and their datasheet values are real (maxon EC 45 flat, GP 42 C,

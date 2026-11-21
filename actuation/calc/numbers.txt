@@ -29,7 +29,7 @@ steady winding temperature at 5.00 A (copper only, 25 °C ambient): 295.6 °C
 derating: ambient 25 °C → I_cont ≈ 3.29 × sqrt((125−25)/100) = 3.29 A
 derating: ambient 35 °C → I_cont ≈ 3.29 × sqrt((125−35)/100) = 3.12 A
 derating: ambient 45 °C → I_cont ≈ 3.29 × sqrt((125−45)/100) = 2.94 A
-first design holding at 11.17 A (if the drive allowed it): winding reaches 125 °C after 8.3 s
+first design holding at 11.16 A (if the drive allowed it): winding reaches 125 °C after 8.4 s
 3.29 A for 3000 s: T_w 98.3 °C, T_h 45.3 °C
 1.77 A (design-2 hold) for 3000 s: T_w 42.6 °C
 design-2 duty cycle 58.6 s: RMS current 1.41 A (motor continuous 3.29 A)
@@ -174,14 +174,14 @@ max power point at 24 V: τ 0.841 N·m, n 2814 rpm, P_mech 248 W, I 21.1 A
 max efficiency at 24 V (model): 84.5% at 0.125 N·m (sheet 85%)
 
 §2b heat widget profiles (25 °C ambient)
-11.17 A for 3 s then 5 A: after 600 s T_w 279 °C; 125 °C reached at 54.6 s
+11.16 A for 3 s then 5 A: after 600 s T_w 279 °C; 125 °C reached at 54.7 s
 design-2 duty cycle for 1 h: T_w 36.9 °C (end), hit None
 I 1.77 A, ambient 25 °C: T_w after 20 min 42.6 °C; 125 °C at never
 I 1.77 A, ambient 45 °C: T_w after 20 min 64.0 °C; 125 °C at never
 I 3.29 A, ambient 25 °C: T_w after 20 min 98.2 °C; 125 °C at never
 I 3.29 A, ambient 45 °C: T_w after 20 min 124.0 °C; 125 °C at never
-I 11.17 A, ambient 25 °C: T_w after 20 min > 300 °C (runaway); 125 °C at 8.3 s
-I 11.17 A, ambient 45 °C: T_w after 20 min > 300 °C (runaway); 125 °C at 6.3 s
+I 11.16 A, ambient 25 °C: T_w after 20 min > 300 °C (runaway); 125 °C at 8.4 s
+I 11.16 A, ambient 45 °C: T_w after 20 min > 300 °C (runaway); 125 °C at 6.3 s
 I 3.70 A constant: 125 °C at 986 s
 I 5.00 A constant: 125 °C at 69 s
 runaway when α·I²·R25·R_th > 1: I > 6.98 A
@@ -230,3 +230,41 @@ odometry that divides by 74 instead of 73.5 reads 0.68 % short: 6.8 mm per metre
 Unitree H1: 16 cells × 4.2 V = 67.2 V (matches the 67.2 V maximum on the product page)
 kitchen robot: 2048 Wh / 251 W = 8.2 h
 wheel top speed at 23.04 V (25.6 V bus), rolling resistance only: motor 0.0110 N·m, 0.54 A, 5364 rpm → wheel 72.5 rpm → 0.607 m/s (ratio widget)
+
+§18 revision of the page: human-scale anchors, the energy ledger, short-time heating, the voltage budget
+1 A (k_t): 0.0404 N·m = 0.40 N at 0.10 m = a mass of 41 g hung on the end of a 10 cm spanner
+design 2 raising: 0.0716 N·m = 0.72 N at 0.10 m = a mass of 73 g hung on the end of a 10 cm spanner
+nominal: 0.1340 N·m = 1.34 N at 0.10 m = a mass of 137 g hung on the end of a 10 cm spanner
+design 1 raising: 0.4510 N·m = 4.51 N at 0.10 m = a mass of 460 g hung on the end of a 10 cm spanner
+stall: 1.6900 N·m = 16.90 N at 0.10 m = a mass of 1723 g hung on the end of a 10 cm spanner
+design 1, one screw turn: F·L = 255.06 × 0.010 = 2.551 J; ÷ 2π = 0.4059 N·m with no loss; ÷ 0.9 = 0.4510 N·m
+design 2, one motor turn: carriage rises 5/3.5 = 1.429 mm: 0.3644 J; ÷ 2π = 0.0580 N·m with no loss; ÷ (0.9 × 0.9) = 0.0716 N·m
+design 1 raising current = 11.16 A = 3.39 × nominal; copper loss = 11.5 × nominal (cold: 71.4 W vs 6.20 W)
+winding heat capacity C_w = τ_w / R_th1 = 6.49 J/K
+  11.16 A: cold copper loss 71.4 W → 11.00 K/s at first → 100 K in 9.1 s if nothing leaked; two-node model: 125 °C after 8.4 s
+  8.04 A: cold copper loss 37.0 W → 5.71 K/s at first → 100 K in 17.5 s if nothing leaked; two-node model: 125 °C after 17.6 s
+  3.29 A: cold copper loss 6.2 W → 0.96 K/s at first → 100 K in 104.7 s if nothing leaked; two-node model: never reaches 125 °C (90.3 °C after 300 s)
+voltage budget at 24 V (speed part k_e·ω + torque part R·I):
+  no load               5627 rpm,  0.27 A: k_e·ω = 23.85 V, R·I =  0.15 V
+  0.0716 N·m            5388 rpm,  2.04 A: k_e·ω = 22.83 V, R·I =  1.17 V
+  nominal 0.134 N·m     5179 rpm,  3.59 A: k_e·ω = 21.94 V, R·I =  2.06 V
+  max power 0.841 N·m   2814 rpm, 21.08 A: k_e·ω = 11.92 V, R·I = 12.08 V
+  stall: 0 rpm, 41.9 A: k_e·ω = 0 V, R·I = 24.00 V
+lift raising at 4200 rpm: k_e·ω = 17.80 V + R·I = 1.17 V = 18.97 V; duty at 25.6 V = 74 %
+holding at 1.77 A: V = 1.01 V, duty at 25.6 V = 4.0 %, battery current ≈ D·I = 0.07 A
+base load 251 W at 25.6 V = 9.80 A → sag 0.29 V at 30 mΩ
+wheel current limit 5.30 A (covers braking); at 0.3 m/s the motor turns 2650 rpm: V = 14.26 V, 75.6 W per motor; two motors draw 5.90 A from a 25.6 V bus → extra sag 0.18 V
+wheel torque at 5.30 A while driving: 11.4 N·m (gearhead continuous 15, intermittent 22)
+free fall through 0.40 m: 0.29 s; design 2 slide: a = 0.326 m/s² → 1.57 s (felt mass 416 kg, net force 135.7 N)
+1.0° at a radius of 0.08 m = 1.40 mm
+1.0° at a radius of 0.60 m = 10.47 mm
+CSD-20-80 twist at 22 N·m: 1.42 mrad → 0.85 mm at 0.6 m; at 51 N·m: 2.64 mrad → 1.58 mm
+brake sizing without friction: design 1 0.406 N·m, design 2 0.0580 N·m
+primer anchor: 100 g on the end of a 10 cm spanner = 0.0981 N·m (≈ 0.1 N·m)
+electrical time constant L/R = 0.525 ms
+design 1 raising with motor friction: (0.451 + 0.0109)/k_t = 11.43 A
+joint-side 14-bit encoder: one count = 0.3835 mrad; × K1 1.3e4 N·m/rad = 4.99 N·m of torque per count
+joint-side 20-bit encoder: one count = 0.0060 mrad; × K1 1.3e4 N·m/rad = 0.08 N·m of torque per count
+CSD-20-80 transmission error 1' × K1 = 3.78 N·m of false torque
+rated current vs design 1: 11.16 / 3.29 = 3.39; squared = 11.5
+wheel braking at the driving limit: 10.2 A × k_t × 74 / 0.72 = 42.4 N·m at the wheel
