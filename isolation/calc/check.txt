@@ -1,0 +1,124 @@
+ok   clash: 8 frames; A is stuck at "packages" only (it installs in a venv)
+ok   clash: B is stuck at packages + runtime (it also needs Python 3.8)
+ok   clash: C at system libraries and distribution; D another operating system (system libraries + kernel); E at the kernel
+ok   clash: F is not a layer: there is no wall, one cat prints the SSH private key
+ok   clash: G is stuck lowest: hardware (CPU architecture), plus permissions on the cluster
+ok   clash: last frame: seven requests, stuck in six places; A and B in the same place
+ok   stack: steps 1, 3, 4, 5 look things up in user mode (PATH, ld.so.cache, sys.path, RPATH)
+ok   stack: steps 2, 6, 7, 8, 9 go into the kernel
+ok   stack: step 6 is the system call openat, number 257
+ok   stack: a system call ≈ 123 ns, a function call ≈ 1.6 ns, about 80×
+ok   stack: step 10: venv swaps sys.path, conda PATH and library paths, containers the mount table, a VM everything below the kernel, dual boot the kernel
+ok   stack: step 10: a container can also have its own process-ID, network and hostname tables
+ok   paging: process 1, 0x2abc: page 2, offset 0xabc → physical page 7 → 0x7abc
+ok   paging: process 2, the same 0x2abc → physical page 9 → 0x9abc
+ok   paging: user mode, 0xf010: the page is present but kernel-only → protection fault → Segmentation fault
+ok   paging: kernel mode, 0xf010 → 0x0010, allowed
+ok   paging: the same address a second time: the TLB hits, not one page-table read
+ok   paging: real size: 0x00007f3a12c45678 → indices 254·232·150·69, offset 0x678, 4 page-table reads + 1 data read
+ok   spectrum: 25 methods on the map
+ok   spectrum: venv: own copies from "packages" up; the runtime and everything below shared
+ok   spectrum: conda: own copies from part of the system libraries up
+ok   spectrum: app containers: own copies from system libraries and distribution up, kernel shared
+ok   spectrum: dual boot: own copies from the kernel up, but in turns
+ok   spectrum: full VMs: own copies from the (virtual) hardware up
+ok   spectrum: one file read: container 5 steps and 1 boundary; gVisor 7 steps and 2 boundaries, 1 step is a translation
+ok   spectrum: costs: container CPU and memory overhead ≈ 0 (Linpack 290.9 vs 290.8 GFLOPS); gVisor: every system call costs more
+ok   boot: Ubuntu with Secure Boot on: 8 steps
+ok   boot: check 1: the firmware checks shim with the Microsoft certificate
+ok   boot: check 2: shim checks GRUB with its own Canonical certificate
+ok   boot: check 3: GRUB asks shim to check the kernel; the initrd is not checked
+ok   boot: three checks on the way; afterwards the kernel checks every module it loads
+ok   boot: Windows changed the boot order: 5 steps to the Windows sign-in screen, GRUB never appears; fix with efibootmgr -o 0001,0000
+ok   boot: Fast Startup left on, into Ubuntu: still 8 steps; C: is hibernated and marked in use, mount it read-only
+ok   boot: Secure Boot off + Windows: 9 steps instead of 8
+ok   boot: the extra step: the TPM will not release the key, the screen asks for the BitLocker recovery key
+ok   boot: every step of the Windows path has a description (the winload step used to be empty)
+ok   trap: ideal machine: 3 run directly, 6 trap, 0 fail silently
+ok   trap: x86 run directly: 3 direct, 4 trap, 2 fail silently
+ok   trap: popf: at low privilege it neither changes the interrupt flag nor faults
+ok   trap: sgdt: not privileged, returns the host’s real GDT address
+ok   trap: x86 has 17 such instructions
+ok   trap: binary translation and paravirtualisation: nothing fails silently
+ok   trap: hardware virtualisation: 5 direct, 4 VM exits ≈ 17360 cycles ≈ 4.6 µs
+ok   trap: the 4 exits are mov cr3, out, cpuid, hlt
+ok   trap: one exit plus entry ≈ 4340 cycles ≈ 1.1 µs on a 3.8 GHz Pentium 4
+ok   trap: with nested paging: mov cr3 no longer exits; 3 exits ≈ 13020 cycles ≈ 3.4 µs
+ok   arithmetic: 4 × 4340 = 17360, 3 × 4340 = 13020; at 3.8 GHz: 1.1, 4.6 and 3.4 µs; 1931 + 2409 = 4340
+ok   nested: nested paging with 4 levels each: R = (4 + 1)(4 + 1) − 1 = 24; native needs 4
+ok   nested: playing counts 24 page-table reads before the data read
+ok   nested: 2 MiB pages: one level less on each side: (3 + 1)(3 + 1) − 1 = 15
+ok   nested: shadow page tables: back to 4 reads
+ok   nested: every guest page-table edit traps into the hypervisor once
+ok   nested: TLB hit: 0 reads
+ok   nested: levels 5 → 35 reads, levels 2 → 8 reads
+ok   arithmetic: (n + 1)² − 1 = 8, 15, 24, 35 for n = 2, 3, 4, 5
+ok   syscall: 9 ways of running
+ok   syscall: native: 6 steps, 2 user↔kernel switches, 0 walls
+ok   syscall: container: the same 6 steps and 2 switches, 1 wall to break
+ok   syscall: gVisor: 10 steps, 6 switches, 1 translation (Sentry), 2 walls
+ok   syscall: microVM: 12 steps, 6 switches, 1 VM exit, 2 walls (plus the guest kernel)
+ok   syscall: WSL 2, a Linux file: 8 steps, 2 switches, 1 VM exit
+ok   syscall: WSL 2, a file on /mnt/c: 12 steps, 6 switches, 1 VM exit, 2 translations (9P message, then a Windows file read)
+ok   ns: Docker default: 6 of 8 namespaces on
+ok   ns: default: ps -e in the container shows its own 5 processes, ros2 is PID 1; on the host it is 5224
+ok   ns: PID namespace off: the container lists the host’s processes with host numbers, python (4127) included
+ok   ns: python train.py is PID 4127 on the host
+ok   ns: mount namespace on: the container’s os-release says 22.04.5 LTS
+ok   ns: mount namespace off: it becomes the host’s Ubuntu 24.04.5 LTS
+ok   ns: uname -r prints 6.8.0-146-generic however the switches are set
+ok   ns: memory limit 128 MiB (default, measured): last line allocated 112 MiB, exit code 137 = 128 + 9
+ok   ns: memory limit 256 MiB: last line allocated 240 MiB, then killed, exit code 137
+ok   ns: CPU limit 0.5: cpu.max 50000 100000; 1.17 s predicted to become 2.34 s, measured 2.27 s
+ok   ns: setting the clock, mounting a disk and loading a module are all refused
+ok   ns: root in the container has 14 of the 41 capabilities
+ok   arithmetic: 128 + 9 = 137; 256 − 16 = 240, 128 − 16 = 112; 1.17 ÷ 0.5 = 2.34; 50000 ÷ 100000 = 0.5
+ok   overlay: reading setup.bash: found in the read-only L2, nothing copied, the writable layer stays empty
+ok   overlay: editing /etc/bash.bashrc: found in L1, the whole file (a few kB) copied up, then changed there
+ok   overlay: appending 1 byte to big.bin: first time 353 ms (the whole 200 MB copied up)
+ok   overlay: second and third time: already in the writable layer, about 0.01 ms each
+ok   overlay: deleting big.bin: a whiteout in the writable layer hides it; the 200 MB in L3 are still there
+ok   overlay: 5 containers from one image: 251.93 MB + 5 × 5 MB = 276.93 MB shared, against 1.28 GB for full copies
+ok   arithmetic: 251.93 + 5 × 5 = 276.93; 5 × (251.93 + 5) = 1284.65 MB ≈ 1.28 GB; 3 × 251.93 = 755.79
+ok   overlay: dependencies first, change only the code: 1 of 4 steps re-run, 3 from the cache, pip install not re-run
+ok   overlay: code first, change only the code: 3 steps re-run, 1 from the cache, pip install re-run
+ok   seccomp: bad deeds that succeed: run directly 6 / 8, Docker default 4 / 8, Docker hardened 1 / 8, gVisor 0 / 8, microVM 0 / 8
+ok   seccomp: the two legitimate jobs work under all five
+ok   seccomp: a table of 10 deeds × 5 ways
+ok   seccomp: run directly: key read, internet, data changed, fork bomb, memory, kernel exploit succeed; mount and clock refused
+ok   seccomp: Docker default: internet, fork bomb (hurts the host), memory (no limit) and the kernel exploit still succeed
+ok   seccomp: Docker hardened: only the kernel exploit is left; fork stops at 100 processes, memory is killed at 2 GiB
+ok   seccomp: the kernel exploit: gVisor: Sentry has to fall first; microVM: two more layers to break
+ok   path: no environment: both get the system Python 3.12 without torch; pip into the system is refused (externally-managed-environment)
+ok   path: venv: A gets Python 3.12, torch 2.5.1 and CUDA 12.4; B has no Python 3.8 and no torch
+ok   path: conda: B gets its own Python 3.8.20, torch 1.13.1 and CUDA 11.7
+ok   path: conda, ldd: libcudart is found at step 1 of the five-step search, the RPATH: envs/b/lib (libcudart.so.11.0) for B, envs/a/lib (libcudart.so.12) for A
+ok   path: uv: B gets a standalone Python 3.8.20 with torch 1.13.1
+ok   path: the shared rows of the bottom panel are the same under all four methods: glibc 2.39, libcuda.so.1 (driver 550), Linux 6.8 with nvidia.ko 550, /home/team, the network, the same user team
+ok   nix: start: 6 store paths, generation 41
+ok   nix: patch openssl: 4 new paths (openssl, python3, numpy, grasp-app); glibc and gcc unchanged; 10 paths; generation 42
+ok   nix: change the compiler (gcc 13.2 → 14.1): all 6 hashes change, glibc included; 16 paths; generation 43
+ok   nix: roll back: the link goes from generation 43 back to 42, nothing is rebuilt; generations 41 and 43 are still there
+ok   nix: garbage-collect: generations 41 and 43 go, then 11 unused paths; 5 remain, gcc is deleted too; no more rollback
+ok   arithmetic: 6 + 4 = 10, 10 + 6 = 16, 16 − 11 = 5; 160 ÷ 5 = 32
+ok   gpu: Docker container: the image brings PyTorch, cuDNN and the CUDA runtime; libcuda.so.1, nvidia.ko and the card are the host’s
+ok   gpu: the host needs the driver and the NVIDIA Container Toolkit, not the CUDA toolkit
+ok   gpu: the two containers bring CUDA 12.4 and CUDA 11.7; the host driver is 550
+ok   gpu: driver 550 runs CUDA 11.7, 12.1, 12.4, 12.8 but not 13.2, which needs ≥ 580
+ok   gpu: VM (passthrough): the guest brings everything, its own driver included; the whole card goes to that one VM
+ok   gpu: driver 580 runs all five, 13.2 included
+ok   gpu: the 470 row is unusable: the RTX 4090 itself needs driver 520 or later
+ok   rule v ≥ vmin(k): 550 ≥ 450 and 550 ≥ 525 but 550 < 580
+ok   choose: A cuts at packages (.venv + lock file); B at the runtime (conda)
+ok   choose: C cuts at system libraries and distribution (a container); D at the kernel (a VM with the USB device handed in)
+ok   choose: E is also at the kernel, but the recommendation is a separate real-time controller
+ok   choose: F: the cut is at the system-call interface: a wall is missing, not another version (gVisor)
+ok   choose: G lands on the hardware: one image per kind of CPU, Apptainer on the cluster
+ok   choose: only "another distribution": an app container, docker run ros:humble
+ok   choose: plus "untrusted code": gVisor plus an app container (docker run --runtime=runsc); what is needed is a wall, not another version
+ok   choose: nesting, Docker Desktop on a Mac: 2 levels (VM → container), 2 kernels (XNU, Linux), system calls land on the Linux kernel in the VM
+ok   choose: 7 presets and 11 kinds of need
+ok   page: 15 interactives, each followed by a "你会看到" line; 15 "先玩" prompts; 3 figures
+ok   figure (set picture) and card: x86 had 17 sensitive instructions that do not trap
+
+122 checks, 0 failed; page errors: 0
