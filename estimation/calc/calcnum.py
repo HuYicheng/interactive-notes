@@ -143,3 +143,28 @@ for p_ in (0.7, 0.4):
 l = 3*math.log(0.7/0.3); print('3 hits ->', round(l, 3), 'p', round(1-1/(1+math.exp(l)), 3))
 
 h('14 Stanley without GPS'); print(f'1.7 m / 1300 m = {1.7/1300*100:.2f} %')
+
+h('15 extra: small numbers in the figures and in the "what you will see" lines')
+print(f'step 1: averaging 100 readings, 30/sqrt(100) = {30/math.sqrt(100):.1f} mm; depth sigma 0.8 m -> 4 m: (4/0.8)^2 = {(4/0.8)**2:.0f} times')
+B_ = 0.40
+print(f'step 2: wheelbase 1 % over four 90 deg corners: {360*0.01:.1f} deg; wheel-radius mismatch 0.2 % over 11.4 m of straights: {math.degrees(0.002/B_*11.4):.1f} deg; '
+      f'wet patch, left wheel +10 % over 0.6 m: {math.degrees(0.1*0.6/B_):.1f} deg; gyro bias 0.05 deg/s x 50.57 s = {0.05*50.57:.1f} deg')
+print(f'step 2 figure: 3.6 deg = {math.radians(3.6):.3f} rad; then 6 m straight: {6*math.radians(3.6):.2f} m sideways')
+s_eq = 30/math.sqrt(2); s_tw = 1/math.sqrt(3/30**2)
+print(f'step 3: two readings of 30 mm: sigma {s_eq:.1f} mm = {s_eq/30:.2f} of one; gap 270 mm / sqrt(30^2+30^2) = {270/math.hypot(30, 30):.2f}; '
+      f'same reading twice: sigma {s_tw:.1f} mm, {100*(1-s_tw/s_eq):.0f} % narrower; value (2*1.52+1.25)/3 = {(2*1.52+1.25)/3:.3f} m')
+print(f'step 4: 1/108 = {100/108:.2f} % per bin')
+print(f'step 5 figure: K = 17.7^2/(17.7^2+30^2) = {17.7**2/(17.7**2+30**2):.3f}')
+print(f'step 8: one cluster from update 62: 10.32 m of 11.40 m = {100*10.32/11.40:.0f} % of the lap (pfupdates.js)')
+print(f'step 9: 0.5 rad/s x 80 ms = {math.degrees(0.5*0.080):.1f} deg; 0.50 x 0.85 x 0.080 = {100*0.5*0.85*0.080:.1f} cm; clock offset 30 ms: 0.50 x 0.85 x 0.030 = {100*0.5*0.85*0.030:.1f} cm')
+g_ = math.sqrt(9.21)
+print(f'step 12 figure: sqrt(9.21) = {g_:.2f}; gate radius {g_*5:.1f} mm for sigma 5 mm, {g_*21:.1f} mm for sigma 21 mm; 20 mm is {20/5:.0f} sigma and {20/21:.2f} sigma')
+for KO, thr, tgt, r0, lab in ((50, 2.0, 5.0, 0.0, 'K_O 50'), (200, 2.0, 5.0, 0.0, 'K_O 200'), (5, 2.0, 5.0, 0.0, 'K_O 5'),
+                              (50, 0.5, 4.7, -0.3, 'wrong model (r rests at -0.3), threshold 0.5'), (50, 2.0, 4.5, 0.0, 'motor current only (friction 0.5)')):
+    print(f'step 13: {lab}: delay {-1000*math.log(1-(thr-r0)/(tgt-r0))/KO:.2f} ms')
+print(f'step 13: K_O 5, after the 0.2 s push r = 5(1 - e^-1) = {5*(1-math.exp(-1)):.2f} N.m')
+half = math.sqrt(1.60**2 + 2.5**2 + 2.0**2 + (800*math.tan(0.2*deg))**2 + 0.3**2)
+not_ = math.sqrt(1.60**2 + 5.0**2 + (800*math.tan(0.2*deg))**2 + 0.3**2)
+print(f'step 16: detection centre halved: sigma {half:.2f} mm (2 sigma {2*half:.2f}); extrinsic translation 0: sigma {not_:.2f} mm; centre share {100*25/tot**2:.0f} %')
+mp2 = math.sqrt(t2**2 + 2*30.0**2)
+print(f'step 16: map chain after the second look: {mp2:.1f} mm, localisation share {100*2*900/mp2**2:.0f} %; for 2 sigma < 10 mm each localisation < {math.sqrt((25-t2**2)/2):.1f} mm')

@@ -10,6 +10,15 @@
   Gauss–Newton step of a 2D pose graph solved sparse vs dense (250–4000 poses).
   Build: `gcc -O2 amcl.c -o amcl -lm`, `gcc -O2 ekf.c -o ekf -lm`; run `python3 posegraph.py` (numpy, scipy).
 
+- `check.js` → `check.txt`: opens the page in a headless browser, operates every interactive the way a reader would
+  and compares the readouts with the numbers quoted in the "你会看到 / What you will see" lines and figure captions.
+  Run: `node check.js /absolute/path/to/estimation/index.html` (needs Node and Playwright; about 8 minutes).
+- `pfupdates.js` → `pfupdates.txt`: where the robot is at each localisation update of the particle-filter interactive
+  (same path and update rule as the page; no random numbers). Run: `node pfupdates.js`.
+- `pfseeds.js` → `pfseeds.txt`: the kidnapping test of step ⑧ over 100 random seeds, run on the page's own
+  particle-filter engine (read from `../index.html`). Run: `node pfseeds.js ../index.html` (about 2 minutes).
+- Section 15 of `calcnum.py` holds the small arithmetic added with the figures and the "what you will see" lines.
+
 Machine: a cloud VM with 2 vCPUs and 8 GB RAM, Linux 6.18 (not a real-time kernel), gcc 13.3 `-O2`, Python 3.13,
 measured on 6 November 2026. Numbers will differ on another machine; the orders of magnitude will not.
 

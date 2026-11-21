@@ -1,0 +1,108 @@
+ok   lap: 50.6 s, 11.40 m; wheels 55.1 cm / -15.5°   [一圈走完（50.6 s，11.40 m），又回到充电座。只用轮子：差 55.1 cm，朝向差 -15.5°（轮距、轮径不]
+ok   lap: IMU leaves the kitchen at 10.1 s, 14.40 m off
+ok   lap: lidar point 1.7 cm off; fused 0.6 cm
+ok   grasp pose at 71.7 s: wheels 1.05 m, fused 1.0 cm and never above 3.0 cm   [停在抓取位置 (4.5, 3.3)，面朝北，杯子 A 在前方约 0.85 m。只用轮子：差 1.05]
+ok   lidar: mean 2.0013 m, sample σ 30.5 mm, 1.3 mm from the truth   [激光雷达对着 2.000 m 外的墙量了 200 次：平均 2.0013 m，样本 σ = 30.5]
+ok   bias +20 mm: mean +21.3 mm from the truth
+ok   average of 100: σ 3.0 mm, centre still at 2.0197 m   [平均 100 次：σ 缩到 σ/ √100 = 3.0 mm（抽出来的 200 组：3.2 mm），可中心停在 2.0197 m，不是真值：平均压得住噪声，压不住偏差]
+ok   depth camera at 0.8 m: σ 1.60 mm
+ok   depth camera at 4 m: σ 40.0 mm (25 times)
+ok   ρ = 0: semi-axes 5.00 and 2.00 cm; 118 and 260 of 300 inside   [椭圆内 86.7 % 260 / 300 · 理论 86.5 % 长轴 5.00 cm 1σ 半轴 √λ₁ 短轴 2.00 cm 1σ 半轴 √λ₂ 角度 0.0° 长轴和 x 轴]
+ok   ρ = 0.95: semi-axes 5.35 and 0.58 cm at +21.1°; still 118 and 260 inside   [内 86.7 % 260 / 300 · 理论 86.5 % 长轴 5.35 cm 1σ 半轴 √λ₁ 短轴 0.58 cm 1σ 半轴 √λ₂ 角度 +21.1° 长轴和 x 轴]
+ok   default lap: wheels 25.3 cm / -6.9°; wheels + gyro 9.6 cm / 2.6°; IMU 3.60 m, out at 20.2 s   [圈数 1.00 t = 50.6 s 轮子 · 位置误差 25.3 cm 朝向误差 -6.9° 轮子 + 陀螺 · 位置误差 9.6 cm 朝向误差 2.6° 只用 IMU · 位]
+ok   default: 3.6° per lap from the wheelbase, 3.3° from the wheel radii
+ok   wheelbase error 0: wheels 11.9 cm / -3.3°   [圈数 1.00 t = 50.6 s 轮子 · 位置误差 11.9 cm 朝向误差 -3.3° 轮子 + 陀螺 · 位置]
+ok   + wet-floor slip: wheels 42.4 cm / -11.9°; wheels + gyro 11.4 cm; IMU unchanged 3.60 m; 8.6° per pass   [圈数 1.00 t = 50.6 s 轮子 · 位置误差 42.4 cm 朝向误差 -11.9° 轮子 + 陀螺 · 位置误差 11.4 cm 朝向误差 2.6° 只用 IMU ·]
+ok   accelerometer bias 70 mg: IMU 278.50 m, out at 3.1 s
+ok   default: lidar 1.520 m, wheels 1.450 m; weights 87.7 / 12.3 %, 1.511 m, σ 28.1 mm   [权重 87.7 / 12.3 % 激光 / 轮子推算 合成值 1.511 m 比较：1.52 · 1.45 合成 σ 28.1 mm 最准的单个：30.0 mm]
+ok   σ₂ = σ₁: 50 / 50, 1.485 m, σ 21.2 mm   [权重 50.0 / 50.0 % 激光 / 轮子推算 合成值 1.485 m 比较：1.52 · 1.45 合成 σ 21.2 mm 最准的单个：30.0 mm]
+ok   wheel reading dragged to 1.25 m: "disagree", 270 mm = 6.36 × 42 mm, formula still says 1.385 m ± 21.2 mm   [两个读数对不上：至少一个坏了。激光说 1.520 m，轮子推算说 1.250 m，差 270 mm，是合起来的 σ（42 mm）的 6.36 倍；两个都对的话，差这么大的机会只有 ]
+ok   same reading twice: σ 17.3 mm, pulled to 1.430 m, 18 % too narrow   [滤波器以为信息有 3333 m⁻²，σ 只有 17.3 mm（虚线），值也被拉到 1.430 m]
+ok   start: 108 bins at 0.93 %, 90 % width 4.90 m   [刚开机：机器人在走廊里，可不知道在哪。置信是均匀的：108 格，每格 0.93 %，90 % 区间宽 4.90 m。先按]
+ok   1st measurement 0.594 m: 2 peaks, 90 % width 3.80 m
+ok   after one move (motion noise 0.05 m) the flat top is 1.65–3.25 m (1.60 m wide)   [最可能的位置 1.65–3.25 m 一样高：4.35–5.70 m 峰的个数 ]
+ok   before the 4th measurement there are still 2 peaks
+ok   4th measurement 0.417 m (oven cabinet): 1 peak, 90 % width 1.60 → 0.50 m   [测到 z = 0.417 m。似然 p(z|x) 在家具前沿离走廊约 0.42 ]
+ok   5th measurement: 90 % width 0.15 m, 1.5 cm from the truth   [ % 区间宽度 0.15 m 装下 90 % 的最少的格子 和真值差 +1.5 cm 最可能 - 真值（3.560 m）]
+ok   measurement noise 0.2 m: 1st measurement only 4.90 → 4.50 m
+ok   measurement noise 0.2 m: a single peak only at the 9th measurement (8 moves)   [measurement 9]
+ok   motion noise 0.2 m: after one move the flat top is 2.25–2.65 m (0.40 m wide)   [最可能的位置 2.25–2.65 m 一样高：4.95–5.35 m 峰的个数 ]
+ok   step 1: σ back to 29.9 mm
+ok   K = 0.996, 0.502, 0.338, 0.258, 0.212 at steps 1–5   [0.996, 0.502, 0.338, 0.258, 0.212]
+ok   figure: at step 4 the prediction has σ 17.7 mm and K = 17.7² / (17.7² + 30²) = 0.258   [第 4 步（t = 0.4 s）：预测把 σ 从 17.5 撑到 17.7 mm；激光比预测 +18]
+ok   20 s: K settles at 0.095, σ 9.25 mm; RMS 9.64 mm vs lidar 28.1 mm; wheels -59.0 mm; 4.0 % outside ±2σ   [20 s 走完：K 稳定在 0.095，σ = 9.25 mm（预测后 9.73 mm）。滤波误差 RMS 9.64 m]
+ok   lidar off for 3 s: σ 9.25 → 18.9 mm, first K back 0.288   [激光断的 3 s 里只预测：σ 从 9.25 mm 长到 18.9 mm（t = 10.9 s）；激光回来的第一步 K = 0.288，几步就收回去]
+ok   wheel slip (120 mm): worst -65.7 mm, back within ±20 mm at 15.0 s   [滤波误差最大 -65.7 mm（t = 13.3 s），t = 15.0 s 回到 ±20 mm 以内]
+ok   √Q = 0.30 mm with slip: K 0.010, worst -136.7 mm, not back by 20 s, 81.5 % outside   [滤波误差最大 -136.7 mm（t = 14.3 s），到 20 s 还没回到 ±20 mm 以内]
+ok   √R = 3 mm: K 0.618, RMS 19.6 mm (about twice 9.64), 82.5 % outside   [20 s 走完：K 稳定在 0.618，σ = 2.36 mm（预测后 3.82 mm）。滤波误差 RMS 19.6 m]
+ok   start: σx 200.0 mm, σv 300.0 mm/s, ρ 0
+ok   predict 1: ρ 0.148, σx 202.2 mm
+ok   correct 1 (position only): σx 29.7 mm, σv 297.4 mm/s
+ok   predict 2: ρ 0.715
+ok   σv after corrections 2–5: 241.9, 171.9, 123.1, 92.9 (below 100 at step 5)   [241.9, 171.9, 123.1, 92.9]
+ok   velocity only, step 1: σv 20.0 mm/s, σx 200.0 mm
+ok   velocity only, step 10: σx still 200.1 mm   [步 10 修正后 σx 200.1 mm σv 15.7 mm/s ρ 0.009 K 0.0691]
+ok   5°: mean 1.992 m vs EKF 2.000 m (0.8 cm); EKF ellipse 86.4 %   [样本平均 x 1.992 m 精确值；这 2000 个点 1.995 m EKF]
+ok   20°: mean 1.882 m, EKF 11.8 cm off, ellipse 70.3 %; UKF 1.882 m, 89.8 %
+ok   45°: mean 1.469 m, EKF 53.1 cm off, 40.1 %; UKF 1.473 m, 88.5 %
+ok   45°, d = 4 m: miss doubles to 106.2 cm, still 40.1 %
+ok   start: 2000 particles, spread
+ok   update 11: still spread   [粒子数 N 2000 有效粒子数 N_eff 1703 占用的格子 k 219 团数 散开 误差 — 更新次数 11]
+ok   update 12: 2 clusters; the heavier holds 52 % and is the wrong one, 2.8 m from the truth   [的平均发布成 /amcl_pose：现在发布的是错的那一团，离真值 2.8 m。]
+ok   the right cluster overtakes it at update 17   [ 把它的平均发布成 /amcl_pose：离真值 4 cm。]
+ok   update 61: still 2 clusters
+ok   update 62: one cluster
+ok   update 63: N = 611, "one cluster since update 62"
+ok   end of the lap (73 updates): N = 501, error 8.7 cm   [粒子数 N 501 有效粒子数 N_eff 466 占用的格子 k 26 团数 1 误差 8.7 cm · 3.5° 更新次数 73]
+ok   textbook product: at update 1 the best beats the second by 1.8 × 10⁵, N_eff = 1.0, 2000 copies; locked on the mirror image 4.2 m away   [好的粒子比第二好的高 e^12.1 ≈ 1.8 × 10⁵ 倍，N_eff = 1.0：重采样抽出的 2000 个粒子几乎全是它的复制品（k = 1；k ≤ 1 时 AMCL 的 ]
+ok   kidnapped, no recovery: still 1 cluster, N_eff = 469, 4.1 m from the truth   [可是还剩 1 团，N_eff = 469：AMCL 很「确定」，估计离真值 4.1 m。]
+ok   kidnapped with random particles on: back near the truth at the 41st update after the kidnapping   [update 41]
+ok   … 73 random particles in all, 3 cm off at the end of the lap   [到现在一共补了 73 个。估计离真值 3 cm：差不多找回来了]
+ok   global localisation: one cluster from update 39, 1.5 cm at the end   [粒子数 N 501 有效粒子数 N_eff 464 占用的格子 k 32 团数 1 误差 1.5 cm · 0.7° 更新次数 73]
+ok   treat as now: 3.4 cm = 0.50 × 0.85 × 0.080; the base turned 2.3°   [杯子位置误差 3.4 cm 跟踪器的估计和真值之差 这一刻迟]
+ok   turn rate 0: 0.5 cm
+ok   drop late data: no estimate, all 29 detections dropped   [杯子位置误差 — 没有估计：29 条检测全扔了 这一刻迟到的消息 12 过去 1]
+ok   rewind and replay: 0.4 cm; back 78.0 ms, redo 16 gyro and 4 odometry messages
+ok   clock offset 30 ms: 1.4 cm (0.50 × 0.85 × 0.030 = 1.3 cm)
+ok   lap: 29 nodes, 28 + 1 edges, drift at the loop 14.0 cm (5.3°), wall 30 cm; node 26 closes the loop   [节点 29 边（里程计 + 回环） 28 + 1 回到起点时的偏差 14.0 cm 墙的厚度 30 cm]
+ok   optimise: cost 561 → 0.26; drift 14.0 → 1.6 cm; mean error 7.5 → 1.2 cm; wall 30 → 15 cm   [优化完：29 个节点、28 条里程计边、1 条回环边，84 个未知数。代价 561 → 0.28 → 0.26，第二次迭代以后就不变了：角度误差小，问题几乎是线]
+ok   no loop closure: 28 + 0 edges, wall stays 30 cm, nothing to optimise   [节点 29 边（里程计 + 回环） 28 + 0 回到起点时的偏差 — 墙的厚度 30 cm]
+ok   drift 3 %: 23.4 cm at the loop, wall 45 cm   [节点 29 边（里程计 + 回环） 28 + 1 回到起点时的偏差 23.4 cm 墙的厚度 45 cm]
+ok   drift 3 %, optimised: 23.4 → 1.6 cm, wall 45 → 15 cm
+ok   start: 408 / 1296 non-zero (31.5 %), cost 489.2, mean error 20.4 cm   [08 / 1296 31.5 % 代价 Σ‖r‖² 489.2 收敛后约 m - n = 54 - 36 = 18 位置误差 20.4 cm 保留的 10 个位姿的平均]
+ok   step 1: cost 19.6, 7.0 cm
+ok   step 2: cost 17.1, 5.7 cm
+ok   step 3: no change, converged
+ok   loop closure on: 426 non-zero (32.9 %), cost 335.0, x9 20.2 cm off
+ok   then cost 29.4 → 27.3, mean error 4.6 → 4.4 cm
+ok   restart keeps the loop closure (426 non-zero)
+ok   marginalise the oldest ×3: 38.5 %, 42.2 %, 46.8 % non-zero; first prior among x1, l1, l3, x9   [341 / 729 46.8 %，填充 62 代价 Σ‖r‖² 1710.5 含边缘化先验 位置误差 27.8 cm 保留的 7 个位姿的平]
+ok   keep only the latest: 81 / 81 full, error 53.0 cm vs 1.1 cm for the whole path
+ok   default: 6 ID switches (5 between 4.7 and 5.9 s, 1 at 7.7 s), 9 tracks started, A within 2.3 mm   [4.7, 5, 5.3, 5.6, 5.9, 7.7]
+ok   constant velocity: 3 tracks, 2 switches, the robot’s "A" is really B, 198 mm away   [轨迹 3 共建过 3 条 ID 交换 2 漏检 23 相机没看见 误检 23 凭空多出来 A 的位置误差 198 mm 机器人的 A = #2，其实是 B]
+ok   + global assignment: 0 switches, A within 1.2 mm
+ok   gate off: only 2 tracks, 6 switches, "A" 187 mm away   [轨迹 2 共建过 2 条 ID 交换 6 漏检 23 相机没看见 误检 23 凭空多出来 A 的位置误差 187 mm ]
+ok   K_O 50: theory 10.2 ms; noise of r about 0.07 N·m; double differencing 122 N·m   [σ(r) 0.076]
+ok   another push: the measured delay is within 1 ms of 10.2 ms   [10.5 ms]
+ok   K_O 200: theory 2.55 ms; noise of r about 0.29 N·m   [σ(r) 0.285]
+ok   K_O 5: theory 102 ms; noise 0.008 N·m; r climbs only to about 3.2 N·m (5(1 − 1/e) = 3.16)   [peak 3.17]
+ok   wrong model, threshold 0.5: r rests at -0.30 N·m, 0.20 from the threshold; false alarms appear   [3 false alarms]
+ok   motor current only: theory 11.8 ms; r stays below 5 N·m   [peak 4.82]
+ok   normal (a 37.2 s stretch): NIS mean 1.92, 4.0 % above 5.99, 1 / 372 gated, error 0.8 cm   [位置误差 0.8 cm NIS 平均 1.92 最近 2 s：2.39 超过 95 % 线 4.0 % d² > 5.9]
+ok   long corridor: ellipse 2.6 → 9.0 cm along the corridor, NIS mean still 1.92
+ok   over-confident: alarm at 6.9 s; then 302 readings gated, error 11.6 cm   [已挡 302 次）；挡掉以后 P 只按很小的 Q 长，门限几乎不会放宽：误差 11.6 cm]
+ok   counted twice: alarm at 11.1 s; at the end NIS mean 7.06, error 11.3 cm
+ok   extrinsic off by 2°: NIS mean 1.92, error 1.2 cm, about 17 cm at 5 m
+ok   kidnapped: alarm at 6.0 s with d² = 755; relocalise brings the error back to 0.7 cm and the alarm goes out   [重新定位以后：滤波器被放回真值附近 15 cm 处，P = (0.3 m)²，下一次激光就被接受，误差回到 0.7 cm]
+ok   25 methods; "Gaussian × present only" has 7   [全部 25 种方法。最挤的是“高斯 × 只留现在”（7 种）：卡尔曼一家都在这里]
+ok   lidar: 8 methods
+ok   nav2_amcl: particles × present only; slam_toolbox: graph × whole path
+ok   camera: 7 methods; three keep a window; of the learned ones only FoundationPose keeps just the present
+ok   base_link chain: σ 6.28 mm, 2σ 12.56 mm, not enough; detection centre is 63 % of the variance   [合计 σ 6.28 mm 2σ 12.56 mm 约 95 % 落在这个范围里 ]
+ok   extrinsic translation 0: σ 5.95 mm
+ok   detection centre halved: σ 4.55 mm, 2σ 9.10 mm, enough
+ok   second look from 0.55 m: 0.76, 3.44, 1.92 mm → σ 4.49 mm, 2σ 8.98 mm, enough
+ok   via map: σ 42.7 mm; localisation is 99 % of the variance; each would need 1.6 mm   [合计 σ 42.7 mm 2σ 85.3 mm 约 95 % 落在这个范围里 余]
+ok   no page errors   []
+
+106 / 106 checks pass

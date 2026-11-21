@@ -1,0 +1,8 @@
+updates in one lap: 73 (lap 50.57 s, 11.40 m)
+update 1: t = 0.03 s, truth (1.21, 1.20), heading 0 deg, driven 0.01 m (0 % of the lap)
+update 12: t = 9.38 s, truth (4.01, 1.20), heading 0 deg, driven 2.81 m (25 % of the lap)
+update 17: t = 12.85 s, truth (4.80, 1.20), heading 24 deg, driven 3.60 m (32 % of the lap)
+update 61: t = 42.97 s, truth (1.20, 2.53), heading -90 deg, driven 10.07 m (88 % of the lap)
+update 62: t = 43.82 s, truth (1.20, 2.28), heading -90 deg, driven 10.32 m (91 % of the lap)
+update 63: t = 44.67 s, truth (1.20, 2.02), heading -90 deg, driven 10.58 m (93 % of the lap)
+update 73: t = 50.40 s, truth (1.20, 1.20), heading -5 deg, driven 11.40 m (100 % of the lap)
