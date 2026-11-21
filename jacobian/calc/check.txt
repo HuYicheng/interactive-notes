@@ -1,0 +1,181 @@
+-- step 0 · task
+ok   task, frame ①: hand at 0.36 m, shoulder supplies 6.7 N·m = 10.2 to hold the arm minus 3.6 from the press
+ok   task, frame ②: hand at 0.58 m moving right at 0.43 m/s; rates shoulder -0.47, elbow 1.11, wrist 0.43 rad/s; the shoulder turns back
+ok   task, frame ③: hand at 0.80 m, shoulder supplies 8.2 N·m (15.4 to hold the arm, 8.0 taken away by the press)
+ok   task, frame ④: hand again at 0.58 m, rates reversed
+ok   task (engine): all the way to the right the shoulder rate is negative (between -0.61 and -0.001 rad/s)
+ok   task (engine): shoulder torque in the four frames 6.7, 7.4, 8.2, 5.9 N·m; elbow and wrist always below 1.4 N·m
+ok   lead: 1 rad = 57.3°
+-- figure of step 0 · the arm and its coordinates
+ok   figure: joint angles 30.3°, -91.4°, -15.2° with the hand at 0.55 m
+ok   figure: elbow at (0.345, 0.452), wrist at (0.514, 0.146), hand at (0.550, 0.000)
+ok   figure: links 40, 35, 15 cm (2.0, 1.5, 0.5 kg), post 25 cm, wiping range 36 to 80 cm, farthest reach 86.5 cm
+-- step 1 · jac
+ok   jac, hand at 36 cm: shoulder column 43.8 cm long
+ok   jac, 36 cm: elbow column 49.1 cm
+ok   jac, 36 cm: wrist column 15.0 cm
+ok   jac, hand at 80 cm: wrist column still 15.0 cm
+ok   jac, 80 cm: elbow column 50.0 cm
+ok   jac, 80 cm: shoulder column 83.8 cm
+ok   jac (engine): between 36 and 80 cm the elbow column stays between 49.1 and 50.0 cm
+ok   jac, shoulder turned 1° at 80 cm: J predicts 14.6 mm, off by 0.13 mm
+ok   jac, 3°: the status still calls J a very accurate straight-line approximation
+ok   jac, 4°: the status changes: prediction off by 2.0 mm, 3% of the distance
+ok   jac, 10°: off by 12.8 mm (9%)
+ok   jac, 30°: off by 114.0 mm (26%)
+-- step 2 · svd
+ok   svd (widget source): the animation runs 0..1 rotate by Vᵀ, 1..2 stretch along the axes, 2..3 rotate into U, and labels the steps so
+ok   svd, shear: σ₁ 1.55, σ₂ 0.65, determinant 1.00
+ok   svd: 1.55 × 0.65 is 1 to two decimals, as the determinant says
+ok   svd, dot Ae₂ dragged straight down to 0.30: σ₂ 0.22, σ₁/σ₂ 6.2
+ok   svd, down to 0.10: σ₂ 0.07, σ₁/σ₂ 18.1
+ok   svd, down to 0: the columns lie on one line, σ₂ 0.00, rank 1, the circle becomes a segment
+-- figure of step 2 · three numbers in, two out
+ok   figure: σ₁ = 0.744 at 48.5°, σ₂ = 0.283; J v₃ = 0
+-- step 3 · vel
+ok   vel, far left (0.20 m): long axis at 174°, that is 6° from horizontal; σ₁/σ₂ 2.2
+ok   vel, 0.36 m: long axis at 24°, σ₁σ₂ 0.178
+ok   vel, 0.55 m: long axis at 48°, σ₁/σ₂ 2.6
+ok   vel, 0.59 m: σ₁σ₂ 0.212
+ok   vel, 0.80 m: long axis at 67°, σ₁/σ₂ 6.7, σ₁σ₂ 0.142
+ok   vel, 0.85 m: σ₁/σ₂ 15.2
+ok   vel, dragged to the end: 2.6 mm short of the farthest point, σ₂ 0.026, σ₁/σ₂ 40.2, long axis at 73°; the hand can move only across the arm
+ok   vel (engine): σ₁σ₂ is largest at 0.587 m (0.212), inside the wiping range 0.36 to 0.80 m
+ok   vel (engine): on the left (0.20 to 0.45 m) σ₁/σ₂ stays between 2.0 and 2.2
+ok   vel (engine): the long axis turns anticlockwise all the way as the hand moves right
+ok   vel (engine): at the end the arm points at -16.2°, so 73° is perpendicular to it (within 1°); farthest point 0.8646 m, end of the drag 0.862 m
+-- step 4 · inv
+ok   inv, pseudoinverse: follows within 0.1 mm early on; ends stuck 85.0 mm from the target, the joints at the cap 100% of the time
+ok   inv (engine, same loop as the widget): the fastest joint passes 1 rad/s with the target at 0.82 m and σ₂ = 0.12
+ok   inv (engine): it hits the 3 rad/s cap with the target at 0.859 m and σ₂ about 0.04, 6 mm before the farthest point
+ok   inv (engine): before that the hand is within 0.1 mm of the target; after the target stops the hand stays at 0.865 m
+ok   inv, damped least squares (λ = 3.0 cm): fastest joint peaks at 2.71 rad/s and stops; hand 82.3 mm from the target, 21 mm above the table
+ok   inv (engine): with λ = 3 cm the hand stops at (0.870, 0.021); the reachable point closest to the target is the same point, on the line from the shoulder, 82.3 mm away
+ok   inv, λ = 1.0 cm: too small, the joints jitter at the cap again
+ok   inv, λ = 0.5 cm: the same
+ok   inv (engine): with λ = 1.5 cm, the next slider position, the joints no longer sit at the cap after the target stops
+ok   inv, λ = 12 cm: the fastest joint never exceeds 1.07 rad/s
+ok   inv (engine): after 1 s (target at 0.75 m) the hand is 4.5 mm behind with λ = 12 cm and 0.3 mm with λ = 3 cm
+-- step 5 · null
+ok   null, start: hand at (0.400, 0), the elbow 3.6 cm inside the shelf, v₃ = (0.11, -0.34, 0.93)
+ok   null, slider dragged left: the elbow is first clear of the shelf at -129° (about -130°)
+ok   null, at -139°: the elbow is 3.5 cm below the shelf
+ok   null, slider dragged right: the elbow is first clear at -39° (-39°)
+ok   null: through all 546 slider positions tried, the readout stays "Hand at (0.400, 0.000) m"
+ok   null, wiping with the pseudoinverse only: the elbow is inside the shelf 89% of the time
+ok   null, with the null-space term: out after 0.4 s; on the second pass never closer than 4.5 cm
+ok   null (engine, same loop as the widget): in both wiping modes the hand stays within 0.1 mm of the plan, along the table and in height
+ok   null (engine): the shelf runs from 18 to 62 cm, 45 to 50 cm above the table; the widget wipes from 24 to 60 cm, all of it under the shelf
+-- step 6 · force
+ok   force, pressing down 10 N at 0.55 m: τ = (-5.50, -2.05, -0.36) N·m; the shoulder’s share is x × F = 5.50; with gravity (6.8, 0.1, -0.3) N·m
+ok   force: 0.55 × 10 = 5.5
+ok   force, 50 N at 0.55 m: no joint over its limit
+ok   force, dragging right at 50 N: the first limit reported is the wrist’s, at about 0.81 m (first seen at 0.815 m in 5 mm steps)
+ok   force (engine, same search as the widget’s curve): at 0.55 m the shoulder limits the press, at 95 N; the wrist takes over at 0.67 m; at 0.80 m 51.5 N is left
+ok   force (engine): a 50 N press first exceeds a limit at 0.811 m; motor limits 40, 25 and 6 N·m
+ok   force, pushing out along the arm: the shoulder needs 0.00 N·m, the line of action passes through it
+ok   force, velocity ellipse overlaid: same axes, lengths swapped
+-- figure of step 6 · torque = force × lever arm
+ok   figure: lever arms 0.550, 0.205, 0.036 m; torques 5.50, 2.05, 0.36 N·m, all clockwise
+-- step 7 · mass
+ok   mass, 0.55 m, push right: 0.16 kg, 31.1 cm/s, 12° off; lightest/heaviest 0.16/2.32 kg
+ok   mass, 0.55 m, push up: 1.41 kg, 7.2 cm/s, 61° off
+ok   mass (engine): pushed up at 0.55 m the hand moves mostly to the right (Δv along (1.26, 0.71)); up is 8 to 9 times heavier than right; the arm weighs 4 kg
+ok   mass, 0.80 m, push up: 0.23 kg, 26.4 cm/s; lightest/heaviest 0.16/3.78 kg
+ok   mass, 0.80 m, push right: 0.44 kg, 18.3 cm/s
+-- step 8 · eom
+ok   eom, released from flat: T rises to about 16 J (largest sampled 16.16 J) while V falls by the same amount; T + V stays 0
+ok   eom: after about 4 s, T + V has drifted by only 0.009 mJ (a few thousandths of a millijoule)
+ok   eom: Newton–Euler and Lagrange give torques within 6e-8 N·m of each other
+ok   eom (engine, 1 ms steps like the widget): at release C q̇ = 0 and at the shoulder g = 16.4 N·m, M q̈ = -16.4 N·m
+ok   eom (engine): T peaks at 0.43 s at 16.3 J, with V = -16.3 J
+ok   eom (engine): at that moment, at the shoulder, g = 1.4, C q̇ = 12.4 and M q̈ = -13.8 N·m; these two are the largest terms of all nine
+ok   eom (engine): in 4 s with exact 1 ms steps the drift is 0.0054 mJ
+ok   eom, hanging, turn the shoulder: the motor did 1.72 J of work in the first 0.6 s and T + V rose by that much
+ok   eom (engine): in those 0.6 s the shoulder turned 24.6° = 0.43 rad; 4 N·m × that angle = 1.72 J; T + V is 1.72 J at 0.6 s and still 1.72 J at 3 s
+-- figure of step 9 · the two passes
+ok   figure: hand at 0.58 m, 0.43 m/s; angular velocities -0.47, 0.64, 1.06 rad/s, each the previous one plus the joint rate
+ok   figure: the hand pushes the table with (3, -10) N; joint forces (3.00, -5.14), (3.06, 9.21), (3.13, 28.53) N
+ok   figure: the last link weighs 4.9 N; joint torques (7.37, 1.36, 0.08) N·m; pose as drawn
+-- step 10 · ctrl
+ok   ctrl, in the air, joint PD: height error 17.1 mm (RMS); the hand brushes the table now and then
+ok   ctrl, air, PD + gravity compensation: 0.48 mm
+ok   ctrl, air, computed torque: 0.00 mm
+ok   ctrl, air, operational space: 0.00 mm
+ok   ctrl, air, PD + gravity compensation at twice the speed: 1.7 mm, about 3.5 times 0.48 mm
+ok   ctrl, air, computed torque with the wet sponge (normal speed): 6.1 mm
+ok   ctrl, on the table, joint PD: 22.6 N on average, between 12 and 44 N
+ok   ctrl, table, PD + gravity compensation: 4.4 N on average
+ok   ctrl, table, computed torque: 20.5 mm off along the table, force between 0.7 and 38 N
+ok   ctrl, table, operational space + force: 0.30 mm off along the table, 10.00 ± 0.25 N
+-- figure of step 10 · how far 3 N moves the hand
+ok   figure: ω = 30 rad/s; softest direction 141 N/m at 12.5° from the table, stiffest 2090 N/m (to three figures); 3 N moves the hand 21 mm and 1.4 mm
+-- step 11 · map
+ok   map: 66 tiles; grouped by matrix: 10 groups; the group "转置 Jᵀ" has 10 tiles, among them τ = Jᵀ F, active stiffness, hybrid position/force, impedance and operational-space control
+ok   map, by era: 5 groups holding 61 dated tiles; 1980–1989 has 28 and is headed "机器人学的黄金十年"
+ok   map, "伪逆" (1920, 1955): 4 relatives
+ok   map: five clicks on relatives lead from the pseudoinverse to operational-space control, by way of whole-body control of humanoids (2005)
+ok   map: following relatives from the pseudoinverse reaches 39 of the 66 tiles; Lagrange’s equations, recursive Newton–Euler, computed torque and principal component analysis are among those not reached
+-- text of step 0
+ok   step 0: one round trip 3.2 s, pressing 10 N, fastest 0.43 m/s; straight reach 90 cm, 86.5 cm on the table
+-- text of step 1
+ok   step 1, forward kinematics at 0.55 m: q = (30.3°, -91.4°, -15.2°), φ = -76.3°; elbow (0.345, 0.452), forearm at -61.1°, wrist (0.514, 0.146)
+ok   step 1, columns of J at 0.55 m: (0.250, 0.550) 0.604 m long; (0.452, 0.205) 0.496 m; (0.146, 0.036) 0.150 m
+ok   step 1, fastest moment (hand at 0.58 m): rates (-0.47, 1.11, 0.43) rad/s; columns (0.250, 0.580), (0.441, 0.229), (0.143, 0.046); hand velocity (0.43, 0.00) m/s
+ok   step 1, straight-line error: 0.9% after 1°, 4.4% after 5°, 8.7% after 10°, 26% after 30°
+ok   step 1, shoulder turned 10°: predicted 105.4 mm, real 105.3 mm, direction 5° off, end points 9.2 mm apart
+ok   step 1: in one millisecond the joints turn only a few hundredths of a degree (0.027 0.063 0.024° at the fastest moment)
+ok   step 1, second row of J: (0.550, 0.205, 0.036); 0.01 rad (0.6°) at the shoulder lifts the hand 5.5 mm, at the wrist 0.36 mm
+-- text of step 2
+ok   step 2, the "general" matrix: σ = 1.59, 0.61; long axis at 31.7°, v₁ at 34.3°; area factor 0.97 = determinant 1.3 × 0.9 - 0.5 × 0.4
+ok   step 2, shear: turn 57° clockwise, stretch by 1.55 and 0.65, turn 33° anticlockwise; mirror: determinant -1.35, singular values 1.52 and 0.89
+ok   step 2, SVD of J at 0.55 m: σ₁ = 0.744, u₁ = (0.663, 0.749) at 48.5°, v₁ = (0.776, 0.609, 0.166); σ₂ = 0.283, u₂ = (-0.749, 0.663), v₂ = (0.627, -0.718, -0.303); v₃ = (-0.065, 0.339, -0.939)
+ok   step 2: the eigenvalues of J Jᵀ are σ₁² and σ₂²
+ok   step 2: one SVD of the 2 × 3 J takes a few microseconds (0.7 µs here, in the browser, on this machine)
+-- text of step 3
+ok   step 3: with |q̇| = 1 rad/s the hand can do 0.358 m/s along x at 0.55 m and 0.338 at 0.58 m; 0.432 / 0.338 = 1.28 rad/s, the norm of (-0.47, 1.11, 0.43)
+ok   step 3, along the table: 0.36 m w = 0.178, κ = 2.1; 0.55 m 0.210, 2.6; 0.80 m 0.142, 6.7; 0.85 m 0.069, 15; 0.86 m κ = 29
+ok   step 3: 1/σ₂ is 6.9 at 0.80 m, 14.8 at 0.85 m and 28 at 0.86 m
+ok   step 3: folded-back singular postures with the hand 0.6, 0.2 and 0.1 m from the shoulder
+-- text of step 4
+ok   step 4, pseudoinverse example at 0.55 m for v = (0.1, 0): components 0.066 and -0.075; 1/σ = 1.34, 3.54; q̇ = (-0.097, 0.244, 0.095), norm 0.280; wrist locked: (-0.104, 0.279, 0), norm 0.297
+ok   step 4, damped gains for λ = 3 cm: at most 1/(2 × 0.03) ≈ 17; 3.50 against 3.54 at σ₂ = 0.283 (1% less); 14.7 against 20 at σ = 0.05; 10 against 100 at σ = 0.01
+ok   step 4, truncated SVD with ε = 3 cm: gain 1/ε = 33 just before the threshold; the fastest joint still reaches the 3 rad/s cap; it ends stopped, 85.2 mm from the target
+-- text of step 5
+ok   step 5: on the default postures the elbow is above 45 cm for the hand between 36 and 56 cm (48.9 cm at 36 cm); at 0.55 m, tilting the last link from -90° to -120° lowers the elbow from 43.9 to 37.9 cm
+ok   step 5, null-space projector at 0.55 m: diagonal 0.004, 0.115, 0.881; N (0, 0, -1) = (-0.061, 0.318, -0.881), which moves the hand by exactly 0
+ok   step 5, the pseudoinverse is not repeatable: a circle of radius 8 cm, anticlockwise about (0.55, 0.10) m, started with the last link pointing down: 0.32° of drift after one lap, 32.7° after a hundred (hand back on its start point to 3e-12 mm)
+-- text of step 6
+ok   step 6: pushing right with 10 N needs (2.50, 4.52, 1.46) N·m (heights 0.25, 0.452, 0.146 m); gravity g = (12.32, 2.16, 0.09); pressing 10 N the total is (6.82, 0.11, -0.27) N·m
+ok   step 6, force ellipse: 1.34 N and 3.54 N per N·m at 0.55 m; at 0.80 m σ₂ = 0.1452 and 1/0.1452 = 6.89 N
+ok   step 6, the curve of the largest press: highest near 0.34 m at about 148 N; 45 N at 0.85 m
+ok   step 6, joint stiffness for 1000 N/m across and 3000 N/m up at the hand: [970, 451, 95; 451, 330, 88; 95, 88, 25] N·m/rad; the term with the 10 N press changes the wrist entry by about 6%
+-- text of step 7
+ok   step 7, M at 0.55 m: [0.561, 0.143, 0.012; 0.143, 0.152, 0.016; 0.012, 0.016, 0.004]; the last rod about its end m l²/3 = 0.00375
+ok   step 7, Λ⁻¹ at 0.55 m: [6.10, 1.26; 1.26, 0.71]; lightest direction at 12.5°, 0.157 kg; heaviest at 102.5°, 2.32 kg; a 0.5 kg rod about one end feels like 0.5/3 ≈ 0.17 kg
+ok   step 7, at 0.80 m: heaviest direction 3.8 kg, pointing 35° below the horizontal, along the last link (at -35.3°); 1.24 kg along the line from the shoulder
+ok   step 7, folded parts: the semi-axes of the mobility ellipse are 6.38 and 0.43 m/s per N·s; the dynamic manipulability ellipse 49.8 and 0.9 m/s²; kinetic energy at the fastest moment 0.082 J, of which the hand motion needs at least 0.032 J
+-- text of step 8
+ok   step 8, last link alone: 0.5 × 9.81 × 0.075 = 0.368; 0.368 × cos(-76.3°) = 0.087 N·m, the third component of g(q)
+ok   step 8, fastest moment: M q̈ = (-0.31, 0.01, 0.00), C q̇ = (0.05, -0.04, -0.00), g = (12.69, 2.35, 0.11), Jᵀ F = (-5.05, -0.96, -0.03); sum τ = (7.37, 1.36, 0.08) N·m
+ok   step 8: at the turn at 0.80 m the inertia term at the shoulder is 0.78 N·m against 15.43 of gravity; over the whole round trip gravity is never less than 19.8 times the inertia term there; 16 times 0.78 is 12.5, comparable to gravity
+ok   step 8: Ṁ - 2C is skew-symmetric with the Christoffel form of C (xᵀ(Ṁ - 2C)x = -8.7e-19 for a test x)
+-- text of step 9
+ok   step 9, outward pass: angular velocities -0.47, 0.64, 1.06 rad/s; angular accelerations -0.75, 0.06, 0.30 rad/s²; elbow acceleration (0.07, 9.50), wrist (0.01, 9.63) m/s²
+ok   step 9, inward pass: wrist (3.00, -5.14) N, elbow (3.06, 9.21) N, shoulder (3.13, 28.53) N; the arm weighs 39.2 N, the last link 4.9 N; torques (7.37, 1.36, 0.08) N·m, the same as Lagrange
+-- text of step 10
+ok   step 10, joint PD holds the arm up by being off target: 12.32 / 400 = 0.031 rad (1.8°) at the shoulder, 0.6° at the elbow, 0.25° at the wrist; the hand sags 19 mm and pulls back 13 mm
+ok   step 10, constants: Kp 400, 200, 20; Kd 40, 16, 1; ω = 30 rad/s; 25 rad/s at the hand; force integral gain 8 /s; 0.5 ms steps; planned 4 mm into the table, 2 cm up in the air; table 20 000 N/m (0.5 mm for 10 N), friction 0.3
+ok   step 10, computed torque: the error decays to a tenth in about 4/ω = 0.13 s ((1 + 4) e⁻⁴ = 0.092)
+ok   step 10, stiffness under computed torque: 30² × 0.157 ≈ 141 N/m and 30² × 2.32 ≈ 2090 N/m; 3 N moves the hand 2 cm
+ok   step 10, impedance example: a 1000 N/m hand in series with the 20 000 N/m table is about 952 N/m; 1 cm of command gives about 9.5 N; a table 1 mm higher adds about 1 N
+ok   step 10, table, joint PD: 17.1, 16.9, 17.8 mm in the air; on the table 14.6 mm and 22.6 ± 9.0 N (12–44)
+ok   step 10, table, PD + gravity compensation: 0.48, 1.72, 5.19 mm; 4.1 mm and 4.4 ± 3.1 N (1.3–10.4)
+ok   step 10, table, computed torque: 0.00, 0.00, 6.11 mm; 20.5 mm and 8.4 ± 9.3 N (0.7–38); with the wet sponge on the table about 90 mm
+ok   step 10, table, operational space + force: 0.00, 0.00, 9.36 mm; 0.30 mm and 10.00 ± 0.25 N (9.6–10.5); wet: 0.72 mm, still 10.00 ± 0.25 N; twice as fast: 1.7 mm, 7.3 to 13.1 N
+-- text of step 11 and the summary
+ok   step 11: the rank-1 approximation of J at 0.55 m is 0.744 u₁ v₁ᵀ and misses J by σ₂ = 0.283
+ok   summary table: semi-axes 0.744 and 0.283 m/s; 1.34 and 3.54 N; lightest 0.157 kg, heaviest 2.32 kg
+ok   quiz: 0.1 / 0.283 = 0.35 rad/s and 0.1 / 0.744 = 0.13 rad/s; 0.55 × 10 = 5.5 N·m; 12.3 - 5.5 = 6.8 N·m; stiffness 141 N/m; force between 0.7 and 38 N
+
+151 checks, 0 failed; page errors: 0
