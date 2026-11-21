@@ -12,25 +12,25 @@ The home page lists the explainers side by side, and each one lives in its own f
 
 | | Page · 页面 | Live page · 在线网页 | File · 文件 |
 |---|---|---|---|
-| 1 | Four Ways to Write a Rotation · 旋转的四种写法 | https://huyicheng.github.io/interactive-notes/rotation/ | `rotation/index.html` |
-| 2 | From Depth to Registration · 从深度到配准 | https://huyicheng.github.io/interactive-notes/perception/ | `perception/index.html` |
-| 3 | From Demonstration to Trial and Error · 从示范到试错 | https://huyicheng.github.io/interactive-notes/robot-learning/ | `robot-learning/index.html` |
-| 4 | Inside a Neural Network · 拆开神经网络 | https://huyicheng.github.io/interactive-notes/backbones/ | `backbones/index.html` |
-| 5 | Loops Within Loops · 环环相扣 | https://huyicheng.github.io/interactive-notes/loops/ | `loops/index.html` |
-| 6 | From PID to World Models · 从 PID 到世界模型 | https://huyicheng.github.io/interactive-notes/control/ | `control/index.html` |
-| 7 | From Noise to Samples · 从噪声到样本 | https://huyicheng.github.io/interactive-notes/generative/ | `generative/index.html` |
-| 8 | Try It in Your Head · 在脑子里试一试 | https://huyicheng.github.io/interactive-notes/world-models/ | `world-models/index.html` |
-| 9 | Which Way to Turn Each Knob · 每个旋钮往哪拧 | https://huyicheng.github.io/interactive-notes/differentiable/ | `differentiable/index.html` |
-| 10 | From Photos to Scenes · 从照片到场景 | https://huyicheng.github.io/interactive-notes/reconstruction/ | `reconstruction/index.html` |
-| 11 | Between the Joints and the Hand · 关节和手之间 | https://huyicheng.github.io/interactive-notes/jacobian/ | `jacobian/index.html` |
-| 12 | Two Seconds of Sound · 两秒钟的录音 | https://huyicheng.github.io/interactive-notes/signals/ | `signals/index.html` |
-| 13 | One Second in Silicon · 芯片里的一秒钟 | https://huyicheng.github.io/interactive-notes/silicon/ | `silicon/index.html` |
-| 14 | One Machine, Many Worlds · 一台机器，几个世界 | https://huyicheng.github.io/interactive-notes/isolation/ | `isolation/index.html` |
-| 15 | One Robot, Dozens of Programs · 一台机器人，几十个程序 | https://huyicheng.github.io/interactive-notes/ros/ | `ros/index.html` |
-| 16 | Where Am I, and How Sure? · 我在哪，有多确定 | https://huyicheng.github.io/interactive-notes/estimation/ | `estimation/index.html` |
-| 17 | What Next, and How? · 接下来做什么，怎么做 | https://huyicheng.github.io/interactive-notes/planning/ | `planning/index.html` |
-| 18 | A Little Off, Every Time · 每次都偏一点 | https://huyicheng.github.io/interactive-notes/calibration/ | `calibration/index.html` |
-| 19 | From Battery to Torque · 从电池到力矩 | https://huyicheng.github.io/interactive-notes/actuation/ | `actuation/index.html` |
+| 1 | Rotation Representations: Matrices, Euler Angles, Axis-Angle, Quaternions · 旋转的表示：矩阵、欧拉角、轴角、四元数 | https://huyicheng.github.io/interactive-notes/rotation/ | `rotation/index.html` |
+| 2 | Camera Models and Point-Cloud Registration: From Depth to Registration · 相机模型与点云配准：从深度到配准 | https://huyicheng.github.io/interactive-notes/perception/ | `perception/index.html` |
+| 3 | Imitation and Reinforcement Learning: From Demonstration to Trial and Error · 模仿学习与强化学习：从示范到试错 | https://huyicheng.github.io/interactive-notes/robot-learning/ | `robot-learning/index.html` |
+| 4 | Neural Network Architectures: From One Neuron to the Transformer · 神经网络的结构：从一个神经元到 Transformer | https://huyicheng.github.io/interactive-notes/backbones/ | `backbones/index.html` |
+| 5 | Feedback Loops and How a Robot Is Organised: Loops Within Loops · 反馈环与机器人的系统结构：环环相扣 | https://huyicheng.github.io/interactive-notes/loops/ | `loops/index.html` |
+| 6 | Control Methods: From PID to World Models · 控制方法：从 PID 到世界模型 | https://huyicheng.github.io/interactive-notes/control/ | `control/index.html` |
+| 7 | Generative Models: From Noise to Samples · 生成模型：从噪声到样本 | https://huyicheng.github.io/interactive-notes/generative/ | `generative/index.html` |
+| 8 | World Models: Try It in Your Head · 世界模型：在脑子里试一试 | https://huyicheng.github.io/interactive-notes/world-models/ | `world-models/index.html` |
+| 9 | Differentiability and Gradients: Which Way to Turn Each Knob · 可微与梯度：每个旋钮往哪拧 | https://huyicheng.github.io/interactive-notes/differentiable/ | `differentiable/index.html` |
+| 10 | 3D Reconstruction, NeRF and Gaussian Splatting: From Photos to Scenes · 三维重建、NeRF 与高斯泼溅：从照片到场景 | https://huyicheng.github.io/interactive-notes/reconstruction/ | `reconstruction/index.html` |
+| 11 | Jacobians, Singular Values and Dynamics: Between the Joints and the Hand · 雅可比、奇异值与动力学：关节和手之间 | https://huyicheng.github.io/interactive-notes/jacobian/ | `jacobian/index.html` |
+| 12 | Signals and Systems: Two Seconds of Sound · 信号与系统：两秒钟的录音 | https://huyicheng.github.io/interactive-notes/signals/ | `signals/index.html` |
+| 13 | Chips, Memory and GPUs: One Second in Silicon · 芯片、内存与 GPU：芯片里的一秒钟 | https://huyicheng.github.io/interactive-notes/silicon/ | `silicon/index.html` |
+| 14 | Virtualisation and Isolation: One Machine, Many Worlds · 虚拟化与隔离：一台机器，几个世界 | https://huyicheng.github.io/interactive-notes/isolation/ | `isolation/index.html` |
+| 15 | Robot Software and ROS: One Robot, Dozens of Programs · 机器人软件与 ROS：一台机器人，几十个程序 | https://huyicheng.github.io/interactive-notes/ros/ | `ros/index.html` |
+| 16 | State Estimation: Where Am I, and How Sure? · 状态估计：我在哪，有多确定 | https://huyicheng.github.io/interactive-notes/estimation/ | `estimation/index.html` |
+| 17 | Planning and Decision-Making: What Next, and How? · 规划与决策：接下来做什么，怎么做 | https://huyicheng.github.io/interactive-notes/planning/ | `planning/index.html` |
+| 18 | Errors and Calibration: A Little Off, Every Time · 误差与标定：每次都偏一点 | https://huyicheng.github.io/interactive-notes/calibration/ | `calibration/index.html` |
+| 19 | Motors, Gears and Sensors: From Battery to Torque · 电机、减速器与传感器：从电池到力矩 | https://huyicheng.github.io/interactive-notes/actuation/ | `actuation/index.html` |
 
 Add `#en` to any address to open it in English, for example https://huyicheng.github.io/interactive-notes/perception/#en.
 
@@ -40,25 +40,25 @@ Add `#en` to any address to open it in English, for example https://huyicheng.gi
 
 ```
 index.html                 home page, the explainers side by side · 首页，各篇并排
-rotation/index.html        Four Ways to Write a Rotation · 旋转的四种写法
-perception/index.html      From Depth to Registration · 从深度到配准
-robot-learning/index.html  From Demonstration to Trial and Error · 从示范到试错
-backbones/index.html       Inside a Neural Network · 拆开神经网络
-loops/index.html           Loops Within Loops · 环环相扣
-control/index.html         From PID to World Models · 从 PID 到世界模型
-generative/index.html      From Noise to Samples · 从噪声到样本
-world-models/index.html    Try It in Your Head · 在脑子里试一试
-differentiable/index.html  Which Way to Turn Each Knob · 每个旋钮往哪拧
-reconstruction/index.html  From Photos to Scenes · 从照片到场景
-jacobian/index.html        Between the Joints and the Hand · 关节和手之间
-signals/index.html         Two Seconds of Sound · 两秒钟的录音
-silicon/index.html         One Second in Silicon · 芯片里的一秒钟
-isolation/index.html       One Machine, Many Worlds · 一台机器，几个世界
-ros/index.html             One Robot, Dozens of Programs · 一台机器人，几十个程序
-estimation/index.html      Where Am I, and How Sure? · 我在哪，有多确定
-planning/index.html        What Next, and How? · 接下来做什么，怎么做
-calibration/index.html     A Little Off, Every Time · 每次都偏一点
-actuation/index.html       From Battery to Torque · 从电池到力矩
+rotation/index.html        Rotation Representations: Matrices, Euler Angles, Axis-Angle, Quaternions · 旋转的表示：矩阵、欧拉角、轴角、四元数
+perception/index.html      Camera Models and Point-Cloud Registration: From Depth to Registration · 相机模型与点云配准：从深度到配准
+robot-learning/index.html  Imitation and Reinforcement Learning: From Demonstration to Trial and Error · 模仿学习与强化学习：从示范到试错
+backbones/index.html       Neural Network Architectures: From One Neuron to the Transformer · 神经网络的结构：从一个神经元到 Transformer
+loops/index.html           Feedback Loops and How a Robot Is Organised: Loops Within Loops · 反馈环与机器人的系统结构：环环相扣
+control/index.html         Control Methods: From PID to World Models · 控制方法：从 PID 到世界模型
+generative/index.html      Generative Models: From Noise to Samples · 生成模型：从噪声到样本
+world-models/index.html    World Models: Try It in Your Head · 世界模型：在脑子里试一试
+differentiable/index.html  Differentiability and Gradients: Which Way to Turn Each Knob · 可微与梯度：每个旋钮往哪拧
+reconstruction/index.html  3D Reconstruction, NeRF and Gaussian Splatting: From Photos to Scenes · 三维重建、NeRF 与高斯泼溅：从照片到场景
+jacobian/index.html        Jacobians, Singular Values and Dynamics: Between the Joints and the Hand · 雅可比、奇异值与动力学：关节和手之间
+signals/index.html         Signals and Systems: Two Seconds of Sound · 信号与系统：两秒钟的录音
+silicon/index.html         Chips, Memory and GPUs: One Second in Silicon · 芯片、内存与 GPU：芯片里的一秒钟
+isolation/index.html       Virtualisation and Isolation: One Machine, Many Worlds · 虚拟化与隔离：一台机器，几个世界
+ros/index.html             Robot Software and ROS: One Robot, Dozens of Programs · 机器人软件与 ROS：一台机器人，几十个程序
+estimation/index.html      State Estimation: Where Am I, and How Sure? · 状态估计：我在哪，有多确定
+planning/index.html        Planning and Decision-Making: What Next, and How? · 规划与决策：接下来做什么，怎么做
+calibration/index.html     Errors and Calibration: A Little Off, Every Time · 误差与标定：每次都偏一点
+actuation/index.html       Motors, Gears and Sensors: From Battery to Torque · 电机、减速器与传感器：从电池到力矩
 toc.js                     the Contents panel shared by every page · 各篇共用的目录面板
 ```
 
@@ -72,7 +72,7 @@ Open the live pages above in any browser, on a phone or a computer. There is no 
 - **Contents / 目录**: the 目录 / Contents button in each page's top bar opens a list of every explainer and its sections; the current page is expanded. 每篇顶栏的「目录」按钮展开全部篇目和各篇的小节，当前这篇默认展开。
 - **Cross-links / 互相链接**: each explainer links to the previous and next one at the top and at the bottom. 每篇的开头和结尾都有到上一篇、下一篇的链接。
 
-## 1. Four Ways to Write a Rotation · 旋转的四种写法
+## 1. Rotation Representations: Matrices, Euler Angles, Axis-Angle, Quaternions · 旋转的表示：矩阵、欧拉角、轴角、四元数
 
 Rotation representations in robotics: rotation matrices, Euler angles, axis-angle, quaternions, and the Lie groups and Lie algebras that tie them together.
 
@@ -94,7 +94,7 @@ Conventions: `v′ = R · v`, so the columns of `R` are the body axes expressed 
 
 约定：矩阵作用方式是 `v′ = R · v`，`R` 的三列是物体三根轴在世界系里的方向；四元数按 Hamilton 约定，写成 `(w, x, y, z)`。
 
-## 2. From Depth to Registration · 从深度到配准
+## 2. Camera Models and Point-Cloud Registration: From Depth to Registration · 相机模型与点云配准：从深度到配准
 
 How a depth camera measures distance, how a depth image becomes a point cloud, and how that point cloud is aligned with a pre-operative MRI, with the camera's intrinsics, extrinsics and every matrix along the way defined explicitly.
 
@@ -119,7 +119,7 @@ Conventions: the camera frame has x right, y down, z forward (the OpenCV and Rea
 
 约定：相机坐标系 x 向右、y 向下、z 朝前（OpenCV 和 RealSense 的光学坐标系）；外参 `[R | t]` 把世界坐标换算成相机坐标；`T_ab` 表示 b 坐标系在 a 坐标系里的位姿。
 
-## 3. From Demonstration to Trial and Error · 从示范到试错
+## 3. Imitation and Reinforcement Learning: From Demonstration to Trial and Error · 模仿学习与强化学习：从示范到试错
 
 Robot-learning paradigms laid out along one spectrum of where the learning signal comes from: demonstrations, video, preferences, rewards, and no labels at all. For each stop: what problem it solves, its key ideas, what it is good at and where it breaks, with the representative papers linked inline.
 
@@ -144,7 +144,7 @@ Conventions: s state, a action, π policy, r reward, G return, γ discount facto
 
 约定：s 状态，a 动作，π 策略，r 奖励，G 回报，γ 折扣因子，V 和 Q 是价值。
 
-## 4. Inside a Neural Network · 拆开神经网络
+## 4. Neural Network Architectures: From One Neuron to the Transformer · 神经网络的结构：从一个神经元到 Transformer
 
 Neural networks taken apart from a single multiply–add, around one kitchen robot that is asked to pass a glass of water. Every step works a toy through by hand first, then counts the real network: its parameters, its bytes and the operations one input costs. One neuron deciding whether to let go of the glass; a layer as a matrix times a vector; stacking layers and why the bend matters; convolution and ResNet-18; recurrent networks and gates, down to a 79 KB wake-word model; attention with queries, keys and values; the Transformer block inside Llama 3.1 8B; images cut into tokens (ViT, SigLIP); sound into Whisper; U-Net; PointNet; multimodal models such as π0 and the four ways to fuse modalities; the ten building blocks and mixture of experts; and how big a network is, which chip it fits and which network suits which task and modality.
 
@@ -177,7 +177,7 @@ Conventions: x input, w and W weights, b bias, z weighted sum, σ the bend (acti
 
 约定：x 输入，w 和 W 是权重，b 是偏置，z 是加权和，σ 是"弯一下"（激活函数），y 是输出，P 是参数个数，F 是一个输入的运算次数，M 是字节数，q 是每个数的字节数；一次乘加算两次运算。
 
-## 5. Loops Within Loops · 环环相扣
+## 5. Feedback Loops and How a Robot Is Organised: Loops Within Loops · 反馈环与机器人的系统结构：环环相扣
 
 The two hierarchies every robot shares: six functional layers divided by job (sensing, perception and estimation, decision, planning, control, actuation), and nested loop levels divided by speed, from the task loop down to the motor's current loop; how the two line up and where they differ, how a loop closes, how fast each loop must run, why loops sit inside loops, how a drive turns a switch into a current, what a robot's programs hand to one another, how five kinds of robot share the same skeleton, and how the hardware is wired together and kept in time. Examples come from robot arms, legged robots, self-driving cars, drones and robot vacuums.
 
@@ -201,7 +201,7 @@ Conventions: r a loop's target, y its output, e its error, u its command; q join
 
 约定：r 是一个环的目标，y 是输出，e 是误差，u 是命令；q 关节角，τ 力矩，带星号的也是上一层给的目标；Hz 是每秒几次。
 
-## 6. From PID to World Models · 从 PID 到世界模型
+## 6. Control Methods: From PID to World Models · 控制方法：从 PID 到世界模型
 
 The whole spectrum of control methods, told on one motor-driven pendulum arm. Every controller is an approximate answer to the same problem (choose commands that minimise a cost, subject to the physics, noisy measurements and limits); methods differ in where the model comes from, when the work is done, how far ahead they look and how they handle uncertainty. The page places each method in the six functional layers and loop levels of page 5, answers why PID still dominates the fastest loops, where the model sits in model-based and model-free control, why reinforcement learning is what carried humanoid robots to where they are now, and what world models add.
 
@@ -228,7 +228,7 @@ Conventions: θ is the arm's angle (0 hanging, 180° upright), φ the angle from
 
 约定：θ 是摆杆的角度（0 垂下，180° 竖直），φ 是偏离竖直的角度，ω 是角速度，τ 或 u 是电机力矩；x 是状态，r 是目标，e 是误差，J 是总代价，V(x) 是价值函数。
 
-## 7. From Noise to Samples · 从噪声到样本
+## 7. Generative Models: From Noise to Samples · 生成模型：从噪声到样本
 
 The whole spectrum of generative models, told on one small example: an eight-petal "flower" of points in the plane. Every generative model answers the same question (how to turn a handful of random numbers into a new sample that looks like the data without copying it), and each step starts from the problem the previous method ran into. The page then takes the questions that cut across all methods: what a generative model actually learns, why sampling almost always starts from a Gaussian and whether it has to, how to make generation fast and controllable, and how robots use generative models for actions, rewards, planning and world models.
 
@@ -246,7 +246,7 @@ The whole spectrum of generative models, told on one small example: an eight-pet
 9. Why a Gaussian: randomness has to come from somewhere, what makes the Gaussian convenient, the soap-bubble shape of high-dimensional noise, and the alternatives (uniform noise, masks, a single point with randomness along the way, a rough answer close to the data, non-Gaussian noise)
 10. Fast, and on request: better solvers, straighter paths, distillation and one-step models, latent spaces, conditions and classifier-free guidance
 11. Robots: demonstrations with several right answers, regression versus generative policies, action chunks, VLAs, imitation and style rewards, planning, grasps, inverse kinematics and world models
-12. The spectrum: a map of 64 methods, grouped by what is learned, whether the probability can be computed, steps to generate, training, era and use in robots
+12. Method map: 64 methods, grouped by what is learned, whether the probability can be computed, steps to generate, training, era and use in robots
 13. Summary: what a generative model learns, a comparison table of the families, how they relate, answers to the opening questions, a quiz, further reading
 
 Interactive demos: four kinds of "generation" on the flower (draw new points, copy, scatter, average) with readouts for realistic, diverse and new; one Gaussian, a Gaussian mixture fitted by EM and a small Gaussian on every point, with training and test scores; a one-dimensional change of variables from a Gaussian to the three-peaked shadow of the flower; a ten-layer normalizing flow played layer by layer at three stages of training; a VAE with its code space and the KL weight β; a GAN trained live in the browser, with matched or mismatched learning rates and a discriminator that looks at pairs; autoregressive sampling one coordinate at a time, with temperature; score fields and Langevin sampling at one or many noise levels; adding noise and the best denoising guess with petal probabilities; diffusion sampling with DDPM or DDIM and different numbers of steps; flow matching with its training pairs, curved paths, reflow and a diffusion overlay; flow matching from different starting points; conditional generation with classifier-free guidance; a small robot going round an obstacle with a regression policy, a generative policy redrawn every step and one that generates a chunk at a time; and a map of 64 generative models with each method's relatives.
@@ -257,7 +257,7 @@ Conventions: x is a data point, z and ε are noise, σ is the size of the noise,
 
 约定：x 是数据点，z、ε 是噪声，σ 是噪声的大小，t 在 Flow Matching 里从 0（噪声）走到 1（数据）；p(x) 是概率密度，s(x) = ∇ log p(x) 是分数，v(x, t) 是速度。
 
-## 8. Try It in Your Head · 在脑子里试一试
+## 8. World Models: Try It in Your Head · 世界模型：在脑子里试一试
 
 World models from the ground up, told on one small task: a robot finger and a puck on a table, and a goal to push the puck into. A world model answers "if I do this, what happens next?", so a robot can try things in its head before acting. The page starts from the simplest learned model; in the first four steps, each one starts from the problem the previous one ran into. It then looks at how to use a model and how to scale it up to video, and asks the questions that cut across all of them: does a world model understand physics, and how do robots actually use one.
 
@@ -272,7 +272,7 @@ World models from the ground up, told on one small task: a robot finger and a pu
 6. Scaling up to video: action-conditioned video generation (GAIA, Genie, GameNGen, DIAMOND, Cosmos), latent actions from unlabelled video, real time, memory, and drift with noise augmentation
 7. Does it understand physics: looking right is not being right; counterfactual tests, rare events, and how to evaluate a world model
 8. Robots: planning (V-JEPA 2), practising in imagination (DayDreamer, WMPO), evaluating policies (1X, WorldGym, a Veo-based simulator), generating data (DreamGen) and world models as policies (UniPi, GR-2, world action models); Spearman's rank correlation as the measure of whether a ranking made inside a model matches the real one
-9. The spectrum: a map of 49 world models, grouped by approach, where they predict, what they are used for, where the actions come from, how they are trained, and era
+9. Method map: 49 world models, grouped by approach, where they predict, what they are used for, where the actions come from, how they are trained, and era
 10. Summary: the answer to the opening question, a comparison table, a checklist for choosing and checking a world model on a new task, a quiz, further reading
 
 Interactive demos: one push animated from the side and from above, then taken apart frame by frame, one frame per 0.1 s step; plan a push, imagine it with a learned model and then do it for real, or let a planner imagine 160 pushes; one-step models trained on 1 000, 10 000 and 100 000 transitions, rolled out open-loop against reality; an ensemble of five networks trained live in the browser, choosing a push strength alone, on average, pessimistically or optimistically; pixel prediction with a hidden friction, the blurry least-squares prediction against a latent model's sharp samples, with an exact posterior that narrows as frames arrive; what three kinds of 4-number latent keep (reconstruction, next-step prediction, value) under flickering or drifting distractors; a tiny JEPA trained live, collapsing or held up by variance terms or by predicting the value; MPC, tree search and an imagination-trained policy pushing a real puck with the same learned model; a small convolutional video model dreaming next to the real world, trained plainly or with noise augmentation; counterfactual tests of an action-blind model and a model that never saw the rim; ranking eight policies inside a world model against the real world; and a map of 49 world models with each method's relatives.
@@ -287,7 +287,7 @@ Conventions: s is the state, a the action, o an observation, z a latent, h a mem
 
 约定：s 是状态，a 是动作，o 是观测，z 是潜变量，h 是记忆，t 是第几步（每步 0.1 秒）；f 是世界模型。
 
-## 9. Which Way to Turn Each Knob · 每个旋钮往哪拧
+## 9. Differentiability and Gradients: Which Way to Turn Each Knob · 可微与梯度：每个旋钮往哪拧
 
 Differentiability from the ground up. The first seven steps use one task: a robot arm throws a ball into a bin 2 m away, and the throw lands 25 cm too far. Which way should each knob turn, and by how much? Each step starts from the problem the previous one ran into. The last steps look at how robots use the same trick, put dozens of "differentiable X" side by side, and answer the opening question: when people in different fields say "differentiable", do they want the same thing?
 
@@ -302,7 +302,7 @@ Differentiability from the ground up. The first seven steps use one task: a robo
 6. Discrete and random: softmax and temperature, attention, DARTS; Gumbel-max, Gumbel-softmax, straight-through; reparameterisation against REINFORCE, with a baseline
 7. The real world gives no derivatives: learned stand-ins (a black box, textbook physics plus a learned residual, system identification); TossingBot, Dreamer, PILCO, DDPG, SuperMimic
 8. Robots: differentiable simulators (Brax, MJX, Warp, DiffTaichi), trajectory optimisation (DDP, iLQR, differentiable MPC), localisation and mapping (iNeRF, Gaussian Splatting SLAM, DROID-SLAM), registration and calibration (ICP, DiffDRR); then two classic problems in depth: inverse kinematics with the Jacobian (gradient descent, Newton's method via the pseudoinverse, damped least squares, singularities) and pose-graph SLAM (loop closure, Gauss–Newton against gradient descent, sparsity)
-9. The spectrum: a map of 61 differentiable methods, grouped by why a gradient is wanted, what is tuned, where the gradient comes from, where it breaks, step on this page and era
+9. Method map: 61 differentiable methods, grouped by why a gradient is wanted, what is tuned, where the gradient comes from, where it breaks, step on this page and era
 10. Summary: the answer to the opening question, a comparison table, a quiz, further reading
 
 Interactive demos: the throw animated from the side and taken apart frame by frame; one knob (speed or angle) with its tangent, Newton steps and a zoom that shows local linearity; a contour map of the loss over speed and angle with gradient descent; a computational graph run forwards and backwards; a 321-weight network trained live through the physics against two trial-and-error learners; throws near the rim with local gradients, a noise-smoothed hit rate and truncation; a 1D render with hard and soft edges and coarse to fine; 2D Gaussian splatting fitted live to a picture; softmax with temperature and Gumbel samples; pathwise and REINFORCE gradient estimates and their spread; four learned stand-ins aiming a throw in a world with slip and drag; a three-link arm reaching a draggable target by gradient descent, Newton's method or damped least squares, including a target out of reach; a robot driving a loop whose odometry drift is pulled straight by pose-graph optimisation after loop closure; and a map of 61 methods with each method's relatives.
@@ -313,7 +313,7 @@ Conventions: θ is all the knobs, L the loss, ∇L the gradient; the throw: rele
 
 约定：θ 是所有旋钮，L 是损失，∇L 是梯度；扔球：出手点离地 1.0 m，筐中心 D = 2.0 m，差 e = x − D。
 
-## 10. From Photos to Scenes · 从照片到场景
+## 10. 3D Reconstruction, NeRF and Gaussian Splatting: From Photos to Scenes · 三维重建、NeRF 与高斯泼溅：从照片到场景
 
 How scenes are reconstructed from photos, as a complete spectrum from classical methods to the newest, built around one task: a robot arm's wrist camera circles a glazed mug and takes 24 photos, and the robot must say what the mug looks like from an angle nobody photographed and where the handle is, to grasp it. Every live widget works in the horizontal cross-section at handle height, where each photo is a single row of 96 pixels. Each family of methods is described by five questions: what goes in, what it is stored as, what it compares, how it is solved and what comes out. The summary answers whether NeRF and 3D Gaussian splatting count as a "modality".
 
@@ -328,7 +328,7 @@ How scenes are reconstructed from photos, as a complete spectrum from classical 
 6. Gaussian splatting: projection with the Jacobian, sorting and blending, adaptive density control; its roots in splatting, surfels and EWA, and in differentiable and neural point rendering (DSS, NPBG, ADOP); branches from Mip-Splatting to ray tracing, triangles and Gaussian SLAM
 7. Surfaces and depth: mean and median depth; why a well-rendered field can have the wrong shape; signed distance fields (DeepSDF, VolSDF, NeuS, Neuralangelo), 2DGS, SuGaR, Gaussian Opacity Fields, depth supervision; NeRF for transparent objects
 8. Learned priors: overfitting with few views; priors as a constraint (monocular depth, from Make3D and Eigen et al. to Depth Pro), as the answer (MVSNet, pixelNeRF, pixelSplat, LRM, DUSt3R, VGGT and their 2025–2026 successors) and as generation (Zero-1-to-3, CAT3D, DreamFusion, TRELLIS)
-9. The spectrum: a map of 104 methods grouped by input, representation, comparison, solver, output, step and era, with each method's relatives
+9. Method map: 104 methods grouped by input, representation, comparison, solver, output, step and era, with each method's relatives
 10. Summary: NeRF against 3DGS, the three senses of "modality", six lineages and how they cross, one comparison table, which method a robot should use, a quiz, further reading
 
 Interactive demos: the arm circling the mug and its 24 photos; two rays with pixel-error wedges crossing at a stripe edge, the handle or plain glaze; a plane sweep along a pixel's ray with its cost curve, the whole 24-photo point cloud and the visual hull; TSDF fusion of noisy depth frames with marching squares; volume rendering along one ray with transmittance and per-sample shares, with and without fog; a NeRF (or a Plenoxels-style grid) trained live, with positional encoding on or off; 2D Gaussian splatting trained live with densification; geometry taken out of trained Gaussians, photos only against photos plus a depth camera; few-view training on a 90° arc with and without a learned depth prior; and a map of 104 methods.
@@ -339,7 +339,7 @@ Conventions: a point in the scene is P, a camera centre o, a pixel's horizontal 
 
 约定：场景里的点写作 P，相机中心写作 o，像素横坐标写作 u；焦距 140 像素；相机离杯子的轴线 32 cm，每 15° 拍一张。
 
-## 11. Between the Joints and the Hand · 关节和手之间
+## 11. Jacobians, Singular Values and Dynamics: Between the Joints and the Hand · 雅可比、奇异值与动力学：关节和手之间
 
 The Jacobian, the singular value decomposition, kinematics and dynamics in one page, built around one task: a three-link planar arm on a 25 cm post wipes a table with a sponge, from 36 cm to 80 cm and back in 3.2 s, while pressing down with 10 N. The same Jacobian is used three times: joint rates to hand velocity (v = J q̇), hand force to joint torques (τ = Jᵀ F), and joint-space mass to the mass felt at the hand (Λ⁻¹ = J M⁻¹ Jᵀ); the SVD reads each one as "which direction, how much". The second half derives the equations of motion and uses them to control the wiping.
 
@@ -356,7 +356,7 @@ The Jacobian, the singular value decomposition, kinematics and dynamics in one p
 8. The Lagrange equations: M q̈ + C q̇ + g = τ − Jᵀ F, Christoffel symbols, the skew-symmetry of Ṁ − 2C and energy, linearity in the parameters, learned Lagrangian models
 9. Newton–Euler: the outward and inward recursions with the forces inside each joint, why it is fast, CRBA, ABA and modern libraries
 10. Control: joint PD, PD plus gravity compensation, computed torque and the hand stiffness ω²Λ, operational-space and force control, compared in the air and on the table, with a wet sponge and at double speed; impedance and adaptive control
-11. The map: 66 methods grouped by the matrix they use, what they are for, how they use it, step and era; the SVD beyond robots (PCA, low-rank approximation, point-set alignment, the eight-point algorithm, randomised SVD, LoRA)
+11. Method map: 66 methods grouped by the matrix they use, what they are for, how they use it, step and era; the SVD beyond robots (PCA, low-rank approximation, point-set alignment, the eight-point algorithm, randomised SVD, LoRA)
 12. Summary: the three uses of J in one table, Lagrange against Newton–Euler, the four controllers, questions, a quiz, further reading
 
 Interactive demos: the wiping task with joint speeds and torques; the Jacobian's columns as arrows with a real rotation against the linear prediction; any 2 × 2 matrix decomposed step by step; the velocity ellipse along the table with σ₁, σ₂ and manipulability; three inverse-kinematics methods chasing a target out of reach; self-motion and wiping under a shelf with and without the null-space term; forces, torque bars, force ellipses and the maximum press; pushes at the hand and the mass felt in each direction; a free triple pendulum with its energy and the three torque terms; four controllers simulated with the full dynamics and a frictional table; and a map of 66 methods.
@@ -367,7 +367,7 @@ Conventions: x to the right, y up, the table at y = 0, the shoulder at (0, 0.25)
 
 约定：x 向右、y 向上，桌面 y = 0，肩在 (0, 0.25) m；三节长 0.40、0.35、0.15 m，重 2.0、1.5、0.5 kg；角度从 x 轴量起，逆时针为正。
 
-## 12. Two Seconds of Sound · 两秒钟的录音
+## 12. Signals and Systems: Two Seconds of Sound · 信号与系统：两秒钟的录音
 
 The basics of signals and systems in one page, built around one synthetic two-second phone recording in a kitchen (16 kHz): a clap at 0.25 s, a voice saying "ah" (220 Hz, formants 850/1220/2810 Hz) from 0.80 s to 1.80 s, 50 Hz mains hum (−40 dB), white hiss (−50 dB) and the kitchen's echoes (RT60 0.5 s). Every definition gets a physical intuition and every formula is checked against this recording; a later step moves to a photo of the same kitchen wall to compare images with sound.
 
@@ -388,7 +388,7 @@ The basics of signals and systems in one page, built around one synthetic two-se
 12. The Laplace transform: e^{st}, transfer functions, the RC low-pass, pole pairs and resonance (Q), stability, vowels as three pole pairs
 13. The z-transform: delays as z^{−1}, the unit circle as the frequency axis, FIR and IIR, a 100 Hz notch filter, an echo and its inverse, the bilinear transform
 14. Images and other signals: a photo of the kitchen wall (tiles as harmonics, flicker bands from the same 50 Hz mains, moiré as aliasing, blur as convolution with the point spread function); the differences (2D frequency vectors, no causality, phase matters to the eye, 1/f statistics, photon noise) and the common essence (linearity and shift invariance); video, MRI k-space, point clouds, graphs
-15. The map: 93 methods grouped by domain, purpose, kind, step and era, including signal processing inside modern neural networks (state-space models, anti-aliased networks, Fourier features)
+15. Method map: 93 methods grouped by domain, purpose, kind, step and era, including signal processing inside modern neural networks (state-space models, anti-aliased networks, Fourier features)
 16. Summary: every term with this recording's numbers, the five transforms compared, questions, a quiz, further reading
 
 Interactive demos: the recording with its four parts and four close-ups (listenable); a phasor with a second sound and beats; decibel squares and a level ruler; adding noise and averaging recordings; building the vowel from harmonics, scrambling phases, the square wave; the Fourier transform as winding; band-limiting the voice and the duration–bandwidth trade-off; envelopes, AM and FM with listenable presets (tremolo, a scaled-down radio, overmodulation, vibrato, FM synthesis, wideband FM); aliasing of a tone, a folding sweep and quantisation; a spectrogram with adjustable windows; convolution with kitchen, echo, bathroom and hall impulse responses; filters applied to the recording with Bode plots; the s-plane with poles you can drag and hear (including vowels); the z-plane with a notch, an echo and its inverse; a photo with its 2D spectrum, low- and high-pass filters, a notch for the flicker bands, downsampling, phase swapping and averaging noisy shots; and the map.
@@ -399,7 +399,7 @@ Conventions: sample rate 16 kHz, values between −1 and 1 (full scale); unless 
 
 约定：采样率 16 kHz，样本在 −1 到 1 之间（满量程）；不另外说明时，dB 是有效值相对满量程 1 的分贝。照片是合成的 256 × 256 灰度图。
 
-## 13. One Second in Silicon · 芯片里的一秒钟
+## 13. Chips, Memory and GPUs: One Second in Silicon · 芯片、内存与 GPU：芯片里的一秒钟
 
 The computing hardware under large language models and embodied AI, explained from zero for a reader who knows nothing about chips, around one sentence in a kitchen: "pass me that glass of water". A fictional two-arm mobile robot, specified after products and papers published in 2025–2026, hands over the glass: a head camera (1280 × 720 at 30 Hz), two wrist cameras, a depth camera, four microphones, an IMU, 21 joints and two wrist force/torque sensors; a Jetson-Thor-class module (128 GB LPDDR5X at 273 GB/s, 40–130 W), an FPGA sensor hub and one microcontroller per joint running a 20 kHz current loop; an ~8B planner and an ~3B vision-language-action model at 10 Hz with 50-step action chunks. A harder question goes to a 70B model on eight B200 GPUs in a data centre. Every formula gets an intuition and is worked through with these numbers, and every figure links to its source. The NVIDIA part covers what it does well and what it costs, and the alternatives are shown with both their strengths and what holds them back.
 
@@ -421,7 +421,7 @@ The computing hardware under large language models and embodied AI, explained fr
 13. The robot’s computer, chip by chip: the six layers and nested loops mapped onto sensors, the FPGA, the main module, the buses, the joint drives and the safety controller
 14. The frontier: gate-all-around transistors and backside power, High-NA lithography, chiplets and advanced packaging, HBM4, FP4, faster NVLink and co-packaged optics, 800 V DC power, new accelerators and robot chips
 15. Routes not yet in wide commercial use: analogue in-memory computing, digital near-memory computing, photonic computing, optical interconnect, neuromorphic chips with event cameras, thermodynamic computing, with in-sensor computing as a contrast; who pushes each, what it would solve and why it has not landed
-16. The map: 96 devices, chips, methods and models grouped by layer, purpose, kind, step and era
+16. Method map: 96 devices, chips, methods and models grouped by layer, purpose, kind, step and era
 17. Summary: every term with this example’s numbers, answers to the opening questions, a quiz, further reading
 
 Interactive demos: the kitchen scene with a time magnifier from 1 s down to 0.1 ms; a switch, a NAND gate, a 4-bit adder and the clock; a toy CPU running y = w·x + b and PyTorch calling a GPU; the memory ladder with models that fit or don’t; energy per operation, number formats and the energy of one token; one matrix product on five kinds of chip; CUDA threads, blocks and warps on a B200, warp divergence and the CUDA stack; a roofline with five chips; one token through eight GPUs; a data-centre calculator for memory, training time, all-reduce, racks, power and optics; scaling-law curves; sensor data rates and drifting clocks; a latency, memory and power budget with presets (π0-like, Helix-like, a cloud model, a 70B model on board); the robot’s computer coloured by layer or by clock; growth curves of GPUs and robot modules; a radar of the routes not yet in wide commercial use; and the map.
@@ -432,7 +432,7 @@ Conventions: 1 GB = 10⁹ bytes and 1 TB = 10¹² bytes; unless stated otherwise
 
 约定：1 GB = 10⁹ 字节，1 TB = 10¹² 字节；不另外说明时，TFLOPS、PFLOPS 是不算稀疏的稠密峰值，NVLink 的带宽按 NVIDIA 的写法是两个方向加起来。芯片的规格以 2026 年 11 月公开的数字为准，"发布"和"上市"分开说。厨房里的机器人是虚构的：它的传感器、计算模块和模型照着 2025 到 2026 年公开的产品和论文来配。
 
-## 14. One Machine, Many Worlds · 一台机器，几个世界
+## 14. Virtualisation and Isolation: One Machine, Many Worlds · 虚拟化与隔离：一台机器，几个世界
 
 Virtual machines, dual boot, containers, conda, venv and twenty-odd other ways of giving a program "a machine of its own", compared side by side, around a kitchen-robot team with one Ubuntu 24.04 workstation and seven requests that clash: a new PyTorch 2.5 project, an old Python 3.8 / PyTorch 1.13 baseline, ROS 2 Humble built for Ubuntu 22.04, a Windows-only calibration tool over USB, a 1 kHz control loop that needs a real-time kernel, untrusted code, and deployment to an ARM64 Jetson Thor, a cloud GPU server and a cluster without root. The page takes a computer apart into layers and shows that every method does the same thing — it replaces one of the "name → thing" tables at some layer — and differs only in where it cuts (above the cut each world has its own copy, below it everything is shared) and who enforces the wall (hardware, the kernel, a naming convention or taking turns, and for a few, software). Then it opens each family: processes and page tables; booting, EFI and Secure Boot; virtual machines from Popek–Goldberg to VT-x, VM exits and nested paging; microVMs, gVisor, WSL, Wine, Rosetta and QEMU; namespaces, control groups and seccomp; OverlayFS and image layers; Docker, Podman, Apptainer and Distrobox; sandboxes; PATH, sys.path and the dynamic linker behind venv, uv, conda and Lmod; Nix's hash paths; the GPU driver versus the CUDA runtime, and MIG; hardware partitions and trusted execution environments; and an answer for each of the seven requests. Some numbers were measured on a small cloud VM (system-call cost, process and container start-up, OverlayFS copy-up, cgroup limits); the programs are in `isolation/meas/`.
 
@@ -441,7 +441,7 @@ Virtual machines, dual boot, containers, conda, venv and twenty-odd other ways o
 0. Seven requests on one workstation, and the six places where they collide
 1. The layers of a computer; one command traced from the shell to the SSD; every layer looks things up by name; the cost of a system call
 2. Processes: virtual memory, page tables, user and kernel mode, 4-level paging; what a process does not isolate
-3. The overview: where the cut is, who enforces it, the five motives, twenty-five methods in one comparison
+3. Method map: where the cut is, who enforces it, the five motives, twenty-five methods in one comparison
 4. Dual boot: UEFI, the EFI system partition, Secure Boot, GRUB; the shared disk and its pitfalls; Live USB
 5. Virtual machines: trap and emulate, Popek–Goldberg, x86's 17 problem instructions, binary translation, paravirtualisation, VT-x/AMD-V, the cost of VM exits, nested paging and its 24 memory references, virtio and passthrough, type 1 and 2, costs; system versus process VMs
 6. MicroVMs (Firecracker, Kata), gVisor, WSL 1 and 2, Wine, Rosetta 2, QEMU
@@ -464,7 +464,7 @@ Conventions: kB/MB/GB step by 1000 and KiB/MiB/GiB by 1024, quoted numbers keep 
 
 约定：kB、MB、GB 按 1000 进位，KiB、MiB、GiB 按 1024 进位，引用的数照原文的写法；"我们测的"来自一台 2 个虚拟 CPU 的云虚拟机（Ubuntu 24.04、Linux 6.18、Docker 29.8）；"估"是没有出处的数量级估计；版本和授权以 2026 年 11 月为准。
 
-## 15. One Robot, Dozens of Programs · 一台机器人，几十个程序
+## 15. Robot Software and ROS: One Robot, Dozens of Programs · 机器人软件与 ROS：一台机器人，几十个程序
 
 What holds a robot's software together, explained from the hardware up around one kitchen robot (a Franka Research 3 arm on FCI at 1 kHz, a RealSense D435i on USB 3, a Hokuyo UST-10LX lidar, a mobile base whose wheel drivers sit on CAN under a microcontroller, a Jetson AGX Thor, a real-time PC and a workstation over Wi-Fi; a dozen devices and a few dozen programs). The page follows bytes from the sensors along the buses into memory, then between processes and between computers; shows how robots were programmed before ROS and why every lab had its own framework; takes ROS 1 apart (the master, XML-RPC, TCPROS, the md5sum check, the six PR2 assumptions) and ROS 2 (rclcpp/rclpy → rcl → rmw → DDS or Zenoh, discovery without a master and the RTPS port formula, QoS and its compatibility rules, loaned messages); looks inside a node (executors, callback groups, components, lifecycle nodes); places ROS on Linux (it is not an operating system: a set of names, message conventions, frameworks and tools on top of one); and opens ros2_control's 1 ms loop and the real-time kernel, MoveIt 2, tf2 and Nav2. It then answers three questions directly: why upgrading ROS is so hard and whether that contradicts its vision of reuse; why the core is C++ while the glue is Python; and what the alternatives are and what each was born for (vendor controllers and PLCs, OROCOS, LCM, plain DDS or Zenoh, AUTOSAR and Apollo Cyber RT, gRPC robot APIs, micro-ROS, Isaac ROS/NITROS, dora-rs, LeRobot); and finally puts the whole robot together and walks through its failure cases. Some numbers were measured on a small cloud VM (inter-process round trips, message decoding in C and Python, garbage-collection pauses, 1 kHz loop lateness) or counted from the official repositories (package counts per distribution, lines of code per language); the programs are in `ros/meas/`.
 
@@ -495,7 +495,7 @@ Conventions: bit/s, kB and MB step by 1000 and KiB/MiB by 1024, quoted numbers k
 
 约定：bit/s、kB、MB 按 1000 进位，KiB、MiB 按 1024 进位，引用的数照原文的写法；"我们测的"来自一台 2 个虚拟 CPU 的云虚拟机（Ubuntu 24.04、Linux 6.18，不是实时内核，Python 3.13）；"我们数的"来自 2026 年 11 月初的官方仓库；"估"是没有出处的数量级估计，"示意"是编的例子；版本、默认值和支持期以 2026 年 11 月为准。
 
-## 16. Where Am I, and How Sure? · 我在哪，有多确定
+## 16. State Estimation: Where Am I, and How Sure? · 状态估计：我在哪，有多确定
 
 Robot state estimation explained from a single noisy reading up to a whole robot, around the kitchen robot of page 15 (a differential-drive base with wheel encoders, a Hokuyo UST-10LX lidar, a RealSense D435i head camera with its Bosch BMI055 IMU, a Franka Research 3 arm, and a Jetson AGX Thor running robot_localization, nav2_amcl, a slam_toolbox map and a cup tracker). No sensor tells the robot where it is, so the page starts from what a reading is (truth + bias + noise, σ, covariance ellipses), why dead reckoning with wheels and an IMU drifts without bound, and how two readings are fused by their variances; then builds the Bayes predict-and-correct loop on a histogram, the Kalman filter in one dimension and as matrices (velocity estimated from positions alone), the EKF and the "banana" that breaks it, the UKF and error-state filters, and particle filters as nav2_amcl really implements them (likelihood field, its additive beam combination, KLD sampling, kidnapping). It then handles real robots: sensors with different rates, latencies and frames (time stamps, rewinding for lagged data, REP 103/105, not fusing the same information twice); SLAM with occupancy grids, scan matching and loop closure; factor graphs, sparsity and why a filter is a smoother that marginalised its past; tracking several cups with Mahalanobis gating; estimating biases, extrinsics, time offsets and external torque (momentum observer); how estimators fail and check themselves with the NIS; a landscape of methods from 1960 to 2025; and the kitchen robot's estimation layer with an error budget for grasping a cup. Some numbers are our own arithmetic or were measured on a small cloud VM (an AMCL update, a 15-state EKF cycle, a pose-graph solve sparse vs dense); the programs are in `estimation/calc/`.
 
@@ -516,7 +516,7 @@ Robot state estimation explained from a single noisy reading up to a whole robot
 12. Tracking cups: Mahalanobis gating, nearest neighbour vs global association, occlusion
 13. Estimating more than position: biases, extrinsics, time offsets, external torque and the momentum observer
 14. How estimation fails and how to notice: degeneracy, over-confidence, wrong association, time and frames; NIS
-15. The landscape: dozens of methods by representation and how much past they keep
+15. Method map: dozens of methods by representation and how much past they keep
 16. The kitchen robot's estimation layer and an error budget for grasping a cup
 17. Summary: one loop, several approximations, eight answers, further reading
 
@@ -524,7 +524,7 @@ Conventions: "our arithmetic" comes from `estimation/calc/calcnum.py`; "measured
 
 约定："我们算的"来自 `estimation/calc/calcnum.py`；"我们测的"来自一台 2 个虚拟 CPU 的云虚拟机（Linux 6.18，不是实时内核）；"我们在源码里读到的"指 2026 年 11 月初的 robot_localization、navigation2 和 slam_toolbox 仓库（只读，没有运行）；"估"是没有出处的数量级估计，"示意"是编的例子；版本和默认值以 2026 年 11 月为准。
 
-## 17. What Next, and How? · 接下来做什么，怎么做
+## 17. Planning and Decision-Making: What Next, and How? · 规划与决策：接下来做什么，怎么做
 
 Robot planning and decision-making explained from the bottom up, around the kitchen robot of pages 15–16 (a differential-drive base, a Hokuyo UST-10LX lidar, a RealSense D435i head camera and a Franka Research 3 arm on ROS 2 Humble, with Nav2 for the base, MoveIt 2 for the arm and a BehaviorTree.CPP task tree), asked to "bring cup A to the island". The page starts from why a robot must plan instead of only reacting (potential fields and their local minima), and what planning is: search in a model, with a cost and constraints, where every practical planner gives up completeness or optimality somewhere. It then takes the methods a real robot uses one by one: costmaps and configuration space (Nav2's inflation layer), Dijkstra and A* on a grid (NavFn, Smac), sampling planners for a 7-joint arm (PRM, RRT, RRT-Connect, RRT*, narrow passages), trajectory optimisation (CHOMP, STOMP, TrajOpt, and why the initial guess decides the side), time parameterisation (TOTG, Ruckig, how hard you can accelerate a cup of water), and local planning and replanning (DWA/DWB, MPPI). On the decision side: expected cost and whether another look is worth it (with page 16's error budget), POMDPs in one paragraph, state machines and behaviour trees (BehaviorTree.CPP semantics, Nav2's default tree), symbolic planning and task-and-motion planning (STRIPS, PDDL, PDDLStream, PlanSys2), language models (SayCan, Code as Policies, VLA), and where learned skills such as diffusion policy sit compared with planners. It ends with failures and the escalation ladder (and why safety is not planning's job), a landscape of methods, and the robot's whole decision and planning layer with a time budget for fetching one cup. Defaults are read from the Humble branches of Nav2 and MoveIt 2 and from BehaviorTree.CPP 3.8; our own arithmetic is in `planning/calc/`.
 
@@ -544,7 +544,7 @@ Robot planning and decision-making explained from the bottom up, around the kitc
 11. From a sentence to a plan: SayCan (useful × feasible), Code as Policies, VLA
 12. Learned skills: where diffusion policy sits, planner vs policy
 13. When things go wrong: the escalation ladder, execution monitoring, safety is separate
-14. The landscape: dozens of methods by layer and by how they think
+14. Method map: dozens of methods by layer and by how they think
 15. The kitchen robot's decision and planning layer, and a time budget for fetching one cup
 16. Summary: four ingredients, several approximations, nine answers, further reading
 
@@ -552,7 +552,7 @@ Conventions: "our arithmetic" comes from `planning/calc/calcnum.py`; "read in th
 
 约定："我们算的"来自 `planning/calc/calcnum.py`；"我们在源码里读到的"指 2026 年 11 月初 navigation2 和 moveit2 的 Humble 分支、BehaviorTree.CPP 3.8、OMPL 和 PlanSys2 的仓库（只读，没有运行）；"估"是没有出处的数量级估计，"示意"是编的例子；版本和默认值以 2026 年 11 月为准。
 
-## 18. A Little Off, Every Time · 每次都偏一点
+## 18. Errors and Calibration: A Little Off, Every Time · 误差与标定：每次都偏一点
 
 Robot errors and calibration explained from the bottom up, around the kitchen robot of pages 15–17 (a differential-drive base, a Hokuyo UST-10LX lidar, a RealSense D435i head camera with a built-in Bosch BMI055 IMU and a Franka Research 3 arm on ROS 2 Humble). After its head camera was taken off and put back, the robot keeps missing cup A on the same side, and looking again does not help. The page is self-contained: it starts from "reading = truth + bias + noise", averaging (σ/√n) and the difference between accuracy and repeatability (ISO 9283; why a 0.1 mm repeatability says little about absolute accuracy), then shows how errors propagate along the chain pixel → intrinsics → depth → camera extrinsics → arm kinematics → tool (sensitivities, lever arms, J Σ Jᵀ, error budgets, error fields and why a one-point correction is not a calibration), and why calibration is weighted least squares whose data must be spread out for the parameters to be identifiable. Each link is then calibrated in turn: camera intrinsics (pinhole model, distortion, Zhang's method, how to place the board), depth bias that grows with distance (RealSense self-calibration and Tare), hand–eye calibration of the head camera (eye-to-hand, AX = XB, why the hand must rotate a lot), arm kinematic calibration (identification Jacobian, 4r + 2p + 6 identifiable parameters), the IMU (error model, six positions, Allan variance, Kalibr's noise parameters), lidar, wheels and camera–lidar extrinsics, time offsets, payload, F/T gravity compensation and TCP pivot calibration. It ends with validation (training vs test error, overfitting, the touch test, loop closure), drift and online self-calibration (observability and degenerate motions), a landscape table, and the robot's calibration plan with a residual error budget. Our own arithmetic is in `calibration/calc/`.
 
@@ -572,7 +572,7 @@ Robot errors and calibration explained from the bottom up, around the kitchen ro
 11. Load and tool: phantom external forces, F/T gravity compensation, TCP pivot calibration
 12. Checking: training vs test error, overfitting, the touch test, loop closure
 13. Drift: what makes a calibration expire, start-up checks, online self-calibration and degenerate motions
-14. The landscape: what to calibrate, against what, with which tool, how often, how to check
+14. Method map: what to calibrate, against what, with which tool, how often, how to check
 15. The kitchen robot's calibration plan, its dependencies and the residual error budget
 16. Summary: two kinds of error, one least-squares problem, nine answers, further reading
 
@@ -580,7 +580,7 @@ Conventions: "our arithmetic" comes from `calibration/calc/calcnum.py`; "est." m
 
 约定："我们算的"来自 `calibration/calc/calcnum.py`；"估"是没有出处的数量级估计，"示意"是编的例子（重装相机的 0.5° 和 1 mm 是示意的）；版本和规格以 2026 年 11 月为准。
 
-## 19. From Battery to Torque · 从电池到力矩
+## 19. Motors, Gears and Sensors: From Battery to Torque · 电机、减速器与传感器：从电池到力矩
 
 A robot's actuation layer and sensor hardware explained from the bottom up, around the kitchen robot of pages 15–18 (a differential-drive base, a Franka Research 3 arm, a Jetson AGX Thor), which gets a ball-screw lift column under its arm so it can reach the wall cabinet. The first version slides down with the arm on it after three seconds at the top; the second holds, but slides when the E-stop takes the torque away; the wheels lose a little travel at every reversal. The page is self-contained: it starts from the force on a wire in a magnetic field (torque constant, back-EMF, k_e = k_t, the torque–speed line, brushless motors and commutation), explains why continuous torque is a small fraction of stall torque (copper loss, thermal resistances and time constants, RMS current, the drive's current limits and I²t), and follows the energy from the battery (LiFePO4 cells, internal resistance and sag, the power budget) through the drive (PWM, half bridges, the current loop, the voltage limit, regeneration and braking resistors). Then the mechanics: gear ratio (torque ×N, speed ÷N, reflected inertia ×N², rotary-to-linear, inertia matching), planetary, strain wave and cycloidal reducers, ball, lead and roller screws (forward and backdrive efficiency, self-locking), backlash, friction and compliance, and backdrivability. The sensors: incremental and absolute encoders on the motor or the joint side, and torque from current, strain gauges or a series spring. The drive's nested control loops, its current limits and trips, and the CiA 402 state machine; the E-stop chain in hardware (stop categories, contactors, STO, spring-applied brakes, dual-channel safety relays, ISO 13849 categories). Finally the page reads a real motor datasheet and a drive's interface description line by line, sizes the lift from requirements to parts, and asks the same questions of other robots (Mini Cheetah, Unitree H1, Dynamixel, RV joints, humanoid linear actuators). The parts and their data are real (maxon EC 45 flat, GP 42 C, EPOS4; Harmonic Drive; Franka); the lift, battery and E-stop design are illustrative. Our own arithmetic is in `actuation/calc/`.
 
@@ -614,6 +614,10 @@ Conventions: "our arithmetic" comes from `actuation/calc/calc19.py`; "est." mark
 Put each new explainer in its own folder as `name/index.html`, link to other pages with relative paths such as `../rotation/`, add a card for it on the home page, load `../toc.js` with its `data-page` set to the folder name, and add the page to the list at the top of `toc.js`.
 
 每篇新的讲解放进自己的文件夹，写成 `name/index.html`；链接别的篇目用相对路径，比如 `../rotation/`；在首页加一张卡片；页面里加载 `../toc.js`（`data-page` 写文件夹名），再把这一篇加进 `toc.js` 开头的列表。
+
+Name things so that a reader can tell what they cover. A page title is "Topic: phrase", for example "World Models: Try It in Your Head"; the same title goes in `<title>`, in `TITLE`, in the `<h1>` (topic first, the phrase in a `<small>` on the next line), on the home card and in `toc.js`. Every section has one name, the textbook term: it is the label in the nav and in `toc.js`, and it opens the `<h2>`, which reads "Term: what this step answers". The small line above the `<h2>` gives only the step number. The opening step says which example the page uses, and the section that gathers all the methods is called "Method map".
+
+起名要让人一看就知道讲什么。篇名写成"主题：一句话"，比如"世界模型：在脑子里试一试"；`<title>`、`TITLE`、`<h1>`（主题在前，那句话放在下一行的 `<small>` 里）、首页卡片和 `toc.js` 用的都是它。每个小节只有一个名字，用教科书上的术语：导航和 `toc.js` 里的短名是它，`<h2>` 也以它开头，写成"术语：这一步回答什么"。`<h2>` 上面的小字只写第几步。开头那一步写明用的是什么例子，汇总所有方法的那一节统一叫"方法地图"。
 
 ## Publishing · 发布
 

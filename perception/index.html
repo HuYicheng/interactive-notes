@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Depth cameras, camera intrinsics and extrinsics, stereo matching, point clouds, registration and ICP, explained from scratch with interactive demos (Chinese / English). 深度相机、内参外参、立体匹配、点云、配准与 ICP：从零讲起，配交互演示（中英双语）。">
-<title>从深度到配准</title>
+<title>相机模型与点云配准：从深度到配准</title>
 
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -49,7 +49,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .hero{padding-block:28px 6px}
 .eyebrow{margin:0 0 6px;font-size:13px;letter-spacing:.06em;color:var(--accent-fg)}
 h1,h2,h3{font-family:var(--f-display);color:var(--fg);text-wrap:balance}
-h1{font-size:clamp(28px,7.5vw,40px);line-height:1.22;margin:0 0 12px;font-weight:700}
+h1{font-size:clamp(28px,7.5vw,40px);line-height:1.22;margin:0 0 12px;font-weight:700}h1 small{display:block;margin-top:7px;font-size:.6em;line-height:1.35;font-weight:600;color:var(--muted)}h1 .tc{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 h2{font-size:clamp(22px,5.6vw,28px);line-height:1.35;margin:0 0 10px;font-weight:700}
 h3{font-size:18.5px;line-height:1.45;margin:30px 0 8px;font-weight:600}
 p{margin:10px 0}
@@ -208,7 +208,7 @@ function pdrag(cv,fn){let on=false;const pos=e=>{const r=cv.getBoundingClientRec
 function onVisible(el,fn){if(!window.IntersectionObserver){fn(true);return}new IntersectionObserver(es=>es.forEach(e=>fn(e.isIntersecting)),{threshold:0}).observe(el)}
 let lang='zh';try{const h=(location.hash||'').slice(1);if(h==='en'||h==='zh')lang=h;else{const s=localStorage.getItem('rot-lang');if(s==='en'||s==='zh')lang=s}}catch(e){}
 root.setAttribute('data-lang',lang);
-const langFns=[],onLang=f=>langFns.push(f),t=(zh,en)=>lang==='en'?en:zh,TITLE={zh:'从深度到配准',en:'From Depth to Registration'};
+const langFns=[],onLang=f=>langFns.push(f),t=(zh,en)=>lang==='en'?en:zh,TITLE={zh:'相机模型与点云配准：从深度到配准',en:'Camera Models and Point-Cloud Registration: From Depth to Registration'};
 function applyLang(){root.setAttribute('data-lang',lang);root.lang=lang==='en'?'en':'zh-CN';document.title=TITLE[lang];document.querySelectorAll('[data-al-en]').forEach(e=>e.setAttribute('aria-label',lang==='en'?e.dataset.alEn:e.dataset.alZh));const b=document.getElementById('langBtn');if(b)b.setAttribute('aria-pressed',lang==='en'?'true':'false')}
 function navBottom(){const n=document.querySelector('.nav');return n?Math.max(0,n.getBoundingClientRect().bottom):0}
 function anchor(){const nb=navBottom()+2,els=document.querySelectorAll('h1,h2,h3,p,li,dt,dd,.eq,.wg,table,.tier,.arrows,summary,.howto>div,footer');for(const e of els){if(e.closest('.nav')||e.closest('details:not([open])>:not(summary)'))continue;const r=e.getBoundingClientRect();if(r.height>0&&r.bottom>nb)return{e,nb,top:r.top,frac:r.top<nb?(nb-r.top)/r.height:-1}}return null}
@@ -222,12 +222,12 @@ return{D,col,dot,cross,add,scl,len,Rz,Ry,Rx,mm,mv,cl,qm,qn,qa,q2R,e2q,R2e,q2aa,w
 </head>
 <body>
 <nav aria-label="章节" class="nav" data-al-en="Sections" data-al-zh="章节"><div class="bar"><div class="in">
-<a href="#s-map"><span class="zh" lang="zh-CN">0 总览</span><span class="en" lang="en">0 Overview</span></a><a href="#s-pin"><span class="zh" lang="zh-CN">① 针孔模型</span><span class="en" lang="en">① Pinhole model</span></a><a href="#s-k"><span class="zh" lang="zh-CN">② 内参</span><span class="en" lang="en">② Intrinsics</span></a><a href="#s-rt"><span class="zh" lang="zh-CN">③ 外参</span><span class="en" lang="en">③ Extrinsics</span></a><a href="#s-p"><span class="zh" lang="zh-CN">④ 大综合</span><span class="en" lang="en">④ Putting it together</span></a><a href="#s-st"><span class="zh" lang="zh-CN">⑤ 双目</span><span class="en" lang="en">⑤ Stereo</span></a><a href="#s-pc"><span class="zh" lang="zh-CN">⑥ 点云</span><span class="en" lang="en">⑥ Point clouds</span></a><a href="#s-reg"><span class="zh" lang="zh-CN">⑦ 配准</span><span class="en" lang="en">⑦ Registration</span></a><a href="#s-icp">⑧ ICP</a><a href="#s-sum"><span class="zh" lang="zh-CN">总结</span><span class="en" lang="en">Summary</span></a>
+<a href="#s-map"><span class="zh" lang="zh-CN">0 总览</span><span class="en" lang="en">0 Overview</span></a><a href="#s-pin"><span class="zh" lang="zh-CN">① 针孔模型</span><span class="en" lang="en">① Pinhole model</span></a><a href="#s-k"><span class="zh" lang="zh-CN">② 内参</span><span class="en" lang="en">② Intrinsics</span></a><a href="#s-rt"><span class="zh" lang="zh-CN">③ 外参</span><span class="en" lang="en">③ Extrinsics</span></a><a href="#s-p"><span class="zh" lang="zh-CN">④ 投影矩阵</span><span class="en" lang="en">④ Projection matrix</span></a><a href="#s-st"><span class="zh" lang="zh-CN">⑤ 双目</span><span class="en" lang="en">⑤ Stereo</span></a><a href="#s-pc"><span class="zh" lang="zh-CN">⑥ 点云</span><span class="en" lang="en">⑥ Point clouds</span></a><a href="#s-reg"><span class="zh" lang="zh-CN">⑦ 配准</span><span class="en" lang="en">⑦ Registration</span></a><a href="#s-icp">⑧ ICP</a><a href="#s-sum"><span class="zh" lang="zh-CN">总结</span><span class="en" lang="en">Summary</span></a>
 </div><button aria-label="Switch language / 切换语言" aria-pressed="false" class="lang" data-noi18n="" id="langBtn" type="button"><span class="lz">中</span><span class="le">EN</span></button></div></nav>
 <header class="wrap hero">
-<p class="prev" data-noi18n=""><a href="../rotation/"><span class="zh" lang="zh-CN">← 上一篇：旋转的四种写法</span><span class="en" lang="en">← Previous: Four Ways to Write a Rotation</span></a><span aria-hidden="true" style="color:var(--faint)"> · </span><a href="../robot-learning/"><span class="zh" lang="zh-CN">下一篇：从示范到试错 →</span><span class="en" lang="en">Next: From Demonstration to Trial and Error →</span></a></p>
+<p class="prev" data-noi18n=""><a href="../rotation/"><span class="zh" lang="zh-CN">← 上一篇：旋转的表示</span><span class="en" lang="en">← Previous: Rotation Representations</span></a><span aria-hidden="true" style="color:var(--faint)"> · </span><a href="../robot-learning/"><span class="zh" lang="zh-CN">下一篇：模仿学习与强化学习 →</span><span class="en" lang="en">Next: Imitation and Reinforcement Learning →</span></a></p>
 <p class="eyebrow"><span class="zh" lang="zh-CN">机器人感知 · 深度相机 · 配准</span><span class="en" lang="en">Robot perception · Depth cameras · Registration</span></p>
-<h1><span class="zh" lang="zh-CN">从深度到配准</span><span class="en" lang="en">From Depth to Registration</span></h1>
+<h1><span class="zh" lang="zh-CN">相机模型与点云配准<i class="tc">：</i><small>从深度到配准</small></span><span class="en" lang="en">Camera Models and Point-Cloud Registration<i class="tc">: </i><small>From Depth to Registration</small></span></h1>
 <p class="lead"><span class="zh" lang="zh-CN">深度相机怎么测出距离，深度图怎么变成点云，点云又怎么和术前 MRI 对齐。这一篇重点讲清楚相机的内参、外参，以及沿途出现的几个矩阵。每个矩阵都先配一个只动它自己的小交互，拖一拖找到感觉，再看公式；公式都配了符号说明、白话解释和能手算的小例子。第 4 步把内参、外参装进同一台相机，做一个大综合。</span><span class="en" lang="en">How a depth camera measures distance, how a depth image becomes a point cloud, and how that point cloud gets aligned with a pre-operative MRI. This page focuses on the camera’s intrinsics and extrinsics, and on the handful of matrices that show up along the way. Each matrix first gets a small interactive that changes only that matrix, so you can get a feel for it by dragging; the formula comes after, with a symbol guide, a plain-words explanation and a small example you can check by hand. Step 4 puts the intrinsics and extrinsics into one camera and ties everything together.</span></p>
 <div class="howto">
 <div><span class="zh" lang="zh-CN"><span class="lab l-sym">符号</span>每个字母、记号是什么意思</span><span class="en" lang="en"><span class="lab l-sym">Symbols</span>What each letter and sign means</span></div>
@@ -239,8 +239,8 @@ return{D,col,dot,cross,add,scl,len,Rz,Ry,Rx,mm,mv,cl,qm,qn,qa,q2R,e2q,R2e,q2aa,w
 </header>
 <main class="wrap">
 <section id="s-map">
-<p class="eyebrow"><span class="zh" lang="zh-CN">第 0 步 · 总览</span><span class="en" lang="en">Step 0 · Overview</span></p>
-<h2><span class="zh" lang="zh-CN">一条流水线，几个矩阵</span><span class="en" lang="en">One pipeline, a handful of matrices</span></h2>
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 0 步</span><span class="en" lang="en">Step 0</span></p>
+<h2><span class="zh" lang="zh-CN">总览：从相机到配准的一条流水线，和几个矩阵</span><span class="en" lang="en">Overview: one pipeline from camera to registration, and a handful of matrices</span></h2>
 <p><span class="zh" lang="zh-CN">从相机拍下照片，到机械臂知道换能器该往哪放，数据要经过下面四步。每一步都有一两个关键矩阵，先混个脸熟，后面逐个讲：每讲一个矩阵，先拖一个小交互，再看公式。</span><span class="en" lang="en">Between the camera taking a picture and the robot arm knowing where to put the transducer, the data goes through the four steps below. Each step has one or two key matrices. Get a first look at them here; each one is explained later, always with a small interactive first and the formula second.</span></p>
 <ol class="pipe">
 <li><span class="zh" lang="zh-CN"><b>拍照：世界里的点变成像素</b><span class="mxl">外参 [R | t]（世界 → 相机）、内参 K（相机 → 像素）、投影矩阵 P = K [R | t]</span></span><span class="en" lang="en"><b>Taking the picture: points in the world become pixels</b><span class="mxl">extrinsics [R | t] (world → camera), intrinsics K (camera → pixels), projection matrix P = K [R | t]</span></span></li>
@@ -251,7 +251,7 @@ return{D,col,dot,cross,add,scl,len,Rz,Ry,Rx,mm,mv,cl,qm,qn,qa,q2R,e2q,R2e,q2aa,w
 <p><span class="zh" lang="zh-CN">贯穿全篇的例子是：用装在机械臂上的深度相机拍一块头皮，再和术前 MRI 里分割出来的头皮表面对齐。</span><span class="en" lang="en">The running example: a depth camera mounted on a robot arm photographs a patch of scalp, which is then aligned with the scalp surface segmented from a pre-operative MRI.</span></p>
 </section>
 <section id="s-pin">
-<p class="eyebrow"><span class="zh" lang="zh-CN">第 1 步 · 针孔模型</span><span class="en" lang="en">Step 1 · Pinhole model</span></p>
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 1 步</span><span class="en" lang="en">Step 1</span></p>
 <h2><span class="zh" lang="zh-CN">针孔相机：三维点怎么变成像素</span><span class="en" lang="en">The pinhole camera: how a 3D point becomes a pixel</span></h2>
 <p><span class="zh" lang="zh-CN">最常用的相机模型是针孔模型。想象一个不透光的盒子，前面开一个小孔，光线穿过小孔打在后面的感光片上。物体上每个点只有一条光线能穿过小孔，所以感光片上会留下一个清晰但倒过来的像。真正的相机用镜头代替小孔，几何关系是一样的。为了不处理"倒过来"，通常把成像面画在小孔前面同样远的地方（虚拟成像面），像就是正的。</span><span class="en" lang="en">The most common camera model is the pinhole model. Picture a light-tight box with a tiny hole in the front: light passes through the hole and lands on the film at the back. Only one ray from each point on an object can pass through the hole, so the film records a sharp but upside-down image. A real camera uses a lens instead of a hole, but the geometry is the same. To avoid dealing with the image being upside down, the image plane is usually drawn the same distance in front of the hole (a virtual image plane), where the image is the right way up.</span></p>
 <p class="try"><span class="zh" lang="zh-CN"><b>先玩：</b>拖动橙色点，看它落在照片上的哪个位置。再打开"沿视线拖"，看看什么变了、什么没变。</span><span class="en" lang="en"><b>Play first:</b> drag the orange point and see where it lands in the photo. Then turn on “Lock to line of sight” and see what changes and what does not.</span></p>
@@ -306,7 +306,7 @@ X.onLang(ui);ui();})();
 <dl class="sym"><dt><span class="zh" lang="zh-CN">齐次坐标</span><span class="en" lang="en">homogeneous coordinates</span></dt><dd><span class="zh" lang="zh-CN">在普通坐标后面多补一个数。最后一个数不是 1 时，整组除以它，就得到普通坐标</span><span class="en" lang="en">ordinary coordinates with one extra number appended. When the last number is not 1, divide the whole group by it to get the ordinary coordinates back</span></dd><dt>≅</dt><dd><span class="zh" lang="zh-CN">代表同一个点</span><span class="en" lang="en">represent the same point</span></dd></dl>
 <p class="pl"><span class="zh" lang="zh-CN">多补一个数有两个好处：一是平移也能写成矩阵乘法（上一篇的 4×4 矩阵 T 就是这么做的）；二是"除以 Z"可以先藏起来，最后统一除。三维点写成 (X, Y, Z, 1)，像素写成 (u, v, 1)。上面的交互里，"沿视线拖"时 (X, Z) 两个数一起按比例变，代表的却是照片上同一个点：这就是 ≅。相机坐标 (X, Y, Z) 本身就是像点的齐次坐标。</span><span class="en" lang="en">The extra number buys two things. First, translation can also be written as a matrix multiplication (that is how the 4×4 matrix T on the previous page works). Second, “divide by Z” can be postponed and done once at the end. A 3D point is written (X, Y, Z, 1) and a pixel (u, v, 1). In the interactive above, locking P to its line of sight scales X and Z together, yet they still stand for the same point in the photo: that is what ≅ means. The camera coordinates (X, Y, Z) are themselves homogeneous coordinates of the image point.</span></p>
 <p class="ex"><span class="zh" lang="zh-CN">齐次坐标 (600, 300, 2) 代表的像素是 (600 ÷ 2, 300 ÷ 2) = (300, 150)。</span><span class="en" lang="en">The homogeneous coordinates (600, 300, 2) stand for the pixel (600 ÷ 2, 300 ÷ 2) = (300, 150).</span></p></div></div>
-<h3><span class="zh" lang="zh-CN">整条链路</span><span class="en" lang="en">The whole chain</span></h3>
+<h3><span class="zh" lang="zh-CN">从世界坐标到像素的整条链路</span><span class="en" lang="en">The whole chain from world coordinates to pixels</span></h3>
 <p><span class="zh" lang="zh-CN">一个世界里的点，要经过四步才变成图上的像素。接下来两节分别讲内参和外参，第 4 步再把它们合成投影矩阵，装进同一台相机里一起玩。</span><span class="en" lang="en">A point in the world goes through four steps before it becomes a pixel in the image. The next two sections cover intrinsics and extrinsics; step 4 then combines them into the projection matrix and puts them all into one camera to play with.</span></p>
 <ol class="pipe">
 <li><span class="zh" lang="zh-CN"><b>外参 [R | t]</b><span class="mxl">世界坐标 X<sub>w</sub> → 相机坐标 X<sub>c</sub></span></span><span class="en" lang="en"><b>Extrinsics [R | t]</b><span class="mxl">world coordinates X<sub>w</sub> → camera coordinates X<sub>c</sub></span></span></li>
@@ -316,7 +316,7 @@ X.onLang(ui);ui();})();
 </ol>
 </section>
 <section id="s-k">
-<p class="eyebrow"><span class="zh" lang="zh-CN">第 2 步 · 内参</span><span class="en" lang="en">Step 2 · Intrinsics</span></p>
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 2 步</span><span class="en" lang="en">Step 2</span></p>
 <h2><span class="zh" lang="zh-CN">内参 K：相机自己的属性</span><span class="en" lang="en">Intrinsics K: properties of the camera itself</span></h2>
 <p><span class="zh" lang="zh-CN">内参描述"光线进了相机以后，怎么落到哪个像素上"。它只和相机本身（镜头、传感器）有关，和相机放在哪儿无关：把相机搬来搬去、转来转去，内参都不变。</span><span class="en" lang="en">The intrinsics describe “once light enters the camera, which pixel it lands on”. They depend only on the camera itself (lens and sensor), not on where the camera is: move it around or turn it however you like, and the intrinsics stay the same.</span></p>
 <p><span class="zh" lang="zh-CN">K 里常用的只有 4 个数：两个焦距 f<sub>x</sub>、f<sub>y</sub> 管"放大多少"，两个主点坐标 c<sub>x</sub>、c<sub>y</sub> 管"往哪平移"；第 5 个数斜切 s 几乎总是 0。下面的网格画的是归一化坐标，也就是上一节"离小孔 1 个单位远"那张成像面上的坐标；K 负责把它画到传感器的像素上。</span><span class="en" lang="en">Only four numbers in K matter in practice: the two focal lengths f<sub>x</sub>, f<sub>y</sub> say “how much to scale”, and the two principal point coordinates c<sub>x</sub>, c<sub>y</sub> say “where to shift”; the fifth number, the skew s, is almost always 0. The grid below shows normalized coordinates, the coordinates on the image plane “one unit away from the pinhole” from the previous section; K draws it onto the pixels of the sensor.</span></p>
@@ -441,7 +441,7 @@ X.onLang(ui);ui();})();
 <p><span class="zh" lang="zh-CN">靠标定。拍十几张不同角度的棋盘格照片：每个角点在棋盘上的位置是已知的（格子尺寸量得出来），在图上的位置能自动检测出来，于是能把 K 和畸变系数一起解出来。这就是张正友标定法，OpenCV 里的 calibrateCamera。RealSense 这类相机出厂时已经标定好，SDK 里直接能读到 fx、fy、ppx、ppy（也就是 c<sub>x</sub>、c<sub>y</sub>）和畸变系数。</span><span class="en" lang="en">From calibration. Take a dozen or so photos of a checkerboard at different angles. The position of each corner on the board is known (you can measure the squares) and its position in the image can be detected automatically, so K and the distortion coefficients can be solved for together. This is Zhang’s calibration method, OpenCV’s calibrateCamera. Cameras like the RealSense are calibrated at the factory, and the SDK gives you fx, fy, ppx, ppy (that is, c<sub>x</sub>, c<sub>y</sub>) and the distortion coefficients directly.</span></p>
 </section>
 <section id="s-rt">
-<p class="eyebrow"><span class="zh" lang="zh-CN">第 3 步 · 外参</span><span class="en" lang="en">Step 3 · Extrinsics</span></p>
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 3 步</span><span class="en" lang="en">Step 3</span></p>
 <h2><span class="zh" lang="zh-CN">外参 [R | t]：相机放在哪、朝哪</span><span class="en" lang="en">Extrinsics [R | t]: where the camera is and which way it faces</span></h2>
 <p><span class="zh" lang="zh-CN">外参描述世界坐标系和相机坐标系之间的关系，也就是相机在世界里的位置和朝向。它和相机本身无关：同一台相机换个地方放，内参不变，外参变。</span><span class="en" lang="en">The extrinsics describe the relationship between the world frame and the camera frame: where the camera is in the world and which way it points. They have nothing to do with the camera itself: move the same camera somewhere else and the intrinsics stay the same while the extrinsics change.</span></p>
 <p><span class="zh" lang="zh-CN">理解外参最直接的办法，是把同一个场景画两遍：一遍画在世界的坐标纸上，一遍画在相机的坐标纸上（相机永远在原点、朝正前方）。外参 [R | t] 就是这两张坐标纸之间的换算：R 管转，t 管挪。</span><span class="en" lang="en">The most direct way to understand extrinsics is to draw the same scene twice: once on the world’s grid paper and once on the camera’s grid paper (where the camera always sits at the origin, looking straight ahead). The extrinsics [R | t] are the conversion between the two sheets: R handles the turning, t handles the shifting.</span></p>
@@ -606,8 +606,8 @@ X.onLang(ui);ui();})();
 <p class="why"><span class="zh" lang="zh-CN">手眼标定的误差会原样传到点云上：X 的平移差 1 mm，基座坐标系里的整片点云就差 1 mm 左右；角度误差更麻烦，X 差 1°，离相机 30 cm 的点就差 5 mm 左右，而且离得越远差得越多。</span><span class="en" lang="en">Hand-eye calibration error goes straight into the point cloud: if X’s translation is off by 1 mm, the whole point cloud in the base frame is off by about 1 mm. Angle errors are worse: if X is off by 1°, a point 30 cm from the camera is off by about 5 mm, and the further away, the larger the error.</span></p></div></div>
 </section>
 <section id="s-p">
-<p class="eyebrow"><span class="zh" lang="zh-CN">第 4 步 · 大综合</span><span class="en" lang="en">Step 4 · Putting it together</span></p>
-<h2><span class="zh" lang="zh-CN">把前面的放在一起：投影矩阵 P = K [R | t]</span><span class="en" lang="en">Putting it together: the projection matrix P = K [R | t]</span></h2>
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 4 步</span><span class="en" lang="en">Step 4</span></p>
+<h2><span class="zh" lang="zh-CN">投影矩阵 P = K [R | t]：把内参和外参合在一起</span><span class="en" lang="en">The projection matrix P = K [R | t]: intrinsics and extrinsics combined</span></h2>
 <div class="fk"><div class="eq"><span class="r">λ (u, v, 1)ᵀ = K [R | t] (X<sub>w</sub>, Y<sub>w</sub>, Z<sub>w</sub>, 1)ᵀ</span><span class="r"><span class="zh" lang="zh-CN">P = K [R | t]  （3×4）</span><span class="en" lang="en">P = K [R | t]  (3×4)</span></span></div><div class="fb">
 <dl class="sym">
 <dt>P</dt><dd><span class="zh" lang="zh-CN">投影矩阵，3×4。把世界点直接变成（齐次的）像素</span><span class="en" lang="en">projection matrix, 3×4. Turns a world point straight into (homogeneous) pixel coordinates</span></dd>
@@ -731,8 +731,8 @@ fit();render();})();
 </ul>
 </section>
 <section id="s-st">
-<p class="eyebrow"><span class="zh" lang="zh-CN">第 5 步 · 双目测深度</span><span class="en" lang="en">Step 5 · Stereo depth</span></p>
-<h2><span class="zh" lang="zh-CN">深度、双目和立体匹配</span><span class="en" lang="en">Depth, stereo and stereo matching</span></h2>
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 5 步</span><span class="en" lang="en">Step 5</span></p>
+<h2><span class="zh" lang="zh-CN">双目测深度：对极几何、视差和立体匹配</span><span class="en" lang="en">Stereo depth: epipolar geometry, disparity and stereo matching</span></h2>
 <p><span class="zh" lang="zh-CN">普通照片的每个像素记的是颜色，深度图的每个像素记的是"那里离相机多远"。很多深度相机输出的就是这样一张图：每个像素一个整数，单位是毫米，0 表示没测到。</span><span class="en" lang="en">Each pixel of an ordinary photo records a colour; each pixel of a depth image records “how far away that is from the camera”. Many depth cameras output exactly such an image: one integer per pixel, in millimetres, with 0 meaning “not measured”.</span></p>
 <p><span class="zh" lang="zh-CN">这里的"多远"指的是沿相机正前方（光轴方向）的距离 Z，也就是相机坐标里的第三个数，不是镜头到那个点的直线距离。比如相机正对一面墙，墙上每一点的深度都一样，虽然墙角离镜头的直线距离更远。</span><span class="en" lang="en">“How far” here means the distance Z straight ahead of the camera (along the optical axis), the third number of the camera coordinates, not the straight-line distance from the lens to the point. For example, if the camera faces a wall head-on, every point on the wall has the same depth, even though the corners are farther from the lens in a straight line.</span></p>
 <p><span class="zh" lang="zh-CN">测深度主要有三种办法：</span><span class="en" lang="en">There are three main ways to measure depth:</span></p>
@@ -944,8 +944,8 @@ $('sm-re').addEventListener('click',()=>{seed++;all()});X.onLang(ui);all();})();
 <p><span class="zh" lang="zh-CN">交互里能看到：距离越近，同一个点在右图里挪得越多；有纹理或打了散斑时，SAD 曲线在真实视差处有一个尖尖的最低点；光滑皮肤的曲线几乎是平的，"重拍一张"它就乱跳。把距离拉到 1.5 m，真实视差只有 4.7 像素，取整成 5，算出的深度就差了 10 cm。</span><span class="en" lang="en">What the interactive shows: the closer the object, the further the same point shifts in the right image; with texture or speckle, the SAD curve has a sharp minimum at the true disparity; on smooth skin the curve is almost flat and “Take another shot” makes the match jump around. Pull the distance out to 1.5 m and the true disparity is only 4.7 pixels; rounded to 5, the computed depth is off by 10 cm.</span></p>
 </section>
 <section id="s-pc">
-<p class="eyebrow"><span class="zh" lang="zh-CN">第 6 步 · 点云</span><span class="en" lang="en">Step 6 · Point clouds</span></p>
-<h2><span class="zh" lang="zh-CN">反投影：深度图变成点云</span><span class="en" lang="en">Back-projection: the depth image becomes a point cloud</span></h2>
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 6 步</span><span class="en" lang="en">Step 6</span></p>
+<h2><span class="zh" lang="zh-CN">点云：把深度图反投影成三维点</span><span class="en" lang="en">Point clouds: back-projecting the depth image into 3D points</span></h2>
 <p><span class="zh" lang="zh-CN">点云就是一堆三维点的清单，每个点是一组 (x, y, z)，有时还带颜色或法向量。点和点之间没有连线，这是它和网格（mesh，由许多小三角面拼成）的区别。深度相机直接给出的点云通常是"有序的"：每个点还记得自己来自哪个像素，找邻居很快；经过裁剪、拼接以后，就变成"无序点云"。</span><span class="en" lang="en">A point cloud is simply a list of 3D points, each an (x, y, z), sometimes with a colour or a normal. The points are not connected to each other, which is the difference from a mesh (made of many small triangles). Point clouds straight from a depth camera are usually “organized”: each point still remembers which pixel it came from, so finding neighbours is fast. After cropping and merging they become “unorganized”.</span></p>
 <p class="try"><span class="zh" lang="zh-CN"><b>先玩：</b>点深度图上任意一个像素，看它落到三维里的哪个点、公式里每个数是多少；拖动点云换角度；再把焦距调错。</span><span class="en" lang="en"><b>Play first:</b> tap any pixel of the depth image to see which 3D point it becomes and every number in the formula; drag the point cloud to change the view; then set the wrong focal length.</span></p>
 <div class="wg" id="pc">
@@ -1092,7 +1092,7 @@ gen();qi=near(qa*Math.PI/180);X.onLang(ui);ui();})();
 <p class="why"><span class="zh" lang="zh-CN">法向量有正反两个方向，一般统一成"朝着相机"。下一步的点到面 ICP 要用到它。</span><span class="en" lang="en">A normal has two possible directions; usually they are all flipped to point towards the camera. Point-to-plane ICP in the next steps needs them.</span></p></div></div>
 </section>
 <section id="s-reg">
-<p class="eyebrow"><span class="zh" lang="zh-CN">第 7 步 · 配准</span><span class="en" lang="en">Step 7 · Registration</span></p>
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 7 步</span><span class="en" lang="en">Step 7</span></p>
 <h2><span class="zh" lang="zh-CN">配准：把两份数据对齐</span><span class="en" lang="en">Registration: aligning two sets of data</span></h2>
 <p><span class="zh" lang="zh-CN">配准就是：两份数据描述的是同一个东西，但各自在不同的坐标系里，要找一个变换，把其中一份挪过去和另一份对齐。</span><span class="en" lang="en">Registration means: two sets of data describe the same thing but each lives in its own coordinate frame, and you want the transform that moves one onto the other.</span></p>
 <p><span class="zh" lang="zh-CN">拿头皮来说：相机拍到的头皮点云在相机坐标系里，术前 MRI 里分割出来的头皮表面在 MRI 的坐标系里。要求的是一个 T，让相机点云挪过去以后正好贴在 MRI 头皮上。求出来以后，MRI 里规划好的靶点就能一路换算到相机、再到机器人基座，机械臂才知道换能器该往哪放。</span><span class="en" lang="en">For the scalp: the point cloud from the camera is in the camera frame, while the scalp surface segmented from the pre-operative MRI is in the MRI frame. We want a T such that the camera point cloud, once moved, sits exactly on the MRI scalp. With that, the target planned in the MRI can be converted all the way to the camera and then to the robot base, and the arm knows where to put the transducer.</span></p>
@@ -1172,8 +1172,8 @@ X.onLang(ui);ui();})();
 <p><span class="zh" lang="zh-CN">麻烦在于：相机点云和 MRI 表面上的点没有编号，不知道谁对应谁。这就要靠 ICP。</span><span class="en" lang="en">The catch: the points in the camera cloud and on the MRI surface are not numbered, so we don’t know which corresponds to which. That is where ICP comes in.</span></p>
 </section>
 <section id="s-icp">
-<p class="eyebrow"><span class="zh" lang="zh-CN">第 8 步 · ICP</span><span class="en" lang="en">Step 8 · ICP</span></p>
-<h2><span class="zh" lang="zh-CN">ICP：边猜对应，边求位姿</span><span class="en" lang="en">ICP: guess the correspondences, solve the pose, repeat</span></h2>
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 8 步</span><span class="en" lang="en">Step 8</span></p>
+<h2><span class="zh" lang="zh-CN">ICP（迭代最近点）：边猜对应，边求位姿</span><span class="en" lang="en">ICP (iterative closest point): guess the correspondences, solve the pose, repeat</span></h2>
 <p><span class="zh" lang="zh-CN">ICP 是 Iterative Closest Point（迭代最近点）的缩写。这是个先有鸡还是先有蛋的问题：知道位姿，就能找到谁对应谁；知道谁对应谁，就能用上面的方法算出位姿。ICP 的办法是两步轮流来：</span><span class="en" lang="en">ICP stands for Iterative Closest Point. It is a chicken-and-egg problem: if you knew the pose, you could find the correspondences; if you knew the correspondences, you could compute the pose with the method above. ICP alternates between the two:</span></p>
 <ol>
 <li><span class="zh" lang="zh-CN">找最近点：对源点云里的每个点，在目标表面上找离它最近的点，先假装它们就是对应点。</span><span class="en" lang="en">Find the closest points: for each point of the source cloud, find the nearest point on the target surface and pretend that is its correspondence.</span></li>
@@ -1325,8 +1325,7 @@ X.onLang(ui);setup();})();
 </ol>
 </section>
 <section id="s-sum">
-<p class="eyebrow"><span class="zh" lang="zh-CN">总结</span><span class="en" lang="en">Summary</span></p>
-<h2><span class="zh" lang="zh-CN">矩阵速查、常见坑和一道检验题</span><span class="en" lang="en">Matrix cheat sheet, common pitfalls and a check question</span></h2>
+<h2><span class="zh" lang="zh-CN">总结：矩阵速查、常见坑和一道检验题</span><span class="en" lang="en">Summary: matrix cheat sheet, common pitfalls and a check question</span></h2>
 <p><span class="zh" lang="zh-CN">表格第一列可以点，直接跳回对应的交互。</span><span class="en" lang="en">The entries in the first column are links back to the matching interactive.</span></p>
 <div class="tbl"><table><thead><tr><th><span class="zh" lang="zh-CN">矩阵</span><span class="en" lang="en">Matrix</span></th><th><span class="zh" lang="zh-CN">大小</span><span class="en" lang="en">Size</span></th><th><span class="zh" lang="zh-CN">作用</span><span class="en" lang="en">What it does</span></th><th><span class="zh" lang="zh-CN">在哪出现</span><span class="en" lang="en">Where it appears</span></th></tr></thead><tbody>
 <tr><td><span class="zh" lang="zh-CN"><a href="#kk">内参 K</a></span><span class="en" lang="en"><a href="#kk">Intrinsics K</a></span></td><td>3×3</td><td><span class="zh" lang="zh-CN">归一化坐标 → 像素</span><span class="en" lang="en">normalized coordinates → pixels</span></td><td><span class="zh" lang="zh-CN">投影、反投影、标定</span><span class="en" lang="en">projection, back-projection, calibration</span></td></tr>
@@ -1368,7 +1367,7 @@ X.onLang(ui);setup();})();
 </ul>
 </section>
 <footer class="foot"><span class="zh" lang="zh-CN">本页约定：相机坐标系 x 向右、y 向下、z 朝前；外参 [R | t] 把世界坐标换算成相机坐标；四元数和旋转的约定同上一篇。</span><span class="en" lang="en">Conventions on this page: the camera frame has x right, y down, z forward; the extrinsics [R | t] convert world coordinates into camera coordinates; rotation conventions follow the previous page.</span></footer>
-<p class="foot" data-noi18n="" style="padding-top:0"><a href="../rotation/"><span class="zh" lang="zh-CN">← 上一篇：旋转的四种写法</span><span class="en" lang="en">← Previous: Four Ways to Write a Rotation</span></a><span aria-hidden="true" style="color:var(--faint)"> · </span><a href="../robot-learning/"><span class="zh" lang="zh-CN">下一篇：从示范到试错 →</span><span class="en" lang="en">Next: From Demonstration to Trial and Error →</span></a></p>
+<p class="foot" data-noi18n="" style="padding-top:0"><a href="../rotation/"><span class="zh" lang="zh-CN">← 上一篇：旋转的表示</span><span class="en" lang="en">← Previous: Rotation Representations</span></a><span aria-hidden="true" style="color:var(--faint)"> · </span><a href="../robot-learning/"><span class="zh" lang="zh-CN">下一篇：模仿学习与强化学习 →</span><span class="en" lang="en">Next: Imitation and Reinforcement Learning →</span></a></p>
 </main>
 <script src="../toc.js" data-page="perception" defer></script>
 </body>

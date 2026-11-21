@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Rotation representations in robotics, explained from scratch with interactive demos (Chinese / English). 机器人中的旋转表示：从零讲起，配交互演示（中英双语）。">
-<title>旋转的四种写法</title>
+<title>旋转的表示：矩阵、欧拉角、轴角、四元数</title>
 
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -49,7 +49,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .hero{padding-block:28px 6px}
 .eyebrow{margin:0 0 6px;font-size:13px;letter-spacing:.06em;color:var(--accent-fg)}
 h1,h2,h3{font-family:var(--f-display);color:var(--fg);text-wrap:balance}
-h1{font-size:clamp(28px,7.5vw,40px);line-height:1.22;margin:0 0 12px;font-weight:700}
+h1{font-size:clamp(28px,7.5vw,40px);line-height:1.22;margin:0 0 12px;font-weight:700}h1 small{display:block;margin-top:7px;font-size:.6em;line-height:1.35;font-weight:600;color:var(--muted)}h1 .tc{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 h2{font-size:clamp(22px,5.6vw,28px);line-height:1.35;margin:0 0 10px;font-weight:700}
 h3{font-size:18.5px;line-height:1.45;margin:30px 0 8px;font-weight:600}
 p{margin:10px 0}
@@ -180,7 +180,7 @@ function rotAxis(V,dx,dy){const L=Math.hypot(dx,dy);if(L<0.5)return null;return{
 const font=px=>px+'px '+getComputedStyle(document.body).fontFamily;
 let lang='zh';try{const h=(location.hash||'').slice(1);if(h==='en'||h==='zh')lang=h;else{const s=localStorage.getItem('rot-lang');if(s==='en'||s==='zh')lang=s}}catch(e){}
 root.setAttribute('data-lang',lang);
-const langFns=[],onLang=f=>langFns.push(f),t=(zh,en)=>lang==='en'?en:zh,TITLE={zh:'旋转的四种写法',en:'Four Ways to Write a Rotation'};
+const langFns=[],onLang=f=>langFns.push(f),t=(zh,en)=>lang==='en'?en:zh,TITLE={zh:'旋转的表示：矩阵、欧拉角、轴角、四元数',en:'Rotation Representations: Matrices, Euler Angles, Axis-Angle, Quaternions'};
 function applyLang(){root.setAttribute('data-lang',lang);root.lang=lang==='en'?'en':'zh-CN';document.title=TITLE[lang];document.querySelectorAll('[data-al-en]').forEach(e=>e.setAttribute('aria-label',lang==='en'?e.dataset.alEn:e.dataset.alZh));const b=document.getElementById('langBtn');if(b)b.setAttribute('aria-pressed',lang==='en'?'true':'false')}
 function navBottom(){const n=document.querySelector('.nav');return n?Math.max(0,n.getBoundingClientRect().bottom):0}
 function anchor(){const nb=navBottom()+2,els=document.querySelectorAll('h1,h2,h3,p,li,dt,dd,.eq,.wg,table,.tier,.arrows,summary,.howto>div,footer');for(const e of els){if(e.closest('.nav')||e.closest('details:not([open])>:not(summary)'))continue;const r=e.getBoundingClientRect();if(r.height>0&&r.bottom>nb)return{e,nb,top:r.top,frac:r.top<nb?(nb-r.top)/r.height:-1}}return null}
@@ -194,12 +194,12 @@ return{D,col,dot,cross,add,scl,len,Rz,Ry,Rx,mm,mv,cl,qm,qn,qa,q2R,e2q,R2e,q2aa,w
 </head>
 <body>
 <nav aria-label="章节" class="nav" data-al-en="Sections" data-al-zh="章节"><div class="bar"><div class="in">
-<a href="#s-basics"><span class="zh" lang="zh-CN">0 基础</span><span class="en" lang="en">0 Basics</span></a><a href="#s-core"><span class="zh" lang="zh-CN">核心逻辑</span><span class="en" lang="en">Core idea</span></a><a href="#s-mat"><span class="zh" lang="zh-CN">① 矩阵</span><span class="en" lang="en">① Matrix</span></a><a href="#s-euler"><span class="zh" lang="zh-CN">② 欧拉角</span><span class="en" lang="en">② Euler angles</span></a><a href="#s-aa"><span class="zh" lang="zh-CN">③ 轴角</span><span class="en" lang="en">③ Axis-angle</span></a><a href="#s-quat"><span class="zh" lang="zh-CN">④ 四元数</span><span class="en" lang="en">④ Quaternion</span></a><a href="#s-lie"><span class="zh" lang="zh-CN">李群</span><span class="en" lang="en">Lie groups</span></a><a href="#s-conv"><span class="zh" lang="zh-CN">转换</span><span class="en" lang="en">Conversions</span></a><a href="#s-interp"><span class="zh" lang="zh-CN">插值</span><span class="en" lang="en">Interpolation</span></a><a href="#s-sum"><span class="zh" lang="zh-CN">总结</span><span class="en" lang="en">Summary</span></a>
+<a href="#s-basics"><span class="zh" lang="zh-CN">0 预备知识</span><span class="en" lang="en">0 Preliminaries</span></a><a href="#s-core"><span class="zh" lang="zh-CN">核心逻辑</span><span class="en" lang="en">Core idea</span></a><a href="#s-mat"><span class="zh" lang="zh-CN">① 旋转矩阵</span><span class="en" lang="en">① Rotation matrix</span></a><a href="#s-euler"><span class="zh" lang="zh-CN">② 欧拉角</span><span class="en" lang="en">② Euler angles</span></a><a href="#s-aa"><span class="zh" lang="zh-CN">③ 轴角</span><span class="en" lang="en">③ Axis-angle</span></a><a href="#s-quat"><span class="zh" lang="zh-CN">④ 四元数</span><span class="en" lang="en">④ Quaternion</span></a><a href="#s-lie"><span class="zh" lang="zh-CN">李群</span><span class="en" lang="en">Lie groups</span></a><a href="#s-conv"><span class="zh" lang="zh-CN">转换</span><span class="en" lang="en">Conversions</span></a><a href="#s-interp"><span class="zh" lang="zh-CN">插值</span><span class="en" lang="en">Interpolation</span></a><a href="#s-sum"><span class="zh" lang="zh-CN">总结</span><span class="en" lang="en">Summary</span></a>
 </div><button aria-label="Switch language / 切换语言" aria-pressed="false" class="lang" data-noi18n="" id="langBtn" type="button"><span class="lz">中</span><span class="le">EN</span></button></div></nav>
 <header class="wrap hero">
-<p class="next" data-noi18n=""><a href="../perception/"><span class="zh" lang="zh-CN">下一篇：从深度到配准 →</span><span class="en" lang="en">Next: From Depth to Registration →</span></a></p>
+<p class="next" data-noi18n=""><a href="../perception/"><span class="zh" lang="zh-CN">下一篇：相机模型与点云配准 →</span><span class="en" lang="en">Next: Camera Models and Point-Cloud Registration →</span></a></p>
 <p class="eyebrow"><span class="zh" lang="zh-CN">机器人学 · 姿态表示 · 扩写版</span><span class="en" lang="en">Robotics · Orientation representations · Extended edition</span></p>
-<h1><span class="zh" lang="zh-CN">旋转的四种写法</span><span class="en" lang="en">Four Ways to Write a Rotation</span></h1>
+<h1><span class="zh" lang="zh-CN">旋转的表示<i class="tc">：</i><small>矩阵、欧拉角、轴角、四元数</small></span><span class="en" lang="en">Rotation Representations<i class="tc">: </i><small>Matrices, Euler Angles, Axis-Angle, Quaternions</small></span></h1>
 <p class="lead"><span class="zh" lang="zh-CN">旋转矩阵、欧拉角、轴角、四元数，以及把它们串起来的李群和李代数。这一版不假设你熟悉任何数学符号：先补基础，再逐个讲。每个公式下面都配了符号说明、白话解释和一个能手算的小例子。</span><span class="en" lang="en">Rotation matrices, Euler angles, axis-angle and quaternions, plus the Lie groups and Lie algebras that tie them together. This edition assumes no familiarity with the math notation: it fills in the basics first, then goes through each representation. Every formula comes with a symbol guide, a plain-words explanation and a small example you can check by hand.</span></p>
 <div class="howto">
 <div><span class="zh" lang="zh-CN"><span class="lab l-sym">符号</span>每个字母、记号是什么意思</span><span class="en" lang="en"><span class="lab l-sym">Symbols</span>What each letter and sign means</span></div>
@@ -211,8 +211,8 @@ return{D,col,dot,cross,add,scl,len,Rz,Ry,Rx,mm,mv,cl,qm,qn,qa,q2R,e2q,R2e,q2aa,w
 </header>
 <main class="wrap">
 <section id="s-basics">
-<p class="eyebrow"><span class="zh" lang="zh-CN">第 0 步 · 先补基础</span><span class="en" lang="en">Step 0 · The basics</span></p>
-<h2><span class="zh" lang="zh-CN">这页会用到的符号</span><span class="en" lang="en">The notation used on this page</span></h2>
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 0 步</span><span class="en" lang="en">Step 0</span></p>
+<h2><span class="zh" lang="zh-CN">预备知识：这页会用到的向量、矩阵和记号</span><span class="en" lang="en">Preliminaries: the vectors, matrices and notation used on this page</span></h2>
 <p><span class="zh" lang="zh-CN">后面每个公式都是用下面这些"零件"拼出来的。已经熟悉的小节可以直接跳过。</span><span class="en" lang="en">Every formula later on is built from the “parts” below. Skip any subsection you already know.</span></p>
 <h3><span class="zh" lang="zh-CN">ℝ 和 ℝ³：数轴和三维空间</span><span class="en" lang="en">ℝ and ℝ³: the number line and 3D space</span></h3>
 <p><span class="zh" lang="zh-CN"><span class="m">ℝ</span> 是全体实数（−2、0、3.14 这样的数），可以想成一条无限长的数轴。<span class="m">ℝ³</span> 是"三个实数一组"的全体，写成 <span class="m">(x, y, z)</span>。它就是我们熟悉的三维空间：一组数既可以表示一个点，也可以表示一根从原点出发的箭头，也就是向量。</span><span class="en" lang="en"><span class="m">ℝ</span> is the set of all real numbers (numbers like −2, 0, 3.14); think of it as an infinitely long number line. <span class="m">ℝ³</span> is the set of all “groups of three real numbers”, written <span class="m">(x, y, z)</span>. It is the familiar three-dimensional space: one triple can stand for a point, or for an arrow starting at the origin, which is a vector.</span></p>
@@ -311,8 +311,7 @@ out();draw();})();
 <p><span class="zh" lang="zh-CN">φ = 2π 刚好缠一整圈回到 I，所以"转 360°"等于"没转"；φ = 2π + π/2 和 φ = π/2 落在同一点。切线上无穷多个点对应圆上同一个旋转，后面各种"跳变"和"不唯一"都从这里来。右边卡片里的 2×2 矩阵就是平面旋转矩阵，它的两列分别是被转过的 x 轴和 y 轴。</span><span class="en" lang="en">φ = 2π wraps exactly one full turn and lands back on I, so “turn by 360°” equals “no turn”; φ = 2π + π/2 lands on the same point as φ = π/2. Infinitely many points on the tangent line map to the same rotation on the circle, and all the later “jumps” and “non-uniqueness” come from this. The 2×2 matrix in the right-hand card is the planar rotation matrix; its two columns are the rotated x and y axes.</span></p>
 </section>
 <section id="s-core">
-<p class="eyebrow"><span class="zh" lang="zh-CN">核心逻辑</span><span class="en" lang="en">Core idea</span></p>
-<h2><span class="zh" lang="zh-CN">三句话看懂所有表示法</span><span class="en" lang="en">Three sentences that explain every representation</span></h2>
+<h2><span class="zh" lang="zh-CN">核心逻辑：三句话看懂所有表示法</span><span class="en" lang="en">Core idea: three sentences that explain every representation</span></h2>
 <h3><span class="zh" lang="zh-CN">1. 旋转有 3 个自由度，但它不是普通向量</span><span class="en" lang="en">1. A rotation has 3 degrees of freedom, but it is not an ordinary vector</span></h3>
 <p><span class="zh" lang="zh-CN">确定一个三维姿态需要 3 个数，所以说它有 3 个自由度。但所有姿态构成的 SO(3) 是弯曲的，不是平直的 ℝ³。所以旋转不能直接相加，也不满足交换律。</span><span class="en" lang="en">Pinning down a 3D orientation takes 3 numbers, so it has 3 degrees of freedom. But the set SO(3) of all orientations is curved, not the flat ℝ³. So rotations cannot simply be added, and they do not commute.</span></p>
 <div class="fk"><div class="eq">R<sub>y</sub>(90°) · R<sub>x</sub>(90°)  ≠  R<sub>x</sub>(90°) · R<sub>y</sub>(90°)</div><div class="fb">
@@ -328,8 +327,8 @@ out();draw();})();
 <p><span class="zh" lang="zh-CN">现代机器人软件两条路一起用：用矩阵或四元数存储和复合姿态，用 3 个数的"小增量"做求导和优化，欧拉角只在给人看的时候用。后面每种表示的优缺点，基本都能从这三句话推出来。</span><span class="en" lang="en">Modern robotics software uses both routes together: matrices or quaternions to store and compose orientations, 3-number “small increments” for derivatives and optimization, and Euler angles only for showing things to people. The pros and cons of each representation follow almost entirely from these three sentences.</span></p>
 </section>
 <section id="s-mat">
-<p class="eyebrow"><span class="zh" lang="zh-CN">第 1 种表示 · 9 个数，6 个约束</span><span class="en" lang="en">Representation 1 · 9 numbers, 6 constraints</span></p>
-<h2><span class="zh" lang="zh-CN">旋转矩阵 R</span><span class="en" lang="en">Rotation matrix R</span></h2>
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 1 种表示</span><span class="en" lang="en">Representation 1</span></p>
+<h2><span class="zh" lang="zh-CN">旋转矩阵 R：9 个数，6 个约束</span><span class="en" lang="en">Rotation matrix R: 9 numbers, 6 constraints</span></h2>
 <p><span class="zh" lang="zh-CN">最"本体"的表示：旋转矩阵就是旋转作用在向量上的样子。其他表示最后几乎都要换算成它，才能拿来变换点。</span><span class="en" lang="en">The most “native” representation: a rotation matrix is exactly what the rotation does to vectors. Almost every other representation has to be converted into one before it can transform points.</span></p>
 <div class="fk"><div class="eq">RᵀR = I,   det R = +1</div><div class="fb">
 <dl class="sym"><dt>R</dt><dd><span class="zh" lang="zh-CN">3×3 的旋转矩阵</span><span class="en" lang="en">a 3×3 rotation matrix</span></dd><dt>Rᵀ</dt><dd><span class="zh" lang="zh-CN">R 的转置</span><span class="en" lang="en">the transpose of R</span></dd><dt>I</dt><dd><span class="zh" lang="zh-CN">单位矩阵</span><span class="en" lang="en">identity matrix</span></dd><dt>det R</dt><dd><span class="zh" lang="zh-CN">行列式</span><span class="en" lang="en">determinant</span></dd></dl>
@@ -394,8 +393,8 @@ out();draw();})();
 <p class="ex"><span class="zh" lang="zh-CN">"不转"和"绕 z 转 180°"两个矩阵直接求平均，得到的矩阵前两列全是 0：物体的 x、y 轴直接消失了，这根本不是旋转。旋转不能像普通数字那样求平均，后面"插值"一节还会碰到这个问题。</span><span class="en" lang="en">Averaging “no rotation” with “180° about z” directly gives a matrix whose first two columns are all 0: the body’s x and y axes have vanished, which is not a rotation at all. Rotations cannot be averaged like ordinary numbers; the “Interpolation” section runs into this again.</span></p></div></div>
 </section>
 <section id="s-euler">
-<p class="eyebrow"><span class="zh" lang="zh-CN">第 2 种表示 · 3 个数</span><span class="en" lang="en">Representation 2 · 3 numbers</span></p>
-<h2><span class="zh" lang="zh-CN">欧拉角</span><span class="en" lang="en">Euler angles</span></h2>
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 2 种表示</span><span class="en" lang="en">Representation 2</span></p>
+<h2><span class="zh" lang="zh-CN">欧拉角：3 个数，会遇到万向锁</span><span class="en" lang="en">Euler angles: 3 numbers, and gimbal lock</span></h2>
 <p><span class="zh" lang="zh-CN">把一个旋转拆成三次"绕坐标轴的转动"。机器人里最常用 ZYX 顺序，三个角分别是：</span><span class="en" lang="en">Split a rotation into three “turns about coordinate axes”. The most common order in robotics is ZYX, and the three angles are:</span></p>
 <ul>
 <li><span class="zh" lang="zh-CN"><span class="m">ψ</span>（希腊字母 psi，读"普赛"）：yaw，偏航，绕 z 轴，像左右摇头</span><span class="en" lang="en"><span class="m">ψ</span> (Greek letter psi): yaw, about the z axis, like shaking your head</span></li>
@@ -473,7 +472,7 @@ X.drag(cv,dx=>{az-=dx*.01;draw()},true);
 draw();})();
 </script>
 <p><span class="zh" lang="zh-CN">看到了吗：pitch 到 90° 时，绿环把红色的 roll 轴转到了蓝色的 yaw 轴上，绿环和蓝环也贴成了同一个平面。这时拖 yaw 和拖 roll 都是绕竖直轴转，只是方向相反，所以两者各加 30°，R 纹丝不动。</span><span class="en" lang="en">Did you see it? At pitch 90°, the green ring has turned the red roll axis onto the blue yaw axis, and the green and blue rings now lie in the same plane. Dragging yaw and dragging roll both turn about the vertical axis, just in opposite directions, so adding 30° to each leaves R completely unchanged.</span></p>
-<h3><span class="zh" lang="zh-CN">更要命的是在运动学里</span><span class="en" lang="en">It gets worse in kinematics</span></h3>
+<h3><span class="zh" lang="zh-CN">万向锁附近，欧拉角的变化率会趋于无穷</span><span class="en" lang="en">Near gimbal lock, the Euler-angle rates blow up</span></h3>
 <div class="fk"><div class="eq">ψ̇ = (ω<sub>y</sub> sin φ + ω<sub>z</sub> cos φ) / cos θ</div><div class="fb">
 <dl class="sym"><dt>ψ̇</dt><dd><span class="zh" lang="zh-CN">ψ 每秒变化多少。字母上加一点表示"对时间求导"，也就是变化速度</span><span class="en" lang="en">how fast ψ changes per second. A dot above a letter means “derivative with respect to time”, i.e. its rate of change</span></dd><dt>ω<sub>x</sub>, ω<sub>y</sub>, ω<sub>z</sub></dt><dd><span class="zh" lang="zh-CN">物体绕自己三根轴的转速（角速度），陀螺仪直接测到的就是它们</span><span class="en" lang="en">how fast the body turns about its own three axes (angular velocity); this is exactly what a gyroscope measures</span></dd></dl>
 <p class="pl"><span class="zh" lang="zh-CN">物体明明以正常的速度在转，欧拉角为了跟上，却可能需要变得无限快，因为分母 cos θ 趋于 0。用欧拉角去积分陀螺仪（每个时刻把 ψ̇ 乘上时间步长再累加），本质上就是在算这个式子。</span><span class="en" lang="en">The body turns at a perfectly normal rate, yet to keep up, the Euler angles may need to change infinitely fast, because the denominator cos θ goes to 0. Integrating a gyroscope in Euler angles (multiplying ψ̇ by the time step and summing, at every instant) is precisely computing this expression.</span></p>
@@ -487,8 +486,8 @@ draw();})();
 <li><span class="zh" lang="zh-CN">插值路径很怪，见"插值"一节</span><span class="en" lang="en">interpolation paths look strange; see the “Interpolation” section</span></li></ul></div></div>
 </section>
 <section id="s-aa">
-<p class="eyebrow"><span class="zh" lang="zh-CN">第 3 种表示 · 3 个数</span><span class="en" lang="en">Representation 3 · 3 numbers</span></p>
-<h2><span class="zh" lang="zh-CN">轴角与旋转向量</span><span class="en" lang="en">Axis-angle and rotation vectors</span></h2>
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 3 种表示</span><span class="en" lang="en">Representation 3</span></p>
+<h2><span class="zh" lang="zh-CN">轴角与旋转向量：3 个数，绕一根轴转一个角</span><span class="en" lang="en">Axis-angle and rotation vectors: 3 numbers, one turn about one axis</span></h2>
 <p><span class="zh" lang="zh-CN">欧拉旋转定理说：不管物体怎么转，最终姿态都可以由"绕某一根固定的轴转一个角度"一步到位。直观地说，转完之后，物体上总有一根穿过转心的直线没有动，那就是转轴。</span><span class="en" lang="en">Euler’s rotation theorem says: no matter how a body has been turned, the final orientation can be reached in one step by “turning by some angle about one fixed axis”. Intuitively, after the turn there is always a line through the pivot that has not moved; that line is the rotation axis.</span></p>
 <div class="fk"><div class="eq">r = θ · <span class="ck">k</span></div><div class="fb">
 <dl class="sym"><dt class="ck">k</dt><dd><span class="zh" lang="zh-CN">转轴方向，单位向量（长度为 1）</span><span class="en" lang="en">direction of the rotation axis, a unit vector (length 1)</span></dd><dt>θ</dt><dd><span class="zh" lang="zh-CN">转过的角度（弧度）。正负按右手定则：大拇指指向 k，四指弯曲的方向为正</span><span class="en" lang="en">the angle turned (in radians). The sign follows the right-hand rule: with your thumb along k, the direction your fingers curl is positive</span></dd><dt>r</dt><dd><span class="zh" lang="zh-CN">旋转向量：方向 = 转轴，长度 = 转角。3 个数同时装下了"绕哪根轴"和"转多少"</span><span class="en" lang="en">the rotation vector: its direction is the axis, its length is the angle. Three numbers hold both “about which axis” and “by how much”</span></dd></dl>
@@ -531,7 +530,7 @@ X.drag(cv,dx=>{az-=dx*.01;draw()},true);
 out();draw();})();
 </script>
 <p><span class="zh" lang="zh-CN">v 与 k 平行时，k × v = 0，后两项都消失，v′ = v：转轴上的点不会动。v 斜着时，沿 k 的那部分原样保留，只有垂直于 k 的部分在转，所以尖端走的是一个比 v 小的圆。</span><span class="en" lang="en">When v is parallel to k, k × v = 0, both extra terms vanish and v′ = v: points on the axis do not move. When v is tilted, the part along k stays as it is and only the part perpendicular to k turns, so the tip traces a circle smaller than v.</span></p>
-<h3><span class="zh" lang="zh-CN">它其实就是"矩阵指数"</span><span class="en" lang="en">It is really a “matrix exponential”</span></h3>
+<h3><span class="zh" lang="zh-CN">罗德里格斯公式其实就是"矩阵指数"</span><span class="en" lang="en">Rodrigues’ formula is really a “matrix exponential”</span></h3>
 <div class="fk"><div class="eq sm">R = exp([r]<sub>×</sub>) = I + [r]<sub>×</sub> + [r]<sub>×</sub>²/2! + [r]<sub>×</sub>³/3! + ⋯</div><div class="fb">
 <dl class="sym"><dt>exp</dt><dd><span class="zh" lang="zh-CN">指数函数。作用在矩阵上时，用右边这个无穷级数来定义</span><span class="en" lang="en">the exponential function. Applied to a matrix, it is defined by the infinite series on the right</span></dd><dt>n!</dt><dd><span class="zh" lang="zh-CN">阶乘：1 × 2 × ⋯ × n，比如 3! = 6</span><span class="en" lang="en">factorial: 1 × 2 × ⋯ × n, e.g. 3! = 6</span></dd><dt>⋯</dt><dd><span class="zh" lang="zh-CN">后面还有无穷多项，越来越小</span><span class="en" lang="en">infinitely many more terms follow, getting smaller and smaller</span></dd></dl>
 <p class="pl"><span class="zh" lang="zh-CN">先回忆平面情形的欧拉公式 e<sup>iθ</sup> = cos θ + i sin θ：指数把"一个角度"变成"一个旋转"。三维完全一样：把旋转向量 r 打包成矩阵 [r]<sub>×</sub>，取指数，就得到旋转矩阵。因为 K³ = −K（连续叉乘三次会转回来并变号），级数里的项可以分组合并成 sin 和 cos 的展开式，合并的结果正好是罗德里格斯公式。</span><span class="en" lang="en">Recall Euler’s formula in the plane, e<sup>iθ</sup> = cos θ + i sin θ: the exponential turns “an angle” into “a rotation”. 3D works exactly the same way: pack the rotation vector r into the matrix [r]<sub>×</sub>, take the exponential, and you get the rotation matrix. Because K³ = −K (three cross products in a row bring you back with a sign flip), the terms of the series can be grouped into the expansions of sin and cos, and the result is exactly Rodrigues’ formula.</span></p>
@@ -546,8 +545,8 @@ out();draw();})();
 <p class="ex"><span class="zh" lang="zh-CN">a = (π/2, 0, 0)（绕 x 转 90°），b = (0, π/2, 0)（绕 y 转 90°）。左边两个矩阵相乘，结果是绕 (1, 1, 1)/√3 转 120°；右边 a + b = (π/2, π/2, 0)，是绕 (1, 1, 0)/√2 转 127°。转轴和角度都对不上。</span><span class="en" lang="en">a = (π/2, 0, 0) (90° about x), b = (0, π/2, 0) (90° about y). Multiplying the two matrices on the left gives 120° about (1, 1, 1)/√3; on the right, a + b = (π/2, π/2, 0) is 127° about (1, 1, 0)/√2. Neither the axis nor the angle matches.</span></p></div></div>
 </section>
 <section id="s-quat">
-<p class="eyebrow"><span class="zh" lang="zh-CN">第 4 种表示 · 4 个数，1 个约束</span><span class="en" lang="en">Representation 4 · 4 numbers, 1 constraint</span></p>
-<h2><span class="zh" lang="zh-CN">单位四元数</span><span class="en" lang="en">Unit quaternions</span></h2>
+<p class="eyebrow"><span class="zh" lang="zh-CN">第 4 种表示</span><span class="en" lang="en">Representation 4</span></p>
+<h2><span class="zh" lang="zh-CN">单位四元数：4 个数，1 个约束</span><span class="en" lang="en">Unit quaternions: 4 numbers, 1 constraint</span></h2>
 <p><span class="zh" lang="zh-CN">先回忆复数：平面上的点 (x, y) 可以写成复数 x + iy，乘以 cos θ + i sin θ，就把它转了 θ。四元数是哈密顿（Hamilton）把这个想法推广到三维的结果：一个四元数有 4 个分量，写成 q = w + x i + y j + z k，规则是 i² = j² = k² = ijk = −1。由此能推出 ij = k、ji = −k，乘法不能交换顺序，和三维旋转一样。</span><span class="en" lang="en">Recall complex numbers: a point (x, y) in the plane can be written as the complex number x + iy, and multiplying by cos θ + i sin θ turns it by θ. Quaternions are Hamilton’s extension of this idea to 3D: a quaternion has 4 components, written q = w + x i + y j + z k, with the rules i² = j² = k² = ijk = −1. From these it follows that ij = k but ji = −k, so multiplication does not commute, just like 3D rotations.</span></p>
 <p class="note"><span class="zh" lang="zh-CN">这里的 i、j、k 只是四元数的三个"虚数单位"，和转轴 k 无关。下面一律把四元数写成 (w, x, y, z) 四个数，或者写成 (w, u)：w 是实部，一个数；u = (x, y, z) 是虚部，一个三维向量。</span><span class="en" lang="en">The i, j, k here are just the quaternion’s three “imaginary units” and have nothing to do with the rotation axis k. From here on a quaternion is written as four numbers (w, x, y, z), or as (w, u): w is the real part, a number; u = (x, y, z) is the imaginary part, a 3D vector.</span></p>
 <div class="fk"><div class="eq"><span class="r">q = (w, x, y, z) = ( cos(θ/2), <span class="ck">k</span> · sin(θ/2) )</span><span class="r">|q| = √(w² + x² + y² + z²) = 1</span></div><div class="fb">
@@ -617,8 +616,7 @@ show(q,false,0);draw(q);})();
 <p><span class="zh" lang="zh-CN">背后是拓扑：用旋转向量来看，SO(3) 就是一个半径为 π 的实心球，球面上正对面的两点粘在一起（绕 k 转 180° 和绕 −k 转 180° 是一回事）。任何 3 个数的坐标都得在某处把这层粘合剪开，剪口就是奇异点或跳变。四元数多用一维，把这个空间展开成 S³，所以不用剪。</span><span class="en" lang="en">The reason is topology. Seen through rotation vectors, SO(3) is a solid ball of radius π with opposite points on its surface glued together (180° about k and 180° about −k are the same). Any 3-number coordinates must cut this gluing somewhere, and the cut shows up as a singularity or a jump. Quaternions use one extra dimension to unfold the space into S³, so no cut is needed.</span></p>
 </section>
 <section id="s-lie">
-<p class="eyebrow"><span class="zh" lang="zh-CN">把它们串起来</span><span class="en" lang="en">Tying it all together</span></p>
-<h2><span class="zh" lang="zh-CN">李群与李代数</span><span class="en" lang="en">Lie groups and Lie algebras</span></h2>
+<h2><span class="zh" lang="zh-CN">李群与李代数：把四种表示串起来</span><span class="en" lang="en">Lie groups and Lie algebras: tying the four representations together</span></h2>
 <p><span class="zh" lang="zh-CN">这两个词听起来吓人，其实就是第 0 步那张"圆和切线"的图，换成三维。</span><span class="en" lang="en">The names sound intimidating, but this is just the “circle and tangent line” picture from step 0, moved to 3D.</span></p>
 <h3><span class="zh" lang="zh-CN">群：一个集合，加一种组合方式</span><span class="en" lang="en">Group: a set, plus a way of combining</span></h3>
 <p><span class="zh" lang="zh-CN">数学里，一个集合加上一种"把两个元素组合成一个"的运算，只要满足下面四条，就叫一个群。用旋转来对照：</span><span class="en" lang="en">In mathematics, a set together with an operation that “combines two elements into one” is called a group if it satisfies the four rules below. Compare them with rotations:</span></p>
@@ -684,8 +682,7 @@ out();draw();})();
 <p class="why"><span class="zh" lang="zh-CN">Ceres 的 Manifold、GTSAM、Sophus、误差状态卡尔曼滤波、IMU 预积分，用的都是这个套路：全局表示（矩阵或四元数）存状态，局部 3 个数（李代数）做增量。奇异点永远在离当前姿态 180° 远的地方，小步更新根本碰不到。这是对开头那个定理的绕行，而不是破解。</span><span class="en" lang="en">Ceres’ Manifold, GTSAM, Sophus, error-state Kalman filters and IMU preintegration all follow this pattern: a global representation (matrix or quaternion) stores the state, and 3 local numbers (the Lie algebra) carry the increments. The singularity is always 180° away from the current orientation, so small update steps never come near it. This works around the theorem from the start; it does not break it.</span></p></div></div>
 </section>
 <section id="s-conv">
-<p class="eyebrow"><span class="zh" lang="zh-CN">转换关系</span><span class="en" lang="en">Conversions</span></p>
-<h2><span class="zh" lang="zh-CN">它们之间怎么互相换算</span><span class="en" lang="en">How to convert between them</span></h2>
+<h2><span class="zh" lang="zh-CN">转换：四种表示之间怎么互相换算</span><span class="en" lang="en">Conversions: how to get from one representation to another</span></h2>
 <p><span class="zh" lang="zh-CN">规律只有一条：任何表示 → 矩阵或四元数，都是光滑的闭式公式，永远能算；反过来，矩阵或四元数 → 3 个数的表示，才会碰到奇异（万向锁、θ = 0 或 180°）和多解（±q、欧拉角的等价解）。所以工程上把矩阵或四元数当"枢纽"，欧拉角和轴角之间不直接换算，都经过它们中转。</span><span class="en" lang="en">There is just one rule: going from any representation → matrix or quaternion is a smooth closed-form formula that always works; going back from matrix or quaternion → a 3-number representation is where you hit singularities (gimbal lock, θ = 0 or 180°) and multiple solutions (±q, equivalent Euler triples). So in practice the matrix or quaternion is the “hub”: Euler angles and axis-angle are never converted directly into each other, but always via the hub.</span></p>
 <div class="map">
 <div class="tier"><h4><span class="zh" lang="zh-CN">全局表示：无奇异，但有约束</span><span class="en" lang="en">Global representations: no singularities, but constraints</span></h4><div class="nodes"><div class="node"><span class="zh" lang="zh-CN">旋转矩阵<small>9 个数，一一对应</small></span><span class="en" lang="en">Rotation matrix<small>9 numbers, one-to-one</small></span></div><div class="node"><span class="zh" lang="zh-CN">四元数<small>4 个数，±q 两个名字</small></span><span class="en" lang="en">Quaternion<small>4 numbers, ±q are two names</small></span></div></div></div>
@@ -720,8 +717,7 @@ out();draw();})();
 <p><span class="zh" lang="zh-CN">欧拉角 ↔ 轴角没有直接公式：先转成四元数或矩阵，再转过去。</span><span class="en" lang="en">There is no direct formula between Euler angles and axis-angle: convert to a quaternion or matrix first, then to the other.</span></p>
 </section>
 <section id="s-interp">
-<p class="eyebrow"><span class="zh" lang="zh-CN">插值</span><span class="en" lang="en">Interpolation</span></p>
-<h2><span class="zh" lang="zh-CN">从一个姿态平滑过渡到另一个</span><span class="en" lang="en">Moving smoothly from one orientation to another</span></h2>
+<h2><span class="zh" lang="zh-CN">插值：从一个姿态平滑过渡到另一个</span><span class="en" lang="en">Interpolation: moving smoothly from one orientation to another</span></h2>
 <p><span class="zh" lang="zh-CN">插值就是：已知起点姿态和终点姿态，让一个进度参数 t 从 0 走到 1，生成中间的姿态。机械臂末端的姿态轨迹、相机动画、滤波里的预测都要用到它。几种"顺手"的做法为什么不行：</span><span class="en" lang="en">Interpolation means: given a start orientation and an end orientation, let a progress parameter t go from 0 to 1 and generate the orientations in between. Orientation trajectories for a robot arm’s end effector, camera animation and prediction in filters all need it. Why the “obvious” approaches fail:</span></p>
 <ul>
 <li><span class="zh" lang="zh-CN">直接对矩阵的 9 个数做线性插值：中间的矩阵一般不是旋转，"旋转矩阵"一节那个求平均的例子就是 t = 0.5 的情形。</span><span class="en" lang="en">linear interpolation of the 9 matrix entries: the matrices in between are generally not rotations; the averaging example in the “Rotation matrix” section is the t = 0.5 case.</span></li>
@@ -790,8 +786,7 @@ setEx(EX[0][0],EX[0][1]);})();
 <p><span class="zh" lang="zh-CN">青绿色的 SLERP 在角速度图上是一条水平线：匀速，总转角就是两个姿态之间的真实夹角，所以最短。橙色的欧拉角线性插值忽快忽慢，总转角也更大；例 2 里 yaw 从 −150° 插到 150°，直接绕了 300° 的远路，而 yaw 实际只差 60°。紫色那条用了 −q₁ 的 SLERP 同样匀速，却走了 360° 减去最短夹角的远路，这就是插值前没统一四元数符号的后果。</span><span class="en" lang="en">The teal SLERP is a flat line in the angular-speed plot: constant speed, and its total angle is the true angle between the two orientations, so it is the shortest. The orange Euler-angle lerp speeds up and slows down, and its total angle is larger; in example 2, yaw is interpolated from −150° to 150° and goes 300° the long way round, although the yaw values are really only 60° apart. The purple SLERP using −q₁ also moves at constant speed, but takes the long way, 360° minus the shortest angle: that is what happens when you skip unifying the quaternion signs before interpolating.</span></p>
 </section>
 <section id="s-sum">
-<p class="eyebrow"><span class="zh" lang="zh-CN">总结</span><span class="en" lang="en">Summary</span></p>
-<h2><span class="zh" lang="zh-CN">对比、怎么选、常见坑</span><span class="en" lang="en">Comparison, how to choose, common pitfalls</span></h2>
+<h2><span class="zh" lang="zh-CN">总结：对比、怎么选、常见坑</span><span class="en" lang="en">Summary: comparison, how to choose, common pitfalls</span></h2>
 <div class="tbl"><table><thead><tr><th><span class="zh" lang="zh-CN">表示</span><span class="en" lang="en">Representation</span></th><th><span class="zh" lang="zh-CN">参数</span><span class="en" lang="en">Parameters</span></th><th><span class="zh" lang="zh-CN">主要问题</span><span class="en" lang="en">Main problems</span></th><th><span class="zh" lang="zh-CN">最适合</span><span class="en" lang="en">Best for</span></th></tr></thead><tbody>
 <tr><td><span class="zh" lang="zh-CN">旋转矩阵</span><span class="en" lang="en">Rotation matrix</span></td><td><span class="zh" lang="zh-CN">9（6 个约束）</span><span class="en" lang="en">9 (6 constraints)</span></td><td><span class="zh" lang="zh-CN">冗余、数值漂移</span><span class="en" lang="en">redundancy, numerical drift</span></td><td><span class="zh" lang="zh-CN">变换点、串坐标系</span><span class="en" lang="en">transforming points, chaining frames</span></td></tr>
 <tr><td><span class="zh" lang="zh-CN">欧拉角</span><span class="en" lang="en">Euler angles</span></td><td>3</td><td><span class="zh" lang="zh-CN">万向锁、约定混乱</span><span class="en" lang="en">gimbal lock, messy conventions</span></td><td><span class="zh" lang="zh-CN">给人看、人输入</span><span class="en" lang="en">display, human input</span></td></tr>
@@ -850,7 +845,7 @@ setEx(EX[0][0],EX[0][1]);})();
 </ul>
 </section>
 <footer class="foot"><span class="zh" lang="zh-CN">本页约定：矩阵作用方式是 v′ = R · v，R 的三列是物体三根轴在世界系里的方向；四元数按 Hamilton 约定，写成 (w, x, y, z)。</span><span class="en" lang="en">Conventions on this page: matrices act as v′ = R · v, and the three columns of R are the body’s three axes expressed in the world frame; quaternions follow the Hamilton convention, written (w, x, y, z).</span></footer>
-<p class="foot" data-noi18n="" style="padding-top:0"><a href="../perception/"><span class="zh" lang="zh-CN">下一篇：从深度到配准 →</span><span class="en" lang="en">Next: From Depth to Registration →</span></a></p>
+<p class="foot" data-noi18n="" style="padding-top:0"><a href="../perception/"><span class="zh" lang="zh-CN">下一篇：相机模型与点云配准 →</span><span class="en" lang="en">Next: Camera Models and Point-Cloud Registration →</span></a></p>
 </main>
 <script src="../toc.js" data-page="rotation" defer></script>
 </body>
