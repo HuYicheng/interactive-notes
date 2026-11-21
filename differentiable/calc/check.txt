@@ -1,0 +1,148 @@
+-- step 0 · task
+ok   task, 0.2 s after release: "horizontally 29 cm every 0.1 s"
+ok   task, 0.5 s: past the top (1.43 m above the ground); at 0.7 s right above the bin but still 0.63 m high
+ok   task, back at rim height: 2.25 m from the release point, 25 cm beyond the centre of the bin
+ok   task, landing: on the ground at 2.40 m, e = +25 cm
+ok   engine: 29 cm forward in every 0.1 s; rises of 24, 14 and under 5 cm in the first three frames; each later frame falls further than the one before
+ok   engine: the top is reached about 0.3 s after release, 1.43 m above the ground
+ok   engine: at 0.7 s the ball is above the bin (1.85 … 2.15 m) with its centre 0.63 m above the ground, the rim being 0.3 m high
+ok   engine: back at rim height at 2.25 m (25 cm beyond the centre), on the ground at 2.40 m
+-- step 1 · knob
+ok   knob, start (4.100 m/s, 45°): landing point 2.249 m, miss +24.9 cm, derivative 0.887
+ok   knob, one press of "Use the derivative": speed 3.819 m/s, miss +0.7 cm, in
+ok   knob, second press: 3.810 m/s, miss 0.0 cm
+ok   knob, switching to the angle starts again from 45.0° (speed fixed at 4.1 m/s), miss +24.9 cm
+ok   knob, angle, first press: jumps to 61.5°, now 25.1 cm short
+ok   knob, angle, second press: 55.9°, miss -2.6 cm (within 10 cm, so in): 2 presses
+ok   knob, angle dragged to 37.0°: derivative -0.0007 m per degree; the tangent would meet the bin-centre line only at 469.8°
+ok   knob, pressing there: the slider stops at its end, 80.0°, and the ball lands 130.9 cm short
+ok   knob, "Zoom" at its maximum reads 100×
+ok   engine: inside that window the curve and its tangent differ by less than 1/1000 of the window height (far less than a pixel): one line
+-- step 2 · land
+ok   land, start: 4.100 m/s, 45.0°, miss +24.9 cm, ∂L/∂v 0.2209, ∂L/∂α -0.2150 per radian; step size 0.50
+ok   land, one step: speed 3.989 m/s (0.111 slower), angle 51.2° (6.2° higher), miss +2.7 cm, "already in"
+ok   land: the map has the same scale across and up (so the arrow is drawn at right angles to the contours)
+ok   engine: at five starting points the gradient of the loss is perpendicular to the contour of the miss (cosine 0)
+ok   land, step size "1.5" (3 slider positions read 1.5), step 1: lands at 3.76 … 3.77 m/s, 63° … 64°, with a miss of -55 … -59 cm, further off than the +24.9 cm at the start
+ok   land, step size 1.5, step 2: hits the bottom edge of the map (10.0°); the status says the steps are too large
+ok   land, step size 1.5: settles on the valley floor (miss 0.0 cm) after between a dozen and thirty steps, near 3.74 m/s, with the angle between 31° and 39°
+-- step 2 · graph
+ok   graph, one forward pass: L = 0.0310, a miss of 0.249 m
+ok   graph, one reverse pass: ∂L/∂v = 0.221 and ∂L/∂α = -0.215 (per radian) after 1 forward and 1 reverse pass
+ok   engine (what the boxes show): ∂L/∂v_x = 0.193, ∂L/∂v_y = 0.119; the arrows from v carry × 0.707, those from α × -2.899 and × 2.899
+ok   engine: the two paths into v bring back 0.193 × 0.707 and 0.119 × 0.707, which add up to 0.221; the two into α combine to -0.215
+ok   graph, forward mode for v alone: 0.221 after 1 pass
+ok   graph, forward mode for α alone: -0.215; 2 passes in all; trying knob by knob takes 3
+-- step 3 · learn
+ok   learn, start: all three at 20.4 cm · 27%; 321 weights, batches of 8 throws
+ok   learn, after all 20480 throws: gradient 0.4 cm · 100%; trial and error 4.6 cm · 93% and 4.1 cm · 80%
+ok   same loop as the interactive, seed 1: the network has 321 weights and the re-run ends exactly where the interactive ended
+ok   re-run, around 100 throws (96 and 104): gradient four to five centimetres, miss-distance trial and error eight to nine, in-or-out trial and error 16 to 18 cm
+ok   re-run, around 10 000 throws (9984 and 10016): gradient 0.5 cm; both kinds of trial and error between 2 and 4 cm
+ok   re-run, after 5000 throws: the two trial-and-error lines stay between 2 and 11 cm (to the nearest cm), the gradient line below 1.5 cm
+ok   re-run, the next 5 starts (seeds 2 to 6): the gradient ends between 0.2 and 0.9 cm, trial and error between 2.6 and 7.1 cm
+ok   learn, "Restart with new weights": the next start is the one of seed 2 in the re-run
+-- step 4 · rim
+ok   rim, start (3.550 m/s): out, rests 0.28 m short of the centre; local derivative -0.49; hit rate with noise 8.3%
+ok   rim, "10 steps by the local gradient": slower and slower, down to the bottom of the slider, 3.450 m/s; still out, resting 0.23 m from the centre
+ok   rim, back at 3.55 with noise 0.080
+ok   rim, "10 steps by the noisy hit rate" (noise 0.080): reaches 3.700 m/s, hit rate 67%
+ok   rim, noise 0.040, back to 3.55, 10 steps: creeps only to 3.555; "of the 320 throws only 1 went in"
+ok   rim, speed 3.640: local derivative 89.81; 0.001 m/s moves the resting point by 8.98 cm
+ok   rim, speed 4.020: local derivative 99.47; 0.001 m/s moves the resting point by 9.95 cm (so 9 to 10 cm at both places)
+ok   rim, 0.005 and 0.010 m/s to either side of 3.64 and 4.02: local derivatives of several tens to more than a hundred (15 … 119)
+ok   rim, "Truncate": a few steps to 3.810 m/s, in
+ok   engine, figure F3: 3.50 m/s hits the outside face of the near wall and rests in front of the bin; 3.62 hits the near rim and bounces away; 3.81 lands inside; 4.00 hits the far rim and ends outside; 4.10 touches nothing and lands beyond the bin at 2.40 m
+ok   engine, the list of fates: below 3.56 m/s the outside of the near wall; near rim from 3.56 to 3.68 (mostly out, sometimes in); in without touching a rim from 3.68 to 3.95; far rim from 3.95 to 4.05 (first still in, then out); over the far rim above 4.05
+ok   engine: in free flight the landing point moves only 0.8 to 0.9 m per m/s over these speeds (against local derivatives of about 100 near the rims)
+-- step 5 · edge
+ok   edge, start: guess at pixel 10.00, hard edge, derivative 0.000, 21.30 pixels from the truth
+ok   edge, hard, "30 gradient steps": the guess has not moved (10.00)
+ok   edge, softness 2 pixels: derivative still 0.000, 30 steps only creep to 10.01
+ok   edge, softness 6 pixels: derivative -0.020; 30 steps arrive at 31.45, 0.15 pixels from the truth
+ok   edge, "Back to pixel 10" also returns the softness to hard
+ok   edge, "Coarse to fine": ends at 31.34, 0.04 pixels off
+-- step 5 · splat
+ok   splat, start: 120 Gaussians, 1080 knobs, PSNR 12.3 dB
+ok   splat, 120 Gaussians: in the first twenty-odd steps the PSNR is only about 21 dB (20 … 24)
+ok   splat, 120 Gaussians after all 1500 steps: 36.9 dB
+ok   splat, 30 Gaussians (270 knobs): 27.8 dB
+ok   splat, 400 Gaussians (3600 knobs): 50.1 dB
+-- step 6 · pick
+ok   pick, start (scores 1.0 / 1.4 / 0.6, τ = 1.00): hard choice B; soft weight on C 0.21, derivative 0.17
+ok   pick: five slider positions read τ = 0.10; at all of them C at 0.6 has weight 0.00 and derivative 0.00
+ok   pick, τ = 0.10, C at 1.4 (level with B): weight about 0.50 (0.49 … 0.50), derivative about 2.5 (2.50 at the middle position, 2.39 … 2.62 at the others)
+ok   pick, τ = 0.10, C at 2.0: weight 1.00, derivative back down to about 0.03 (0.02 … 0.03)
+ok   same random numbers as the interactive: "Draw 1 000 times" picks A, B, C 344, 456 and 200 times, in line with the softmax weights 0.32, 0.47, 0.21
+ok   the next 3 single draws at τ = 0.10: B with a Gumbel-softmax bar of 1.00; C with about 0.94; then C again, split into about 0.25 (B) and 0.73 (C)
+-- step 6 · noise
+ok   noise, start (μ = 3.950, σ = 0.060, 16 throws per batch): spreads 0.022 (reparameterisation), 0.111 (REINFORCE, 5 times as much), 0.080 (with a baseline); the true gradient of the hit rate is -6.24 while reparameterisation always says 0
+ok   noise, 64 throws per batch: 0.011, 0.061 and 0.043, each about half of what it was (ratios 0.50 … 0.55)
+ok   noise, μ near 3.8: the true gradient of the hit rate is close to 0 (0.53 at 3.800, 0.23 at 3.805, -0.08 at 3.810): the hit rate peaks there
+ok   engine, figure F4: at 45° the ball goes in for speeds between 3.69 and 3.93 m/s; of the eight schematic throws around μ = 3.95 the 3 slowest go in
+-- step 7 · proxy
+ok   proxy, aiming at 2.60 m before any real throw: only textbook physics answers; 4.481 m/s, lands at 2.170 m, 43.0 cm short
+ok   proxy, after one real throw at 4.10 m/s: identified physics -8.3 cm (the only one in); textbook plus residual -18.7 cm; the black box asks for the upper limit, 5.800 m/s, and lands 54.4 cm too far
+ok   proxy: 5.800 m/s is the upper end of what the aiming allows (slider maximum 5.2 plus 0.6)
+ok   proxy, after one more real throw each at 3.8 and 4.4 m/s (3 in all): identified slip factor 0.960 and drag coefficient 0.080, the true values
+ok   proxy, aiming at 2.60 m again: all three learned stand-ins go in, with misses of +1.7, -5.3 and -0.0 cm
+ok   proxy, target 1.5 m: the three learned stand-ins are all within 2 cm (+0.4, -1.1, +0.0)
+ok   proxy, target 3.0 m: identified physics -0.0 cm, the black box +3.4 cm, textbook plus residual -12.0 cm, which is out
+-- step 8 · ik
+ok   ik, start: hand 27.7 cm from the target, joint angles 70° -60° -50°, σ_min 0.307
+ok   ik, gradient descent, "Keep going": after the 60 steps the hand is still 1.3 cm from the target
+ok   ik, Newton from the start pose: 8.4 cm, 1.2 cm, 1.3 mm and 0.0 mm left after steps 1 to 4; "there after 4 steps"
+ok   ik, target dragged to about half the distance (0.40 m right, 0.25 m up): the hand is now about 47 cm away
+ok   ik, gradient descent to the nearer target: there in ten steps or so (9 … 12)
+ok   ik, target out of reach, Newton step 1: largest joint turn 33.1°, σ_min 0.173
+ok   ik, Newton step 2: largest joint turn 31.0°, σ_min down to 0.026 (the arm is almost straight)
+ok   ik, Newton step 3: one joint turns 103.0° at once and the hand is flung to 64.1 cm from the target; "the pseudoinverse has flown off"
+ok   ik, Newton, three more steps: it keeps jumping about (the largest step so far 153°)
+ok   ik, damped least squares on the same target: stops after 11 steps with the hand 6.9 cm from the target (6.6 cm is the best possible)
+ok   same step as the interactive: gradient descent needs 280 steps to get within 0.5 mm (1.3 cm left after 60); Newton 4 steps (84.1, 12.5, 1.3, 0.02 mm left); damped least squares 7
+ok   same step, seven targets about half as far out: gradient descent takes ten steps or so (9 … 15 from the pose Newton ended in, 3 … 13 from the start pose), the other two only a few (2 … 8)
+ok   same step, target out of reach: damped least squares never turns a joint by more than thirty-odd degrees in a step (largest 31.9°), and settles 6.9 cm from the target
+ok   engine: the first target is 0.94 m from the base and the arm reaches 0.96 m; the out-of-reach target is 1.03 m away, so 6.6 cm is the closest the hand can get
+-- step 8 · slam
+ok   slam, start: 120 knobs; the end of the red line is 1.42 m from the start; mean error 96.1 cm; sum of squared errors 5753
+ok   slam, one Gauss–Newton step: sum of squared errors 379
+ok   slam, second Gauss–Newton step: 5.9, mean error 12.1 cm; "the error is spread over every step", all 40 poses moved
+ok   slam, a third step changes nothing more: still 5.9
+ok   slam, "Back to odometry": 5753 again
+ok   slam, gradient descent run to 1000 steps: sum of squared errors 18.4 (3 times the 5.9 of two Gauss–Newton steps), mean error still 47.5 cm (4 times the 12.1 cm)
+ok   slam, loop closure off: the sum of squared errors is 0.0; "nothing to fix"
+ok   slam, loop closure off: pressing either button moves nothing (still 1.42 m, 96.1 cm, 0.0)
+-- step 9 · sp
+ok   sp, "Why a gradient": 61 methods; the two largest groups are "Infer causes" (18) and "Control and planning" (17); "Learn from data" has 4
+ok   sp, "Where the gradient comes from": smooth already 25, make the hard parts soft 17, estimate by sampling 3, differentiate an equation 7, learn a stand-in 8, get the jumps right 1 (differentiable ray tracing by edge sampling)
+ok   sp, "Where it breaks": the "Jumps" group has 8, among them the reparameterisation trick, differentiable rigid contact, Brax, MuJoCo MJX and 3D Gaussian splatting
+ok   sp, "Where it breaks": the largest group is "Biased approximations" (20), then "Only sees nearby" (14) and "Memory and compute" (12)
+ok   sp, opening a method of the "Jumps" group: its description has a "Weaknesses" line saying where it breaks
+-- text · numbers recomputed with the engine
+ok   text, step 0 (the task): the bin is 30 cm wide and 30 cm tall, the ball has a radius of 3.5 cm, the release point is 1.0 m above the ground and 0.7 m above the rim
+ok   text, landing-point card: both components 4.1 × 0.707 = 2.899 m/s; t = (2.899 + 4.704) ÷ 9.8 = 0.7758 s; x = 2.899 × 0.7758 = 2.249 m, 25 cm beyond the centre
+ok   text, "differentiable" card: x′ ≈ 0.89 at 4.1 m/s, so 0.1 m/s faster lands about 8.9 cm further
+ok   text, step 1: knowing that 3.6 m/s is short and 4.1 m/s long, bisection needs 4 more throws to get within 1 cm
+ok   text, step 1: 25 cm too far at 0.89 m per m/s means 0.25 ÷ 0.89 ≈ 0.28 m/s slower
+ok   text, Newton card: v1 = 4.1 - 0.249 ÷ 0.887 = 3.819 m/s lands at 2.007 m (0.7 cm off); v2 = 3.810 m/s is almost dead centre
+ok   text, gradient-descent card: dL/dv = 0.249 × 0.887 = 0.221; with η = 1 ÷ 0.887² ≈ 1.27 the step is Newton’s: 4.1 - 1.27 × 0.221 = 3.819
+ok   text, step 1: at 4.1 m/s the angle curve is highest near 36.5°
+ok   text, gradient card: at 4.1 m/s, 45° the partial derivatives are 0.221 and -0.215 (per radian)
+ok   text, chain-rule card: ∂x/∂v = 0.776 × 0.707 + 2.899 × 0.165 × 0.707 = 0.549 + 0.338 = 0.887
+ok   text, step 2: the small network of step ③ has 321 knobs, so trying them one by one takes 322 throws per update
+ok   text, step 3: 321 adjustable numbers, 288 weights and 33 biases; batches of 8 throws, jitter 0.15 m/s, 20480 throws each
+ok   text, network card: the signal passed back to the network is 0.249 × 0.887 = 0.221
+ok   text, jitter card: at 3.55 m/s with σ = 0.08 about 1 throw in 12 goes in (the interactive reads 8.3%); ten steps reach 3.7 m/s with a hit rate of six or seven in ten (67%); with σ = 0.04 the hit rate at 3.55 is under 1% (0.7%)
+ok   text, step 4: near the rims the local derivative reaches about 100, against 0.8 to 0.9 in free flight
+ok   text, soft-edge card (β = 2 pixels): S(1) = 0.73, 0.27 two pixels outside; shifting by 0.1 pixel moves the edge pixels from 0.500 to about 0.513 and 0.488 (slope 0.25 at 0)
+ok   text, step 5: the photo is 64 × 48 pixels and the fit runs for 1500 steps
+ok   text, softmax card: scores 1.0, 1.4, 0.6 give weights 0.32, 0.47, 0.21 at τ = 1 and 0.02, 0.98, 0.00 at τ = 0.1
+ok   text, estimator card (μ = 3.95, σ = 0.06, 16 throws, 200 batches): spreads 0.022 and 0.111, 5 times as much; the true gradient of the hit rate is -6.24 per m/s; at 3.95 m/s the landing point is about 12 cm beyond the centre
+ok   text, stand-in card: the "real world" has κ = 0.96 and c = 0.08 /m; the textbook formula asks for 4.48 m/s to reach 2.6 m and the real throw lands at 2.17 m, 43 cm short; after one real throw identified physics is only 8 cm off; after three it is almost dead centre
+ok   text, inverse-kinematics card: links of 40, 32 and 24 cm (0.96 m in all), λ = 0.08; target 0.94 m from the base; 27.7 cm at the start; gradient descent 1.3 cm after 60 steps and 280 steps to get within 0.5 mm; Newton 4 steps (8.4 cm, 1.2 cm, 1.3 mm, 0.02 mm); damped least squares 7; out of reach at 1.03 m (6.6 cm at best), where Newton turns a joint by 103° in step 3
+ok   text, pose-graph card: 40 steps, 18.8 m per lap; odometry noise 3 cm and 2°, loop closure 2 cm and 0.5°; end 1.42 m from the start, mean error 96 cm, sum of squared errors 5753; 379 after one Gauss–Newton step, 5.9 and 12 cm after two; gradient descent after 1000 steps: 18 and still 48 cm
+ok   text, step 9 and the header: 61 methods; smooth already about four in ten (25 of 61); nearly half "make" a gradient (17 + 3 + 8 = 28 of 61); a little over one in ten get it right (7 + 1 = 8 of 61)
+ok   text, step 9: the most common pitfall is "Biased approximations" (20), then "Only sees nearby" (14) and "Memory and compute" (12)
+ok   text, figure F3 and figure F4: the captions quote the five speeds 3.50, 3.62, 3.81, 4.00, 4.10 m/s and μ = 3.95 m/s, σ = 0.06 m/s (checked above)
+
+131 checks, 0 failed; page errors: 0
