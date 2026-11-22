@@ -96,9 +96,9 @@ Conventions: `v′ = R · v`, so the columns of `R` are the body axes expressed 
 
 ## 2. Camera Models and Point-Cloud Registration: From Depth to Registration · 相机模型与点云配准：从深度到配准
 
-How a depth camera measures distance, how a depth image becomes a point cloud, and how that point cloud is aligned with a pre-operative MRI, with the camera's intrinsics, extrinsics and every matrix along the way defined explicitly.
+How a depth camera measures distance, how a depth image becomes a point cloud, and how that point cloud is aligned with a 3D model scanned beforehand, with the camera's intrinsics, extrinsics and every matrix along the way defined explicitly. The running example is a kitchen robot that looks at a kettle on the table.
 
-深度相机怎么测出距离，深度图怎么变成点云，点云又怎么和术前 MRI 对齐；重点讲清相机的内参、外参，以及沿途出现的每个矩阵。
+深度相机怎么测出距离，深度图怎么变成点云，点云又怎么和一份事先扫好的三维模型对齐；重点讲清相机的内参、外参，以及沿途出现的每个矩阵。贯穿全页的例子是厨房机器人看桌上的一把水壶。
 
 0. Overview: one pipeline, a handful of matrices
 1. The pinhole camera and homogeneous coordinates
@@ -114,6 +114,10 @@ How a depth camera measures distance, how a depth image becomes a point cloud, a
 Every matrix gets its own small interactive before its formula: dragging a point through a pinhole, the normalized grid that `K` stretches and shifts, lens distortion, the same scene drawn on world and camera grid paper (why `t` is not the camera position), hand-eye calibration with a deliberately wrong `X`, epipolar lines before and after rectification, the `Q` matrix with iso-disparity lines, normals from the covariance ellipse, the Kabsch vote dial, and the eigenvalues of `AᵀA` showing where ICP slides. A full camera playground then ties the intrinsics and extrinsics together (sliders for fx, fy, cx, cy, k1 and the camera pose, with `K`, `[R | t]` and `P` updating live, plus a dolly zoom), followed by stereo block matching, depth image to point cloud, and 2D ICP with outliers, pair rejection, point-to-plane and the sliding failure.
 
 每个矩阵都先配一个只动它自己的小交互，再看公式；相机部分最后用一台完整的相机做大综合。
+
+Every step lets the reader play first: the interactive comes before the formula cards and is followed by a "What you will see" line with its numbers. Six static figures draw what no interactive shows (the running example, depth against straight-line distance, rectification, the two similar triangles behind `Z = f·B / d`, how the subscripts of chained transforms join, point-to-point against point-to-plane). The numbers are checked by `perception/calc/check.js`, which operates every interactive along its prompt (see `perception/calc/README.md`).
+
+每一步都先玩：交互放在公式卡片前面，后面跟一句带数字的"你会看到"。六张图画出交互里没有的东西（贯穿全页的例子、深度和直线距离的区别、校正、`Z = f·B / d` 背后的两个相似三角形、连乘时下标怎么接、点到点和点到面）。这些数由 `perception/calc/check.js` 核对：它照每个交互的提示去操作一遍（见 `perception/calc/README.md`）。
 
 Conventions: the camera frame has x right, y down, z forward (the OpenCV and RealSense optical frame). The extrinsics `[R | t]` map world coordinates into camera coordinates, and `T_ab` is the pose of frame b in frame a.
 

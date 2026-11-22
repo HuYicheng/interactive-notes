@@ -1,0 +1,132 @@
+ok   every interactive has a "先玩" prompt in front of it and a "你会看到" line after it
+ok   the script of every interactive was found in the page
+-- Part A · the interactives, operated along their prompts
+-- step 1 · pinhole
+ok   pin: the picture maps the point as the script says (oy = H − 96, s = (oy − 22) / ZM, ZM = 1.25)
+ok   pin start: 0.500 m ahead, 0.050 m to the right, x′ = 0.050 ÷ 0.500 = 0.100
+ok   pin dragged away to X = 0.050 m, Z = 1.000 m: x′ = 0.050
+ok   pin: twice as far, half as far from the centre of the photo (0.100 → 0.050); the status calls it near-large far-small
+ok   pin after "复位" and "沿视线拖": back at (0.050, 0.500), the lock is on
+ok   pin locked to the line of sight, Z = 1.000 m: X = 0.100 m and x′ still 0.100
+ok   pin locked: the status says the point in the photo does not move and depth is lost here
+ok   pin locked: pulled sideways, the point stays on the dashed line (x′ = 0.100 whatever X and Z are)
+-- step 2 · intrinsics
+ok   kk start: u = 380.0, v = 204.0, field of view 56.1° × 43.6°
+ok   kk: the readout's arithmetic (600 × 0.1 + 320, 600 × (−0.06) + 240, 2 atan(320 / 600), 2 atan(240 / 600))
+ok   kk focal length 1200 (linked): the orange point at (440.0, 168.0), field of view 29.9° × 22.6°
+ok   kk focal length 1200: f_y followed, twice as far from the principal point, the status calls it zooming
+ok   kk principal point c_x = 400: u goes from 380.0 to 460.0 (80 pixels), the cells keep their size
+ok   kk f_x alone at 900: u = 410.0, v still 204.0, squares become rectangles
+-- step 2 · distortion
+ok   ds start (k₁ = −0.2): radial factor 0.887 at (0.6, 0.45), 11.3% closer to the centre, barrel
+ok   ds k₁ = 0.2: factor 1.113, 11.3% further out, pincushion
+ok   ds k₁ = 0.2, k₂ = −0.2: factor 1.049, moustache
+ok   ds: the curve 1 + 0.2 r² − 0.2 r⁴ first rises (to r ≈ 0.71) and then falls (back to 1 at r = 1)
+ok   ds p₁ = 0.03: a tangential offset of (0.016, 0.029), no longer symmetric top to bottom
+ok   ds: the offset is (2 p₁ x′ y′, p₁ (r² + 2 y′²)) = (0.0162, 0.0290) at (0.6, 0.45)
+-- step 3 · extrinsics
+ok   rt example 1: C = (0, 0, −0.6), t = (0, 0, 0.6) = −C
+ok   rt example 2 (turned 90° on the spot): C unchanged, t = (−0.6, 0, 0)
+ok   rt example 1 turned by 30°: C unchanged, t = (−0.300, 0.000, 0.520); the world turns the other way in the camera-frame picture
+ok   rt: t = −R C for a pan of 30° is (−0.300, 0, 0.520) (0.6 sin 30°, 0.6 cos 30°)
+-- step 3 · hand-eye
+ok   he with the right X: every pose reads "差 0.0 mm"
+ok   he angle error 3° (after "复位"): the purple points are up to 16.8 mm apart, this pose is off by 14.7 mm
+ok   he sweep: every pose is off by 14.7 mm, in a direction that turns with the camera (the purple points lie on an arc)
+ok   he: 14.7 mm is a turn of 3° at the distance of the target from the camera, 0.28 m (2 × 0.28 × sin 1.5° = 14.66 mm)
+-- step 4 · projection
+ok   cm start: the orange corner at pixel (364.4, 128.9), 0.540 m from the camera while the board is at 0.600 m
+ok   cm focal length 900: the corner at (386.7, 73.3)
+ok   cm focal length 900: board and corner both magnified 1.5 times about the principal point (320, 240)
+ok   cm camera at 0.40 m: the corner at (390.6, 63.5), now 0.340 m from the camera
+ok   cm camera at 0.40 m: the board grows 0.60 ÷ 0.40 = 1.5 times, the corner 0.54 ÷ 0.34 ≈ 1.59 times
+ok   cm dolly zoom ends at 0.30 m with a focal length of 300
+ok   cm dolly zoom: it starts at 1.10 m and 1100 px; focal length ÷ distance stays 1000 px per metre, so the board keeps its size
+-- step 5 · epipolar geometry
+ok   ep before rectification: slanted lines, about 11° for taps near v = 100 (10.9° to 11.3°) and less than 5° near v = 380 (4.3° to 4.8°)
+ok   ep: all six lines pass through one point outside the picture (the image of the left camera's centre in the right camera)
+ok   ep: tapped on a corner of the cube, its true position in the right image (the orange ring) lies on the line
+ok   ep rectified: every angle is 0.0° and the line is the row of the tapped point (a = 0, b = 1, c = −v)
+-- step 5 · disparity
+ok   q disparity 60: depth 0.50 m, one pixel of disparity is 8.3 mm of depth
+ok   q disparity 120: depth 0.25 m, 2.1 mm per pixel
+ok   q disparity 30: depth 1.00 m, 33 mm per pixel
+ok   q: Z = f B ÷ d with f B = 30; the error Z² ÷ (f B) is 2.08, 8.33 and 33.3 mm, four times as large at twice the distance; the grey lines (every 10 px) get closer together towards the camera
+-- step 5 · stereo matching
+ok   sm textured, 0.50 m: true disparity 14.0, matched 14, a clear minimum
+ok   sm textured, 0.25 m: 28.0 and 28
+ok   sm textured, 1.50 m: true disparity 4.7, matched 5, depth 1.40 m, 10 cm off
+ok   sm: f B = 140 px × 0.05 m = 7; 7 ÷ 1.5 = 4.67, 7 ÷ 5 = 1.40
+ok   sm smooth surface, 0.50 m: matched 18, depth 0.39 m, the curve is almost flat
+ok   sm smooth surface, five more shots: 21, 18, 17, 14, 23 (right only once)
+ok   sm smooth + infrared speckle: 14 again, depth 0.50 m
+-- step 6 · back-projection
+ok   pc start: pixel (16, 13), depth 0.353 m, 3D point (0.004, 0.013, 0.353) m
+ok   pc: the depth image is 32 × 24 numbers; pixel (16, 13) is on the spout (the bump towards the camera is 1.8 cm of its 2 cm there; only a few pixels are nearer)
+ok   pc: the wall pixels are 0.62 m deep, give or take (0.615 to 0.626 m)
+ok   pc: a black pixel, (16, 6), has no depth and gives no point (28 such pixels)
+ok   pc: a wall pixel, (2, 20): depth 0.619 m
+ok   pc: the kettle (176 pixels) and the unmeasured pixels hide part of the wall, which has only 564 of the 768 pixels
+ok   pc assumed focal length 60: X and Y shrink to 0.67 times, Z unchanged, squeezed narrow and long
+ok   pc assumed focal length 30: X and Y grow to 1.33 times, flattened
+ok   pc: 40 ÷ 60 = 0.67 and 40 ÷ 30 = 1.33 (the true focal length of the toy camera is 40)
+-- step 6 · normals
+ok   cv start (back of the kettle, k = 12): λ₁ = 52.4, λ₂ = 0.41, curvature measure 0.008, a long thin ellipse
+ok   cv: the spread along the surface is over a hundred times the spread across it (52.4 ÷ 0.41 = 128)
+ok   cv k = 40: λ₂ = 10.38, curvature measure 0.018
+ok   cv k back at 12: the readout is the one at the start
+ok   cv noise 2.0 mm (k = 12): λ₂ = 3.17, curvature measure 0.056, the status warns of a fat ellipse
+ok   cv noise back at 0.4 mm: the readout is the one at the start
+ok   cv spout tip: λ₂ = 12.45, curvature measure 0.106, the surface turns a corner
+-- step 7 · Kabsch
+ok   kb start: angle 59.7° (true 60°, 1 mm of noise), residual 1.0 mm
+ok   kb: the two steps move the picture, not the solution (the readout is unchanged)
+ok   kb one point mislabelled: angle 51.2°, 8.8° off, translation 8.0 mm off, residual 15.2 mm
+ok   kb mislabelled, the two steps once more: the same readout
+ok   kb: with the wrong label the mislabelled pair (number 4) is 25.0 mm apart after alignment and three of the other four pairs are more than 10 mm apart (without it every pair is within 2 mm)
+-- step 8 · ICP
+ok   ic ① stepped: RMSE 30.4 mm at the start, 7.5 mm after round 1, 2.5 mm after round 12, when the true error is still 9.7 mm
+ok   ic ① run to the end: stops at the limit of 60 rounds with RMSE 1.1 mm and a true error of 0.7 mm
+ok   ic: the limit is 60 rounds (MAXIT in the script)
+ok   ic ② point-to-plane: stops after 7 rounds, true error 0.4 mm
+ok   ic ③ from 80° (point-to-point): stops after 18 rounds, RMSE 34.1 mm, true error 122.2 mm, angle off by 129.9°
+ok   ic ④ with 10 outliers: pulled 8.9 mm off
+ok   ic: the outliers are 10 points (the loop in the script)
+ok   ic ④ with far pairs rejected and point-to-plane: 7 rounds, true error 0.3 mm
+ok   ic ⑤ back only: stops after 7 rounds with RMSE 1.0 mm, yet the true error is 22.7 mm and the angle is 16.5° off
+-- step 8 · AᵀA
+ok   ata back, small patch: λ₃ ≈ 0, weakest direction (1.00, 0.00, 0.00), a pure rotation
+ok   ata side, small patch: also λ₃ ≈ 0 and (1.00, 0.00, 0.00)
+ok   ata: both patches (150° to 210° and 90° to 130°) lie on one circle about the centre of the kettle (radius 0.9 throughout); the spout patch does not
+ok   ata with the spout: λ₃ is 0.040 times the largest eigenvalue, all three directions are held
+ok   ata most of the kettle: 0.056 times
+-- Part B · numbers in the text, recomputed here
+ok   header: no interactive uses the browser's own random numbers; seeded generators in sm, pc, cv, kb and ic
+ok   overview: (2 0; 1 3) times (4; 5) is (8; 19)
+ok   pinhole card: 0.05 ÷ 0.5 = 0.1, and 0.05 at 1 m
+ok   homogeneous coordinates: (600, 300, 2) is the pixel (300, 150); (2, 4, 2) ≅ (1, 2, 1)
+ok   K card: 1.93 mm ÷ 0.003 mm ≈ 643 pixels; u = 643 × 0.1 + 640 = 704.3, v = 643 × (−0.06) + 360 = 321.4
+ok   distortion card: r² = 0.36 + 0.2025 = 0.5625, 1 + k₁r² = 0.8875, x″ = 0.5325, y″ ≈ 0.399, 11% closer
+ok   extrinsics card: turned 90° to the right, the rows of R are (0, 0, −1), (0, 1, 0), (1, 0, 0), t = −R C = (−0.6, 0, 0) and −Rᵀt = (0, 0, −0.6)
+ok   hand-eye card: an error of 1° in X moves a point 30 cm from the camera by about 5 mm
+ok   projection card: (0.06, −0.03, 0) → (0.06, −0.03, 0.6) → (228, 126, 0.6) → pixel (380, 210); 5 + 6 = 11 degrees of freedom
+ok   figure: a wall 0.60 m ahead, point B 0.30 m to the side: depth 0.60 m, straight line 0.67 m
+ok   stereo card: (0.1, 0, 0.5) is (0.05, 0, 0.5) for the right camera; 600 × 0.2 and 600 × 0.1 differ by 60 pixels
+ok   essential matrix card: for T = (−B, 0, 0) the rows of [T]× are (0, 0, 0), (0, 0, B), (0, −B, 0), so the constraint is y_r = y_l
+ok   disparity card: 640 × 0.05 ÷ 0.4 = 80 pixels, 20 pixels at 160 cm
+ok   depth error card: f × B = 32; 0.4² ÷ 32 = 0.005 m = 5 mm; 80 mm at 160 cm
+ok   depth error, why: one pixel in 120 is less than 1%, one pixel in 30 is more than 3%
+ok   Q card: Q (380, 210, 60, 1) = (60, −30, 600, 1200), the point (0.05, −0.025, 0.5) m; the interactive shows the same
+ok   stereo matching: the window of the toy matcher is 7 pixels wide (the text gives 7 × 7 as an example)
+ok   figure "Z = f × B ÷ d": drawn to scale (B = 160, Z = 160, f = 44 and d = 44 of its own units, so d ÷ f = B ÷ Z)
+ok   back-projection card: pixel 380 is 60 cells right of 320; 60 × 0.5 ÷ 600 = 0.05 m
+ok   covariance card: the four neighbours (±1, 0, 0), (0, ±1, 0) give a diagonal C with (0.5, 0.5, 0), so the normal is along z
+ok   Kabsch card, the 2D example: cross products add up to 2, dot products to 0, θ = atan2(2, 0) = 90°
+ok   registration: a rigid transform has 6 unknowns, 3 for the rotation and 3 for the translation
+ok   point-to-plane card: on a perfect sphere (60 points, centre away from the origin) A has rank 3, so AᵀA has 3 eigenvalues of zero
+ok   ICP: the 2D interactive has one angle and two translations (AᵀA is 3×3); in 3D it is 6×6
+ok   lead: "a dozen or so matrices": the summary table has 13 rows
+ok   figures: six, in steps 0, 3, 5 (three) and 8
+ok   no page errors while the interactives were operated
+
+114 checks, 0 failed; page errors: 0
