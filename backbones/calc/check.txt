@@ -1,0 +1,270 @@
+-- step 0 · the ten seconds (kit)
+ok   kit: the wake-word network decides every 0.1 s, 3.8 million operations a time
+ok   kit: the readout of the wake-word network at t = 1.20 s (13 calls) equals the interactive's own count cnt()
+ok   kit: over the ten seconds the wake-word network decides 100 times; the transcriber and the planner run once each
+ok   kit: the action model starts at second 3 (0 calls at 2.99 s, 1 at 3.00 s, 70 by 10 s) and so does the hand policy (0, 1, 350)
+ok   kit: the let-go neuron starts at second 8 (0 calls at 7.99 s) and makes its 66th and last call at 9.30 s
+ok   kit: the transcriber runs once
+ok   kit: the planner runs once in these 10 s
+ok   kit: the action model takes 4.3 TFLOP a call, 10 calls a second
+ok   kit: the hand policy takes 0.42 MFLOP a call, 50 calls a second, 21 MFLOP/s
+ok   kit: one second of the hand policy is less than one two-hundred-thousandth of one call of the action model (4.3 TFLOP ÷ 21 MFLOP ≈ 205,000)
+ok   kit: the let-go neuron takes 6 operations, 50 calls a second in phase ④; smallest and largest call are about 7 × 10¹¹ apart
+ok   kit: 4.3 TFLOP ÷ 6 ≈ 7 × 10¹¹
+ok   kit: dragged to 9.30 s, the readout shows the neuron on its 66th call, letting go
+-- step 0 · units (units)
+ok   units: −10 stored in FP4 becomes −6, 40% off; the largest FP4 value is 6
+ok   units: 0.8808 stored in BF16 becomes 0.87890625, −0.21%
+ok   units: in FP8 it is 0.875, in FP4 it can only be 1
+ok   units: Llama 3.1 8B has 8,030,261,248 parameters: 32.1 GB in FP32, 4.02 GB in FP4, 16.1 GB in BF16 = 12.5% of 128 GB
+ok   units: FP32 → FP4 is an eighth of the bytes
+ok   units: one token takes 7.50 billion multiply–adds = 15.0 billion operations = 15.0 GFLOP
+-- step ① · one neuron (neuron)
+ok   neuron: with the hand seen and the arm stopped the score is 0 at 2 N and the output one half; the threshold is F* = 2 N
+ok   neuron: output 0.27 at 0 N, 0.56 at 2.5 N, 0.88 at 6 N, 0.98 at 10 N
+ok   neuron: with ReLU the output is 0 up to 2 N, then a straight line (1 at 4 N, 2 at 6 N, 4 at 10 N)
+ok   neuron: with no bend the output is the score itself (−1, 2, 4), with no limit either way
+ok   neuron: no bend gives −1 at 0 N, 2 at 6 N, 4 at 10 N
+-- step ② · a dense layer (layer)
+ok   layer: the "squeeze" row is 3 + (−3) + 0 + (−1) = −1, and ReLU makes it 0
+ok   layer: three inputs at once: 36 multiply–adds instead of 12 (72 FLOP), the 16 numbers read once, each weight used 3 times
+ok   layer: Llama projection 4096 → 4096: 16,777,216 parameters, 33.6 MB in BF16, 33.6 MFLOP
+ok   layer: Llama MLP 4096 → 14336: about 58.7 million parameters, 117 MB
+ok   layer: 117,440,512 B is 3.5 times 33,554,432 B
+-- step ③ · the MLP (mlp)
+ok   mlp: the "squeeze" circle is ReLU(3 + (−3) + 0 + (−1)) = ReLU(−1) = 0, and its lines into layer 2 multiply 0
+ok   mlp: after the walk-through the scores are (2.5, −1) and the probabilities 0.971 and 0.029
+ok   mlp: without the bend layer 1 passes on (2, −1, 1, −2), "keep holding" scores −4, and one 2 × 3 layer with 8 parameters gives the same (2.5, −4)
+ok   mlp: width ×2 is on the slider
+ok   mlp: width ×2: 209,429 → 746,517 parameters, 0.42 → 1.5 MFLOP
+ok   mlp: both grow about 3.6 times (746,517 ÷ 209,429 = 3.56; multiply–adds 745,472 ÷ 208,512 = 3.58)
+ok   mlp: 6 hidden layers are on the slider
+ok   mlp: then 6 hidden layers: 785,045 parameters, 5% more; the added layers narrow down (128 → 64 → 32)
+ok   mlp: 785,045 ÷ 746,517 = 1.05
+-- step ④ · convolution (conv)
+ok   conv: with the window at row 3, column 3 the nine products add up to (8 − 2) + (8 − 2) + (8 − 2) = 18
+ok   conv: the horizontal-edge kernel gives 0 6 12 18 in the top two rows and 0 below
+ok   conv: no padding, stride 1: n′ = ⌊(6 − 3) / 1⌋ + 1 = 4
+ok   conv: one ring of zeros: n′ = 6, as large as the input
+ok   conv: with stride 2 as well: n′ = ⌊2.5⌋ + 1 = 3
+ok   conv: the real layer starts as ResNet-18’s first layer: 9,408 parameters, 118 million multiply–adds
+ok   conv: C_out 128 is on the slider
+ok   conv: C_out 64 → 128 doubles the parameters (18,816) and the multiply–adds (236 million)
+ok   conv: input side 448 is on the slider
+ok   conv: input side 224 → 448 leaves the parameters and makes the multiply–adds 4 times as many (944 million)
+ok   conv: the layer inside layer3: 589,824 parameters (63 times the first layer), 116 million multiply–adds, each weight used 196 times
+ok   conv: 589,824 ÷ 9,408 = 62.7
+ok   conv: each weight of the first layer is used 12,544 times
+-- step ⑤ · ResNet-18 (cnn)
+ok   cnn: the walk-through has 9 sections
+ok   cnn: the side is halved 5 times: 224 → 112 → 56 → (56) → 28 → 14 → 7, then average pooling leaves one position
+ok   cnn: parameters: layer4 71.8%, layer3 18.0%; multiply–adds: 25.5%, 22.7%, 22.7%, 22.7%
+ok   cnn: one number of stage 4 (layer4) sees 435 × 435 pixels, more than the whole picture
+ok   cnn: at 1280 × 720 the parameters stay at 11,689,512 and the multiply–adds go from 1.81 to 33.5 billion, 18.45 times
+ok   cnn: 1.81 billion multiply–adds at 224 × 224
+-- step ⑥ · a recurrent network (rnn)
+ok   rnn: with a = 0.5 the memory over the five steps is 0, 1, 3.5, 4.75, 3.375
+ok   rnn: the bars are labelled by the interactive’s own fLeft(): 0.5¹⁰ → 0.001 and 0.9¹⁰ → 0.35
+ok   rnn: the legend says the row under the slider is "what is left of the first input after t steps"
+ok   rnn: the slider reads a = 0.9
+ok   rnn: with the gate the memory is 0, 0.036, 5.893, 5.998, 5.926 whatever the slider says
+ok   rnn: the gate sets a = 0.018 at 6 N and a = 0.982 at 2 N
+ok   rnn: the status line: after 20 more quiet steps 0.7 is left, 10⁻⁶ without the gate
+ok   rnn: 0.982²⁰ = 0.70 and 0.5²⁰ ≈ 10⁻⁶ by the same formatter
+ok   rnn: 80 → 512: Plain RNN 303,616 parameters, GRU 910,848 = exactly 3 times (three sets of weights)
+ok   rnn: T = 100,000 is on the slider
+ok   rnn: at T = 100,000 the recurrent network takes 100,000 steps with a memory of 512 numbers; attention scores 100,000 × 100,000 = 10¹⁰ pairs
+-- step ⑦ · attention (attn)
+ok   attn: "ba" looks most at "that glass of water" (0.475), "that glass of water" at "pass" (0.475), "pass" at "that glass of water" and "to me" (0.366 each), "to me" at "pass" (0.475)
+ok   attn: the weights of "pass" are (0.134, 0.366, 0.134, 0.366) and its output (0.366, 0.366, 0.134, 0.134)
+ok   attn: the query of "ba" is (2, 0, 0, 0): it looks only for a thing
+ok   attn: with the causal mask the first three rows change: (1, 0, 0, 0), (0.5, 0.5, 0, 0), (0.212, 0.576, 0.212, 0); the last row does not
+ok   attn: in the second head "pass" looks most at "to me" (0.475)
+ok   attn: at 131,072 tokens: projections 17.6 TFLOP, scoring and mixing 281 TFLOP = 94% of the layer
+ok   attn: from 2,048 to 131,072 tokens (64 times): projections 275 GFLOP → 17.6 TFLOP = 64 times; scoring 68.7 GFLOP → 281 TFLOP ≈ 4,100 times = 64²
+-- step ⑧ · the Transformer (xfmr)
+ok   xfmr toy: 11 steps
+ok   xfmr toy: the lookup gives (0, 0, 1, 0); attention weighs "that glass of water" 0.58; after the residual (0.58, 0, 1.21, 0.21)
+ok   xfmr toy: only one hidden number of the MLP is not 0; it writes 1.51 into the "person" slot
+ok   xfmr toy: "to me" scores 3.46 and gets probability 0.76
+ok   xfmr Llama 3.1 8B: MLP 70.2% of the parameters, attention 16.7%, lookup and output head 6.5% each
+ok   xfmr Llama 3.1 8B: 15.0 GFLOP per token from the weights (2 × the weights used), 8,030,261,248 parameters
+ok   xfmr: 2 × 7,504,924,672 = 15.0 GFLOP, 1.87 times the 8.03 billion parameters
+ok   xfmr: context 131,072 is on the slider
+ok   xfmr Llama 3.1 8B at 131,072 tokens of context: the KV cache is 17.2 GB, more than the 16.1 GB of weights in BF16; 131 kB per token
+ok   xfmr Gemma 2B dragged to the end (limit 8,192): the cache is 151 MB, 18.4 kB per token
+-- step ⑨ · the vision Transformer (vit)
+ok   vit: 7 steps; in step 4 the 588 numbers of a patch are multiplied by a 588 × 1152 table and become 1,152 numbers
+ok   vit: tapping another patch changes the patch (135 → 35) but not the 7 steps
+ok   vit: at 896 px there are 4,096 tokens and 5,457 GFLOP, of which scoring and mixing 2,087 GFLOP (38.3%)
+ok   vit: 16 times the tokens, about 25 times the operations, 256 times the scoring part (from 8.15 GFLOP, 3.7%)
+ok   vit: patch side 8 px is on the slider
+ok   vit: back at 224 px, a patch side of 8 gives 28 × 28 = 784 tokens and 721 GFLOP
+-- step ⑩ · Whisper (whisper)
+ok   whisper: 14 steps; writing the third character is step 9, where cross-attention looks most at 0.60–0.83 s
+ok   whisper: padded to 30 s, 2,800 of the 3,000 frames are blank: 93%
+ok   whisper: by the same sum, 15 s of speech would leave 1,500 of 3,000 frames blank: one half
+ok   whisper: small → large: the encoder goes from 338 GFLOP to 2.26 TFLOP, about 6.7 times (12 → 32 layers, width 768 → 1,280)
+-- step ⑪ · U-Net (unet)
+ok   unet: 11 steps; the picture shrinks 4 times (256 → 128 → 64 → 32 → 16) and is scaled up 4 times
+ok   unet: each level on the way up takes 2.35 billion multiply–adds, 69% together; the levels on the way down 0.66 to 0.91 billion
+ok   unet: up levels 2.35 G each, down levels 661, 906, 906, 906 M
+ok   unet: without the skip connections 540 pixels are classed wrongly, all on the edge, and 9,838 are undecided against 308 with them
+ok   unet: input side 512 is on the slider
+ok   unet: input side 256 → 512: not one parameter more, 4 times the operations (11.3 → 45.1 billion multiply–adds without the skips)
+ok   unet: the same with the skip connections: 13.7 → 54.7 billion
+-- step ⑫ · PointNet (point)
+ok   point: 8 steps; step 7 says where the deciding points are: 311 points (30%): 271 of 814 on the wall, 31 of 93 on the base, 9 of 117 on the water surface
+ok   point: 311 of 1,024 is 30%, and 814 + 93 + 117 = 1,024, 271 + 31 + 9 = 311
+ok   point: "Another point" picks a different point with different coordinates (#513 → #698), and its features are computed from those coordinates alone
+ok   point: after shuffling, the global feature adds up to 742.25 before and after: not one number differs
+ok   point: "Which points decide" switches the marking on; the count, 311 points (30%), is in the status line of step 7
+ok   point: 4,096 points are on the slider
+ok   point: 1,024 → 4,096 points: still 147,648 multiply–adds per point, 151 → 605 million in all, 4 times
+ok   point: 605 ÷ 151 = 4.0 and 147,648 × 4,096 = 604.8 million
+-- step ⑬ · the action model (vla)
+ok   vla: the backbone has the most operations: 800 tokens through 18 layers, 3.27 TFLOP, 76% of the call
+ok   vla: seeing 0.66 TFLOP, action expert 0.37 TFLOP, 4.30 TFLOP in all
+ok   vla: 7 steps; 0.66 + 3.27 + 0.37 = 4.30 and 3.27 ÷ 4.30 = 76%
+ok   vla: with cross-attention only the 32 text tokens enter the backbone, and the score table is 32 × 800 = 25,600 cells
+ok   vla: 640,000 ÷ 25,600 = 25
+ok   vla: with modulation there is no score table; each picture is averaged into one vector and details such as "which patch is the glass in" are easily lost
+ok   vla: the grid is drawn as lam × trajectory + (1 − lam) × noise with lam = pass ÷ 10
+     correlation of the picture at passes 1…10 with the finished chunk: 0.05 0.129 0.226 0.346 0.489 0.646 0.798 0.916 0.982 1
+ok   vla: 50 × 21 = 1,050 cells; for the first 5 passes the picture is mostly noise (correlation with the finished chunk below 0.6), around passes 6 and 7 the bands show (0.6 to 0.9), from pass 8 on they are clear (above 0.9)
+-- step ⑭ · the building blocks (build)
+ok   build: the table has the ten kinds of block named in the lead
+ok   build: all nine networks use normalisation; dense layers are used by eight (not U-Net), residuals and skips by eight (not PointNet)
+ok   build: upsampling is used by only two, U-Net and Diffusion Policy; no other block is used by fewer
+ok   build: the recurrence row is empty: none of the nine uses it; on this page only the wake-word GRU is recurrent
+ok   build: the chain of π0 has 6 operation blocks; their main operations (the stripes) are attention ×4, lookup ×1, dense ×1; in all they use six kinds of block
+ok   build Mixtral: 47B parameters stored, 13B used per token; one token is 26 GFLOP
+ok   build Mixtral: 47 ÷ 13 = 3.6 and 2 × 47 billion = 94 GFLOP
+-- step ⑮ · sizes and chips (size)
+ok   size: the walk-through visits 11 networks
+ok   size: on the "used once" line: the neuron (0.75), the hand policy (1), Llama 3.1 8B (0.93), Mixtral (1 per parameter used)
+ok   size: furthest from the line: the small U-Net (1,762), then Whisper (715) and π0 (651)
+ok   size: U-Net has 7.77M parameters and 27.4 GFLOP, ResNet-18 11.7M and 3.63 GFLOP
+ok   size: the top-level kernels of U-Net are used 256 × 256 = 65,536 times; no kernel of ResNet-18 more than 56 × 56 times
+ok   size Thor · BF16: Llama 3.1 8B takes 16.1 GB and fits (13% of 128 GB); 58.8 ms per token, at most 17 a second, not keeping up with 20
+ok   size Thor · FP4: 4.02 GB, 14.7 ms per read: it keeps up
+ok   size: 1 ÷ 14.7 ms ≈ 68 tokens a second and 1 ÷ 58.8 ms ≈ 17
+-- text · the header and step 0
+ok   hdr: the unit conventions: FP32 4 bytes, BF16 2, FP8 1, FP4 half; a multiply–add counts as 2 operations; a GB is 10⁹ bytes
+ok   step 0: the robot has 2 + 1 + 14 + 2 + 2 = 21 joints; the head camera takes 30 pictures of 1280 × 720 a second; 128 GB of memory
+ok   step 0: the smallest network has 4 parameters and takes 6 operations, the largest 8 billion parameters; one call of the action model takes 4.3 trillion operations: 9 and nearly 12 orders of magnitude apart
+ok   step 0: the list of networks quotes the numbers worked out in the later steps (79 kB, 3.8 million; 340 billion; 15 billion per token; 220 billion per image; 4.3 trillion; 3.6 billion; 210,000 parameters and 420,000 operations)
+-- text · step 0, units
+ok   units table: σ(2) = 0.880797… is stored as 0.88079709 in FP32, 0.87890625 in BF16, 0.88085938 in FP16, 0.875 in FP8 and 1 in FP4
+ok   units table: the bits add up (1 + 8 + 23 = 32, 1 + 8 + 7 = 16, 1 + 5 + 10 = 16); the largest FP16 value is 65,504 and the largest FP32 and BF16 values about 3.4 × 10³⁸
+ok   units: FP4 has 15 different values (0, ±0.5, ±1, ±1.5, ±2, ±3, ±4, ±6); −10 can only be stored as −6; with one 8-bit scale per 16 numbers FP4 really takes 4.5 bits per number
+ok   units card: the neuron: P = 4, M = 16 B in FP32, 3 multiply–adds, F = 6 FLOP, R = 300 FLOP/s at 50 calls a second
+ok   units card: Llama 3.1 8B: P ≈ 8.03 × 10⁹, 16.1 GB in BF16, 15 GFLOP per token, 59 ms to read the weights at 273 GB/s
+ok   units card: the "1.8 GFLOPs" of ResNet-18 are 1.8 billion multiply–adds, 3.6 billion operations as counted here
+ok   units: the prefix table and the 1024-based units: 0.42 MFLOP = 420,000; 3.63 GFLOP = 3.63 billion; 4.3 TFLOP = 4.3 trillion; 1 GiB = 2³⁰ ≈ 1.074 × 10⁹ bytes, so 16.1 GB shows as 15.0 GiB
+-- text · step ① the neuron
+ok   step ①: lead and card: 6 × 0.5 = 3, 1 × 3 = 3, 0 × (−10) = 0; 6 + (−4) = 2; e⁻² ≈ 0.135, y = 1 / 1.135 ≈ 0.88
+ok   step ①: the two other moments: (2, 0, 0) gives z = −3 and y ≈ 0.05; (6, 1, 0.5) gives z = 3 + 3 − 5 − 4 = −3
+ok   step ①: without the bend, a pull of 600 N would raise z from 2 to 299, nearly 150 times
+ok   step ①: 4 parameters, 16 bytes in FP32 and 8 in BF16, 3 multiplications and 3 additions = 6 operations; the dividing line is 0.5 x₁ + 3 x₂ − 4 = 0
+-- text · step ② the dense layer
+ok   step ②: the four neurons give z = (2, −1, 1, −2) and, after ReLU, h = (2, 0, 1, 0); 12 weights + 4 biases = 16 parameters, 64 bytes in FP32, 12 multiply–adds, 24 operations
+ok   step ②: the batch of three in the interactive: the wobble gives all zeros, the moving arm gives only "stop" = 3.5
+ok   step ②: Llama’s 4096 → 4096 layer: 16,777,216 parameters (about 16.78 million), 33,554,432 bytes ≈ 33.6 MB in BF16, about 33.55 million operations = 33.6 MFLOP
+-- text · step ③ the MLP
+ok   step ③: the second layer gives 2.5 and −1; e^2.5 ≈ 12.18, e^−1 ≈ 0.37; softmax 12.18 / 12.55 ≈ 0.971 and 0.029
+ok   step ③ card: 26 parameters (16 + 10), 12 + 8 = 20 multiply–adds, 40 operations
+ok   step ③ card: without the bend the layers merge: W₂W₁ has the rows (0.5, 4, −7.5) and (−0.5, −6, 10), the bias is (−4.5, 5), and one layer gives the same 2.5 and −4
+ok   step ③: the hand policy takes in 82 numbers = 21 + 21 + 12 + 7 + 21; layer by layer 42,496, 131,328, 32,896 and 2,709 parameters, 209,429 in all, 837,716 bytes ≈ 0.84 MB in FP32
+ok   step ③: 41,984 + 131,072 + 32,768 + 2,688 = 208,512 multiply–adds, 417,024 operations ≈ 0.42 MFLOP; at 50 calls a second about 20.85 million operations ≈ 21 MFLOP/s
+ok   step ③: the 512 → 256 layer holds over six tenths of the parameters; doubling the hidden widths gives 746,517 parameters, 3.6 times as many
+ok   step ③: training takes about 6P operations per example, 3 times inference, and about 16 bytes per parameter (2 + 2 + 12): 3.4 MB for the hand, about 128 GB for an 8-billion-parameter model
+-- text · step ④ convolution
+ok   step ④: a 1280 × 720 photo is 2,764,800 numbers; a dense layer from 224 × 224 × 3 = 150,528 inputs to 112 × 112 × 64 = 802,816 outputs would need about 1.2 × 10¹¹ weights, about 483 GB in FP32, nearly 4 times the 128 GB
+ok   step ④: the hand-worked example: 24 − 24 = 0, 24 − 18 = 6, 24 − 6 = 18; the 4 × 4 output has 6, 12, 18, 18 down its two middle columns and 0 on both sides; 16 positions × 9 = 144 multiply–adds with 9 weights
+ok   step ④: the same picture with the horizontal-edge kernel gives 0 6 12 18 in the top two rows and 0 below, as the interactive shows
+ok   step ④: output sides by the formula: 4 (no padding), 6 (one ring of zeros), 3 (one ring and stride 2), 2 (stride 2 alone)
+ok   step ④ card: ResNet-18’s first layer: n′ = ⌊(224 + 6 − 7) / 2⌋ + 1 = 112; 7 × 7 × 3 × 64 = 9,408 weights; 9,408 × 112 × 112 = 118,013,952 multiply–adds ≈ 0.24 GFLOP; a dense layer would need about 12.8 million times as many weights; each weight is used 12,544 times
+ok   step ④: a 3 × 3 × 3 kernel has 27 weights; L stacked 3 × 3 layers see (1 + 2L) × (1 + 2L) pixels: 5 × 5 for two; halving the picture cuts the operations by three quarters
+-- text · step ⑤ ResNet-18
+ok   step ⑤ table: first layer 9,536 parameters and 118.0 M multiply–adds; the four stages 147,968 / 525,568 / 2,099,712 / 8,393,728 parameters and 462.4 / 411.0 / 411.0 / 411.0 M multiply–adds; one number sees 11, 43, 99, 211, 435 pixels
+ok   step ⑤: 11,689,512 parameters, about 46.8 MB in FP32 and 23.4 MB in BF16; 1.81 billion multiply–adds, about 3.63 GFLOP
+ok   step ⑤: stage 4 holds 72% of the parameters and 23% of the operations; its kernels are used 49 times each, those of stage 1 3,136 times; the last three stages take 411 million multiply–adds each
+ok   step ⑤: at 1280 × 720 the multiply–adds are 33.5 billion, 18.5 times those at 224 × 224, about the ratio of the areas; the parameters do not change
+ok   step ⑤ card: a block of stage 1: two layers of 3 × 3 × 64 × 64 = 36,864 weights plus 128 for normalisation = 36,992 each; 36,864 multiply–adds at each of 56 × 56 positions ≈ 116 million; the 1 × 1 convolution on the shortcut of stage 2 has 8,448 parameters
+ok   step ⑤: "18" counts the layers with weights: 1 + 16 + 1
+-- text · step ⑥ the recurrent network
+ok   step ⑥: with a = 0.5 the memory is 0, 1, 3.5, 4.75, 3.375 (lead and card)
+ok   step ⑥ card: what is left after t steps is aᵗ: with a = 0.5 a half, a quarter, 3%, a thousandth, a millionth after 1, 2, 5, 10, 20 steps; with a = 0.9, 35% after 10 steps and 0.5% after 50
+ok   step ⑥ card: 80 → 512: 512 × (80 + 512 + 1) = 303,616 parameters, 303,104 multiply–adds a step, about 60.6 million operations a second at 100 steps ≈ 61 MFLOP/s; GRU 910,848 and LSTM 1,214,464 (3 and 4 times); with PyTorch’s two bias sets 912,384 and 1,216,512
+ok   step ⑥: the wake-word figures quoted from the Hello Edge paper (78.8 kB, 3.8 million operations, 93.5%; LSTM 92.9%; DS-CNN 38.6 kB, 5.4 million, 94.4%) and 25 steps of 40 ms in 1 s
+-- text · step ⑦ attention
+ok   step ⑦: the scores of "pass" are (0, 1, 0, 1), the weights (0.134, 0.366, 0.134, 0.366) and the output (0.366, 0.366, 0.134, 0.134); e¹ ≈ 2.72 and the sum is 7.44
+ok   step ⑦: with the mask the three scores (0, 1, 0) give the weights (0.212, 0.576, 0.212, 0); the four tokens take 320 multiply–adds
+ok   step ⑦ card: d = 4096, 2d = 8192: for 2,000 tokens the table multiplications take about 2.7 × 10¹¹ and the scoring and mixing about 6.6 × 10¹⁰; at 131,072 tokens the scoring takes about 2.8 × 10¹⁴, 16 times the table multiplications; Llama 3.1 8B has 32 query heads of 128 numbers
+-- text · step ⑧ the Transformer
+ok   step ⑧ card: one block of Llama 3.1 8B: attention 41,943,040 parameters, MLP 176,160,768, two normalisations 8,192: 218,112,000 in all
+ok   step ⑧ card: P = 32 × 218,112,000 + 2 × 128,256 × 4096 + 4096 = 8,030,261,248; MLP 70.2% (5.64 billion), attention 16.7% (1.34 billion), the two vocabulary tables 13.1% (525 million each)
+ok   step ⑧ card: 16.1 GB in BF16, 8.0 in FP8, 4.0 in FP4; one token 2 × (8,030,261,248 − 525,336,576) ≈ 15 GFLOP; with 2,000 tokens before it another 4 × 32 × 2000 × 4096 ≈ 1.05 GFLOP
+ok   step ⑧ card: the KV cache: d_kv = 8 × 128 = 1024; 2 × 32 × 1024 × 2 bytes = 131,072 bytes ≈ 131 kB per token; 262 MB for 2,000 tokens, 17 GB for 131,072; reading 2,000 tokens in parallel takes about 30 TFLOP
+ok   step ⑧: Gemma 2B: cache 2 × 18 × 256 × 2 = 18,432 bytes per token; 1.98 billion parameters without the lookup table and 520 million in it; about 2 × 2.5 billion ≈ 5 GFLOP per token; 16,384 × 2 = 32,768; grouped keys and values make the cache a quarter of what 32 sets would need
+ok   step ⑧: Llama 3.1 70B: about 70.6 billion parameters, about 139 GFLOP per token, 141 GB in BF16, 71 GB in FP8: fewer than 4 tokens a second at 273 GB/s, against about 34 for the 8B in FP8
+ok   step ⑧: the list: a vocabulary of 128,256 tokens, a 128,256 × 4096 lookup table, 32 blocks, a 4096 × 128,256 output table
+-- text · step ⑨ the vision Transformer
+ok   step ⑨: 224 / 14 = 16 patches a side, 16 × 16 = 256 patches of 14 × 14 × 3 = 588 numbers each, turned into 1,152 numbers; 27 blocks, MLP width 4304, 16 heads
+ok   step ⑨ card: per layer the table multiplications take about 7.8 GFLOP and the scoring and mixing about 0.30; with the patch step an image takes about 219 GFLOP, of which scoring and mixing 8.2
+ok   step ⑨ card: about 412 million parameters: 15.24 million per layer × 27; the patch table 588 × 1152 plus bias 678,528; the position encoding 256 × 1152 = 294,912; about 0.82 GB in BF16
+ok   step ⑨ card: 219 GFLOP is 27 times ResNet-50 (8.2 GFLOP); 412 million parameters are 16 times its 25.56 million; ResNet-50 uses each parameter about 160 times
+ok   step ⑨: at 448 px about 973 GFLOP and at 896 px about 5.46 TFLOP: 16 times the tokens and the table multiplications, 256 times the scoring, whose share goes from under 4% to 38%
+ok   step ⑨: patch sides 16, 8 and 32 give 196, 784 and 49 tokens at 224 px; ViT-B/16 (patch 16, 12 layers, width 768) has 86 million parameters and takes about 35 GFLOP an image, a little over 4 times ResNet-50
+-- text · step ⑩ Whisper
+ok   step ⑩: 2 s of sound are 32,000 numbers; an 80 × 200 picture, padded to 80 × 3000; two convolutions leave 1,500 positions of 768 numbers
+ok   step ⑩ card: the cross-attention keys and values, once per window: 12 × 2 × 1500 × 768 × 768 ≈ 21.2 billion multiply–adds ≈ 42 GFLOP; afterwards each layer needs 2 × 1500 × 768 ≈ 2.3 million multiply–adds per character; √64 = 8
+ok   step ⑩: the stem about 6.4 GFLOP, the encoder about 338 GFLOP per window, the keys and values about 42 GFLOP, the decoder about 0.33 GFLOP per token; about 0.39 trillion operations for this sentence, over eight tenths of them in the encoder
+ok   step ⑩: 2 s is 1/15 of 30 s, so 93% of the encoder’s operations go on the padding; the five sizes of the paper
+-- text · step ⑪ U-Net
+ok   step ⑪: 7,765,985 parameters (about 31.1 MB in FP32), 13.68 billion multiply–adds ≈ 27.4 GFLOP for a 256 × 256 image, 7.5 times ResNet-18 on a 224 × 224 one
+ok   step ⑪: the most parameters at the bottom (3.54 million) and the level next to it (2.30 million); each level on the way up about 2.35 billion multiply–adds, nearly seven tenths together; the levels on the way down 0.66 to 0.91 billion
+ok   step ⑪ card: level 3 on the way up: 4 × 512 × 256 × 32 × 32 ≈ 0.54 G, 9 × 512 × 256 × 32 × 32 ≈ 1.21 G and 0.60 G, about 2.35 G in all
+ok   step ⑪ card: the skips add about 780,000 parameters and 2.4 billion multiply–adds (about 18% of the operations) and keep about 3.93 million numbers waiting
+ok   step ⑪: 512 × 512 takes 4 times and 1024 × 1024 16 times the operations; with twice the channels (64 to 1024), as in the original paper, about 31 million parameters; the output has 65,536 numbers
+-- text · step ⑫ PointNet
+ok   step ⑫: the four points have the features A (0, 4, 0), B (4, 0, 0), C (0, 0, 12), D (0, 0, 6); the global feature is (4, 4, 12) and stays the same without D
+ok   step ⑫: 848 × 480 = 407,040 depths; 1,024 × 3 = 3,072 numbers; the shared MLP takes 147,648 multiply–adds per point, about 150 million for 1,024 points; the paper’s 3.5 million parameters and 440 million multiply–adds = 0.88 GFLOP (0.8 million and 148 million without the T-Nets)
+-- text · step ⑬ the action model
+ok   step ⑬: 3 × 256 = 768 image tokens, about 0.66 TFLOP for the three pictures; about 800 tokens through the backbone, about 3.3 TFLOP; the action expert (about 300 million parameters) about 0.37 TFLOP for its 10 passes
+ok   step ⑬: about 4.3 trillion operations a call, 43 trillion a second at 10 calls; on an RTX 4090 the paper measured 14 + 32 + 27 = 73 ms; about 3.3 billion parameters, 6.6 GB in BF16
+ok   step ⑬: the expert’s operations are a little over a tenth of the backbone’s, yet it takes about as long (27 ms against 32 ms)
+ok   step ⑬ card: the score tables: about 800 × 800 = 640,000 cells; 50 × 800 = 40,000 for the action tokens, plus 50 × 51
+ok   step ⑬: the numbers the interactive shows follow from the same formulas: one pass 37.4 GFLOP, the state token 0.741 GFLOP, table 50 × 851 = 42,550
+-- text · step ⑭ the building blocks
+ok   step ⑭ card: Mixtral 8x7B: 47 billion parameters stored, 13 billion used per token: about 94 GB in BF16, about 26 GFLOP per token, over seven tenths less than a dense 47-billion model
+ok   step ⑭ card: in FP8 about 47 GB, about 13 GB read per token: about 21 tokens a second at 273 GB/s, fewer than 6 for a dense model of the same size
+-- text · step ⑮ sizes and chips
+ok   step ⑮ table: operations ÷ parameters: 1.5 for the neuron, 2 for the MLP, 1.9 for Llama, 0.55 for Mixtral (stored parameters), 251 for PointNet, 310 for ResNet-18, 531 for SigLIP, about 1300 for the π0-like model, 1430 for Whisper (about 3960 on the encoder’s 87 million parameters), 3524 for the small U-Net
+ok   summary table: the same ratios (small U-Net 3524, ResNet-18 310, Llama 1.9)
+ok   step ⑮: Llama has nearly 700 times the parameters of ResNet-18 but only 4 times the operations; ResNet-18 uses each weight about 155 times on a 224 × 224 image
+ok   step ⑮ card: ridge points: a B200 in FP8 with about 4.5 PFLOPS dense and about 8 TB/s: about 560; Thor with 517.5 TFLOPS and 273 GB/s: about 1900; a language model writing for one person uses about 0.4% of a B200’s peak
+ok   step ⑮: Llama 3.1 8B: 16 GB ÷ 273 GB/s ≈ 59 ms per token in BF16, about 17 tokens a second; about 34 in FP8 and 68 in FP4; the 70B in FP8 fewer than 4
+ok   step ⑮: what fits in 128 GB: Llama 3.1 8B 16 GB in BF16, the π0-like model about 6.6 GB, Whisper small about 0.5 GB; the 70B needs 141 GB in BF16 and 71 GB in FP8; Thor’s quoted peak is 2070 TFLOPS (FP4, sparse)
+ok   step ⑮: "about 55 ms for one call of the π0-like model on Thor in BF16" is the interactive’s estimate (55.4 ms, 55% busy at 10 calls a second)
+-- text · the summary and the quiz
+ok   summary: the hand policy about 0.84 MB in FP32, ResNet-18 about 47 MB, Llama 3.1 8B about 16 GB in BF16; ResNet-18 takes 3.63 GFLOP at 224 × 224 and about 67 GFLOP at 1280 × 720
+ok   quiz 1: z = 0.5 × 4 + 3 × 1 + 0 − 4 = 1 and σ(1) ≈ 0.73
+ok   quiz 2: 1024 × 4096 + 4096 = 4,198,400 parameters, about 8.4 MB in BF16, 2 × 1024 × 4096 ≈ 8.4 MFLOP
+ok   quiz 3: a 3 → 4 → 2 network without the bend equals one 3 → 2 layer with 3 × 2 + 2 = 8 parameters instead of 26
+ok   quiz 4: n′ = ⌊(56 + 2 − 3) / 2⌋ + 1 = 28; 3 × 3 × 64 × 128 = 73,728 weights; 73,728 × 28 × 28 ≈ 57.8 million multiply–adds
+ok   quiz 5: 128 × (40 + 128 + 1) = 21,632 parameters; an LSTM has 4 times as many, 86,528
+ok   quiz 6 and 7: T > 2d = 8192 tokens; (448 / 16)² = 784 tokens against 196: 4 times the tokens and 16 times the score table
+ok   quiz 8, 9, 11 and 12: 24 / 30 = 80%; 4 times the operations; 47 billion × 2 bytes ≈ 94 GB and about 26 GFLOP per token; 273 / 8.03 ≈ 34 tokens a second
+-- the figures
+ok   there are 7 figures
+ok   fig 1: z = ReLU(F − 3) − 2 ReLU(F − 5.5) is above 0 exactly between 3 N and 8 N (peak 2.5 at 5.5 N); without the bends the same weights give z = 8 − F, above 0 for everything below 8 N
+ok   fig 2: two stacked 3 × 3 layers see 5 × 5 pixels: each layer adds 2 to the side
+ok   fig 3: the residual block is drawn as y = σ(x + f(x))
+ok   fig 4: every token adds 2 × L × d_kv numbers to the cache
+ok   fig 5: the seven stretches of the sentence are those the Whisper interactive reports; "bēi" is spoken from 0.60 to 0.83 s
+ok   fig 6: modulation is drawn as y = γ(c) ⊙ x + β(c)
+ok   fig 7: r = 1 for a dense layer, n′² for a convolution, T for a Transformer; F ≈ 2 r P
+
+231 checks, 0 failed; page errors: 0
