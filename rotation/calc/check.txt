@@ -1,0 +1,112 @@
+ok   every interactive has a "先玩" prompt in front of it and a "你会看到" line after it
+ok   the script of every interactive was found in the page
+-- Part A · the interactives, operated along their "先玩" prompts
+ok   w0 at the start: φ = 1.00 rad = 57.3°, the same angle on the circle
+ok   w0 button 2π: 6.28 rad = 360.0°, back at 0.0° after one full turn, matrix 1, 0, 0, 1
+ok   w0 button 2π + π/2: 7.85 rad = 450.0°, 90.0° on the circle, matrix 0, −1, 1, 0
+ok   w0 button π/2 gives the very same matrix and the same angle on the circle as 2π + π/2
+ok   w0: numbers on the tangent that differ by a multiple of 2π land on the same point of the circle (161 values, with the page's own wrap)
+ok   w0 negative side: φ = −1.00 gives −57.3° and the arrow below the horizontal (drawn at cy − R sin φ), i.e. turned clockwise
+ok   wm at the start: column 1 is 0.77, 0.54, 0.34 (mostly along x, towards y, tipped up)
+ok   wm: that column has its largest part along x and positive parts along y and z
+ok   wm: after four drags the matrix has changed and the status line still reads lengths 1.00, dot products 0.00, det = 1.00
+ok   wm "复位" restores the starting matrix
+ok   wm "加一点误差" (first press after loading): lengths 0.97 / 1.03 / 0.90, dot products 0.24 / −0.15 / 0.13, det = 0.85, status red
+ok   wm prompt: every entry moved by at most 0.14 (plus rounding), and the source adds (rnd()*2-1)*.14 from a seeded generator
+ok   wm "投影回 SO(3)": the status is all 1.00 and 0.00 again, but column 1 is now 0.78, 0.52, 0.34
+ok   wm: the projected matrix differs from the starting one
+ok   wm: the perturbed matrix recomputed in the page equals the one shown, and the interactive's routine gives the matrix shown after projecting
+ok   wm: the interactive's iteration and U Vᵀ (computed here from an eigen-decomposition) give the same matrix; it is a rotation and nearer to the bad matrix than the starting matrix and than 3000 other rotations
+ok   wa after "复位": yaw 30°, pitch 25°, roll 15°, three axes not parallel
+ok   wa "pitch 拉到 90°": the status reports gimbal lock; first row of R is 0.00, −0.26, 0.97
+ok   wa: at pitch 90° the roll axis (first column of Rz·Ry) is vertical, along the yaw axis and pointing the opposite way
+ok   wa locked, yaw 60°: first row 0.00, −0.71, 0.71
+ok   wa locked, yaw 60° and roll 45°: the first row is 0.00, −0.26, 0.97 again and the whole matrix is as before
+ok   wa: computed with the page's helpers, R(60°, 90°, 45°) equals R(30°, 90°, 15°) exactly, while R(60°, 90°, 15°) does not
+ok   wa after a reset: the warning first appears at pitch 78° (not at 77°); the four highlighted entries are 0.18, 0.10, 0.05, 0.20 there and 0.00 at 90°
+ok   wa: the highlighted entries are r11, r21, r32, r33 (positions 0, 3, 7, 8 of the grid)
+ok   wr v ⊥ k, θ = 90°: sideways (0, 1, 0), back (−1, 0, 0), v′ = (0, 1, 0)
+ok   wr v ⊥ k, θ = 180°: sideways 0, back (−2, 0, 0), v′ = (−1, 0, 0)
+ok   wr "v 斜着" (still at 180°: v′ = (−0.80, 0, 0.60)), then θ = 90°: v = (0.80, 0, 0.60) → v′ = (0, 0.80, 0.60)
+ok   wr tilted: the tip circles at radius 0.80, smaller than the 1.00 of the first case (the interactive draws the circle with the length of the part of v at right angles to k)
+ok   wr "v 与 k 平行": both stretches are 0 and v′ = v = (0, 0, 1) at 90°, −120°, 37° and 180°
+ok   wr: in all three cases the last line reads ‖v‖ = 1.00，‖v′‖ = 1.00
+ok   wr back at the start (v ⊥ k, θ = 70°): sideways 0.94, back −0.66 (the numbers of the figure under "罗德里格斯公式")
+ok   wb at the start: Euler angles 40.0°, 30.0°, 20.0°; θ = 49.2°; quaternion (0.909, 0.070, 0.297, 0.283)
+ok   wb "q → −q": all four numbers of the quaternion change sign; the other three cards do not change
+ok   wb dragged straight down: pitch climbs from 30° with yaw 40.0° and roll 20.0° unchanged; when it reaches 90° (pixel 95) yaw is −140.0° and roll −160.0°, the card shows "跳变", and pitch falls from then on
+ok   wb fold: on the pixel that lands on 90° the card shows yaw 20.0°, roll 0.0° (the difference 40° − 20°)
+ok   wb dragged to the right: θ climbs from 49.2° to 180° (largest value shown ≥ 179.5°), then falls; at the turn k and r change sign and the axis-angle card shows "跳变"
+ok   wb fold: at the turn k goes from (−0.58, −0.02, 0.81) to (0.58, 0.02, −0.81) and r from (−1.82, −0.05, 2.55) to (1.82, 0.05, −2.55); the length of r is about 3.13 both times
+ok   wb: during both drags no number of the quaternion changed by more than 0.006 from one pixel to the next
+ok   wb "绕 k 一步转到位": the plane restarts near the zero orientation (θ below 5° after 0.1 s) and ends exactly on the orientation it had been dragged to
+ok   wb fold: with a drag that strays a little, yaw swings through more than 100° within two pixels and the card shows "剧烈变化", never "跳变"
+ok   wb fold: a straight downward drag turns the plane about the pitch axis, because the view direction of the interactive (40°) equals the starting yaw (40°)
+ok   w5 at 0.30 rad per step, 20 steps: exp stays at length 1.000, the naive point is at 2.367 and "已经不是旋转"
+ok   w5: 20 steps of 0.30 rad make 6 rad, just short of a full turn of 2π ≈ 6.28
+ok   w5: after the very first step the naive length is 1.044
+ok   w5 at 0.15 rad per step, 40 steps (the same 6 rad): the naive length is 1.561
+ok   w5: even at the smallest step (0.05) one step already leaves the circle (length 1.001)
+ok   wd example 1: SLERP 94° uniform, Euler-angle interpolation 108° varying, SLERP with −q₁ 266° uniform
+ok   wd "播放" runs each of the three methods to t = 1.00 (the button reads "暂停" while it plays)
+ok   wd example 1, recomputed with the interactive's own code: totals 108.2°, 93.8°, 266.2°; SLERP is uniform and equals the angle between the two orientations; 266.2° = 360° − 93.8°
+ok   wd example 1: the Euler-angle interpolation starts at about 141° per unit of t and ends at about 76°, falling all the way
+ok   wd example 2: the orientations are 71° apart, Euler-angle interpolation turns 292°
+ok   wd example 2: its yaw goes from −150° to 150° (300° counted, 60° across ±180°); recomputed totals 292.3° and 71.2°
+-- Part B · numbers and formulas in the text, recomputed here
+ok   header: no interactive uses the browser's own random numbers; the two that use chance (wm, wd) draw from a seeded generator, and "随机" gives 240° / 120° / 240° and then 118° / 104° / 256° after loading
+ok   basics: (1, 2, 3) + (0, 1, 0) = (1, 3, 3); 2 · (1, 2, 3) = (2, 4, 6)
+ok   basics: ‖(3, 4, 0)‖ = 5 and the unit vector (0.6, 0.8, 0)
+ok   basics: x̂ · ŷ = 0; (1, 1, 0) · (1, 0, 0) = 1, cos α = 1/√2, α = 45°
+ok   basics: x̂ × ŷ = ẑ and ŷ × x̂ = −ẑ; a × b is at right angles to a and to b (300 random pairs)
+ok   basics: the matrix for 90° about z sends (1, 0, 0) to (0, 1, 0); R · v is the three columns mixed by v (300 random cases)
+ok   basics: (A · B) · v = A · (B · v) (300 random cases)
+ok   basics: for the 90°-about-z matrix the transpose is (0 1 0; −1 0 0; 0 0 1), the trace 1 and the determinant +1; det R = c₁ · (c₂ × c₃) agrees with the cofactor formula (300 random matrices)
+ok   basics: 180° ÷ π ≈ 57.3°; atan2(1, 1) = 45°, atan2(−1, −1) = −135°, atan2(1, 0) = 90°
+ok   core idea: Ry(90°)·Rx(90°) sends the nose to (0, 0, −1), Rx(90°)·Ry(90°) sends it to (0, 1, 0) (also what the figure shows)
+ok   core idea: 3 − 0 = 4 − 1 = 9 − 6 = 3
+ok   matrix: the columns of the 90°-about-z matrix are (0, 1, 0), (−1, 0, 0), (0, 0, 1); for 200 random rotations RᵀR = I and det = +1
+ok   matrix: the transpose of Rz(90°) is Rz(−90°)
+ok   matrix: with R = I and t = (1, 0, 0) the point (0, 2, 0) goes to (1, 2, 0)
+ok   matrix: ½ (I + Rz(180°)) has a single non-zero entry, the 1 in the bottom right corner
+ok   Euler: Rz(90°)(1, 0, 0) = (0, 1, 0), Ry(90°)(0, 0, 1) = (1, 0, 0)
+ok   Euler: the nine entries of the big matrix, as written in the card, equal Rz·Ry·Rx (300 random triples)
+ok   Euler: θ = −asin(r31), φ = atan2(r32, r33), ψ = atan2(r21, r11) give back the three angles (300 random triples with |θ| < 86°); for Rz(90°) they give 0, 0, 90°
+ok   Euler, gimbal lock: (0°, 90°, 30°) and (20°, 90°, 50°) give the same matrix; the card's matrix in sin and cos of φ − ψ equals Rz·Ry(90°)·Rx (300 random pairs); at θ = −90° only φ + ψ matters
+ok   Euler, rates: cos 89° ≈ 0.01745 and 10 / 0.01745 ≈ 573
+ok   Euler, rates: the formula ψ̇ = (ωy sin φ + ωz cos φ) / cos θ against a finite difference of the page's own matrices
+ok   Euler, conventions: (0°, 30°, 0°) and (180°, 150°, 180°) are the same orientation; 6 + 6 orders, each intrinsic or extrinsic, make 24
+ok   Euler, figure: with y to the left and z up, a positive pitch points the nose down (ψ = 60°, θ = 35°: z component −0.57; in the interactive at 0° / 30° / 0° it is −0.50)
+ok   axis-angle: π/2 ≈ 1.571 and −30° = −0.524 rad
+ok   axis-angle: for k = ẑ, K (1, 0, 0) = (0, 1, 0) = ẑ × x̂; K v = k × v for 300 random k and v
+ok   axis-angle: Rodrigues' example (1, 0, 0) + (0, 1, 0) + (−1, 0, 0) = (0, 1, 0); the formula of the card equals the page's rotation by quaternion (300 random axes and angles)
+ok   axis-angle: K³ = −K, and 40 terms of the series I + [r]× + [r]×²/2! + … equal Rodrigues' formula (300 random rotation vectors)
+ok   axis-angle: θ = acos((tr R − 1)/2) and k from the differences across the diagonal recover axis and angle (300 random cases); for Rz(90°): tr R = 1, θ = 90°, (0, 0, 2) / 2 = (0, 0, 1)
+ok   axis-angle: for a small angle, half the differences across the diagonal have length ≈ θ (0.01 rad: error below 10⁻⁶)
+ok   axis-angle: Rx(90°)·Ry(90°) is a turn of 120° about (1, 1, 1)/√3, while a + b has length 127° along (1, 1, 0)/√2
+ok   quaternion: 90° about z is (0.707, 0, 0, 0.707); 180° about x is (0, 1, 0, 0); unit length for 300 random ones
+ok   quaternion: q ⊗ (0, v) = (0, 0.707, 0.707, 0), then ⊗ q* gives (0, 0, 1, 0); the sandwich equals the rotation matrix for 300 random q and v
+ok   quaternion: for a vector along the axis, q ⊗ (0, k) = (−sin(θ/2), k cos(θ/2)) and the right-hand factor brings it back to (0, k); a vector at right angles is turned through θ/2 by the left factor (300 random cases)
+ok   quaternion: the product formula of the card equals the page's product (300 random pairs); q ⊗ q for 90° about z is (0, 0, 0, 1)
+ok   quaternion: 9 × 3 = 27 multiplications against 4 × 4 = 16
+ok   quaternion: q and −q give the same rotation matrix (300 random q); both turn x to y in the example
+ok   Lie: each naive step multiplies the length by √(1 + (ωΔt)²): 1.09¹⁰ = 2.367, 1.0225²⁰ = 1.561, √1.09 = 1.044
+ok   Lie: the velocity of a rotation path at its start is the skew-symmetric matrix [ω]× (central differences, 100 random axes and rates)
+ok   Lie: Ṙ = R [ω]× against a finite difference of R ← R · exp([ω Δt]×) (100 random cases); (1, δ/2) normalized is the small rotation to within 10⁻⁶ at |δ| = 0.01
+ok   Lie, figure: a straight step of 0.8 rad ends √(1 + 0.64) = 1.28 from the middle (the interactive shows 1.281 after one step of 0.80)
+ok   conversions: the table repeats the four cards of the step 5 interactive at its start
+ok   conversions: 1 − 2 × (0.297² + 0.283²) ≈ 0.66
+ok   conversions, quaternion → matrix: the nine entries of the card equal Rodrigues' formula for the axis and angle of q and the page's routine (300 random q); the example gives Rz(90°)
+ok   conversions, matrix → quaternion: the four formulas recover q up to sign (random rotations with tr R > 0.2); for Rz(90°): w = z = 0.707
+ok   conversions, Shepperd: when r11 is the largest diagonal entry the second set of formulas recovers q (random cases); for 180° about x the diagonal is 1, −1, −1, tr R = −1, w = 0, and it gives (0, 1, 0, 0)
+ok   conversions, Euler → quaternion: the four closed-form components equal qz ⊗ qy ⊗ qx, the page's routine and the rotation matrix Rz·Ry·Rx (300 random triples); (90°, 0, 0) gives w = z = 0.707
+ok   conversions, quaternion → Euler: the three formulas give back the angles (300 random triples with |θ| < 86°)
+ok   conversions, quaternion → axis-angle: θ = 2 atan2(‖u‖, w) and k = u/‖u‖ agree with the page's routine and reproduce the rotation (300 random q); atan2(0.707, 0.707) = 45°, θ = 90°
+ok   interpolation, SLERP example: cos Ω = 0.707, the two weights are sin 22.5° / sin 45° = 0.5412, and 0.5412 × (1.7071, 0, 0, 0.7071) = (0.924, 0, 0, 0.383) is 45° about z
+ok   interpolation: R0 · exp(t · log(R0ᵀR1)) and SLERP give the same orientation at t = 0.2, 0.5, 0.9 (random pairs), and the angle between two orientations is twice the angle Ω between their quaternions
+ok   interpolation, figure: chord points at t = ¼, ½, ¾ pushed out to the circle are 19.1°, 40.9°, 40.9°, 19.1° apart for Ω = 120° (crowded at the ends); the arcs of example 1 are 46.9° and 133.1°, twice that is 94° and 266°
+ok   figure of Rodrigues' formula: sin 70° ≈ 0.94 and 1 − cos 70° ≈ 0.66
+ok   figure of the ball: turning on about one axis, the angle reported by the page rises to 180° and then falls while the axis flips (179° about k, then 179° about −k at 181°, 110° at 250°, 1° at 359°)
+ok   summary: the angle of R_estᵀ R_gt equals 2 acos(|q₁ · q₂|) (200 random pairs); atan2(‖(R − Rᵀ)∨‖/2, (tr R − 1)/2) gives θ and half that length is sin θ (300 random cases)
+
+108 checks, 0 failed; page errors: 0

@@ -74,25 +74,30 @@ Open the live pages above in any browser, on a phone or a computer. There is no 
 
 ## 1. Rotation Representations: Matrices, Euler Angles, Axis-Angle, Quaternions · 旋转的表示：矩阵、欧拉角、轴角、四元数
 
-Rotation representations in robotics: rotation matrices, Euler angles, axis-angle, quaternions, and the Lie groups and Lie algebras that tie them together.
+Rotation representations in robotics: rotation matrices, Euler angles, axis-angle, quaternions, and the Lie groups and Lie algebras that tie them together. The running example is a paper plane, and one orientation of it is written down in all four ways.
 
-机器人里的旋转表示：旋转矩阵、欧拉角、轴角、四元数，以及把它们串起来的李群和李代数。
+机器人里的旋转表示：旋转矩阵、欧拉角、轴角、四元数，以及把它们串起来的李群和李代数。贯穿全页的例子是一架纸飞机，同一个姿态用四种写法各写一遍。
 
-0. Basics: ℝ³, dot and cross products, matrices, SO(3), the circle-and-tangent picture
-1. Rotation matrix
-2. Euler angles and gimbal lock
-3. Axis-angle, rotation vectors, Rodrigues' formula, exp and log
-4. Unit quaternions and the double cover
-5. Lie groups and Lie algebras: so(3), kinematics, optimization on manifolds
-6. Conversions between every pair of representations
-7. Interpolation: SLERP versus Euler-angle lerp
-8. Summary, how to choose, common pitfalls, symbol reference, a check question
+0. Preliminaries, folded and to be opened when needed: ℝ³, length, dot and cross products, matrix products, `Rᵀ`, `I`, `R⁻¹`, `det`, `tr`, radians and `atan2`, the name SO(3)
+1. Core idea: the circle and its tangent line, why the order of two turns matters, why any three numbers must have bad points
+2. Rotation matrix: 9 numbers, 6 constraints
+3. Euler angles and gimbal lock
+4. Axis-angle, rotation vectors, Rodrigues' formula, exp and log
+5. Unit quaternions and the double cover
+6. Lie groups and Lie algebras: so(3), kinematics, optimization on manifolds
+7. Conversions: one orientation in four notations, quaternion → matrix, and the other formulas folded for looking up
+8. Interpolation: SLERP versus Euler-angle lerp and NLERP
+9. Summary, how to choose, common pitfalls, symbol reference, a check question
 
-Interactive demos: the circle and its tangent line, matrix columns and drift correction, a three-ring gimbal, Rodrigues' formula term by term, a drag-to-rotate comparison of all four representations, naive versus exp integration, and interpolation paths.
+Interactive demos: the circle and its tangent line, matrix columns with "add a little error" and "project back to SO(3)", a three-ring gimbal, Rodrigues' formula term by term, a drag-to-rotate comparison of all four representations, naive versus exp integration, and interpolation paths.
 
-Conventions: `v′ = R · v`, so the columns of `R` are the body axes expressed in the world frame. Quaternions follow the Hamilton convention and are written `(w, x, y, z)`.
+Every step lets the reader play first: the interactive comes before the formula cards and is followed by a "What you will see" line with its numbers (step 0 and step 7 have no interactive). Nine static figures draw what no interactive shows (the plane and its three axes, the same two turns in two orders, longitude failing at the pole, three frames chained, yaw then pitch then roll, Rodrigues' formula seen from along the axis, the ball of rotation vectors whose opposite surface points are the same rotation, a straight step against a step wrapped onto the circle, chord against arc and the short way against the long way). Each formula carries a small name above it, and no formula contains Chinese. The numbers are checked by `rotation/calc/check.js`, which operates every interactive along its prompt and tests the formulas of the cards on random orientations against the page's own code (see `rotation/calc/README.md`).
 
-约定：矩阵作用方式是 `v′ = R · v`，`R` 的三列是物体三根轴在世界系里的方向；四元数按 Hamilton 约定，写成 `(w, x, y, z)`。
+每一步都先玩：交互放在公式卡片前面，后面跟一句带数字的"你会看到"（第 0 步和第 7 步没有交互）。九张图画出交互里没有的东西（飞机和它的三根轴、同样两次转动换个顺序、经度在极点失效、三个坐标系接成一串、先 yaw 再 pitch 再 roll、顺着转轴看罗德里格斯公式、旋转向量组成的球和球面上相对的两点是同一个旋转、直着走一步和缠到圆上走一步、弦和弧以及近路和远路）。每条公式上面有一个小名字，公式里没有汉字。这些数由 `rotation/calc/check.js` 核对：它照每个交互的提示去操作一遍，并把卡片上的公式拿随机姿态和页面自己的程序对照（见 `rotation/calc/README.md`）。
+
+Conventions: `v′ = R · v`, so the columns of `R` are the body axes expressed in the world frame. Quaternions follow the Hamilton convention and are written `(w, x, y, z)`. Euler angles are yaw, pitch, roll about z, y, x in that order, and a positive pitch points the nose down.
+
+约定：矩阵作用方式是 `v′ = R · v`，`R` 的三列是物体三根轴在世界系里的方向；四元数按 Hamilton 约定，写成 `(w, x, y, z)`；欧拉角按 z、y、x 的顺序依次是 yaw、pitch、roll，pitch 为正时机头朝下。
 
 ## 2. Camera Models and Point-Cloud Registration: From Depth to Registration · 相机模型与点云配准：从深度到配准
 
