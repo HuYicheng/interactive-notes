@@ -1,0 +1,130 @@
+-- step ① · lp: one wheel-speed loop
+ok   lp at rest: closed loop, true speed 0.30 m/s
+ok   lp constants: 0.04 (m/s)/V so 0.30 m/s needs 7.5 V; battery 14.4 V; Kp 100; Ki = Kp/τ ≈ 1700; one pulse = 0.61 mm; the carpet leaves 60%
+ok   lp carpet: the status says the voltage goes from 7.5 V to about 12.5 V and the speed is back at 0.30 m/s
+ok   lp carpet (the interactive's own code): the speed dips to about 0.27 m/s and is back within 0.006 of 0.30 in under 0.2 s; the voltage it needs is 0.30 / (0.04 × 0.6) = 12.5 V
+ok   lp feedback cut on the carpet: 7.5 V, true speed 0.18 m/s
+ok   lp 2 ms window: on average 1.0 pulse per window, one pulse = 0.31 m/s
+ok   lp 2 ms window, target 0.30 on the carpet: steady (voltage scatter under 1 V)
+ok   lp 2 ms window, target 0.20: the measured speed is 0, 0.31 or 0.61 m/s, the voltage is at 14.4 V about four-tenths of the time and the wheel runs about 0.01 m/s below target
+ok   lp 50 ms window: the status says the measurement is about 25 ms late
+ok   lp 50 ms window, target 0.30 → 0.20 on the carpet: overshoots down to about 0.16, swings two or three times, settles after about 0.2 s
+ok   lp the same on the hard floor: overshoots to about 0.11 and swings for over half a second
+ok   lp carpet, target 0.40: would need 16.7 V, stops at 0.35 m/s with 14.4 V
+ok   lp hard floor, target 0.30, no integral: settles at 0.24 m/s, 0.06 short
+ok   lp feedback wired backwards: 14.4 V, the wheel runs away to 0.58 m/s
+-- step ② · pd: a joint holding a weight
+ok   pd PD loop, 1 kg: rests 5.1° below the target (4.45 N·m ÷ 50 ≈ 0.089 rad)
+ok   pd open loop, 1 kg, at the target: a constant 4.25 N·m just holds it at 30.0°
+ok   pd open loop, 1.5 kg: the arm ends about 52° below the horizontal, 82° from the target
+ok   pd (own code) open loop 1 kg → 1.5 kg: settles at −51.8° after ten seconds or so; a push there sends it swinging and it settles at −51.8° again
+ok   pd PD loop again, 1 kg: 5.1° below
+ok   pd PD loop, 1.5 kg: 7.3° below (6.33 N·m ÷ 50 ≈ 0.127 rad)
+ok   pd PD loop, a push: back in under half a second (readout 1.5 s later: 7.3° again)
+ok   pd K_d = 0, a push: swings between about 12° and 32° and takes six or seven seconds to settle
+ok   pd PD + gravity comp., 1.5 kg: 2.1° low, the feedforward gives 1.8 N·m too little
+ok   pd PD + gravity comp., 1 kg: the sag is 0.0°
+-- step ③ · ip: how fast a loop has to be
+ok   ip human hand (30 Hz, 0.12 s): stick 1.07 m, T = 330 ms, total lag about 137 ms = 0.41 T
+ok   ip slider: 60 cm reads 0.55 T and 58 cm reads 0.56 T
+ok   ip (own code) human hand: 1.07 m and 60 cm stand for two minutes, 58 cm falls after ten seconds or so, a 15 cm “pencil” (1.1 T) within about a second
+ok   ip motor controller (1 kHz, 1 ms), 5 cm stick: T = 71 ms, lag 0.02 T, stands firm
+ok   ip 5 cm stick, delay 30 ms: 0.43 T, “precarious”
+ok   ip 5 cm stick, delay 45 ms: 0.64 T; (own code) it stands for two minutes at 43 ms and falls within three seconds at 45 ms
+-- step ④ · nl: the vacuum's three nested loops
+ok   nl ③ wheel loop: 1000 times a second, pulses × 0.61 mm ÷ window, the error is a subtraction in m/s
+ok   nl ② route loop: 10 times a second, lidar against the map plus wheel odometry (SLAM), an error that can still be subtracted
+ok   nl ① task loop: acts on events, a coverage map, and a comparison that is mostly a judgement
+-- step ④ · cq: the quadrotor's four loops
+ok   cq at load the drone flies by itself to the target at the top right (2.20 m); the copy of its code is there after 6 s too
+ok   cq tap far left: the position loop asks for the 3 m/s limit
+ok   cq (own code) a 4.4 m move: speed asked 3 m/s (limit), tilt asked about 29° (limit), turning rate asked over 200°/s, thrust difference over 1 N; there in under 3 s, overshoot 3 cm
+ok   cq gust: the status says the body tilted only about 3°
+ok   cq (own code) gust: tilt 3°, blown about 0.3 m off, back within 5 cm after two to three seconds
+ok   cq rate loop at 20 Hz: the status says the body keeps shaking
+ok   cq (own code) 20 Hz: swings to 20° or so, never crashes, still gets to a new target
+ok   cq (own code) 15 Hz: swings to 50° or so without crashing in 40 s
+ok   cq (own code) 12 to 14 Hz (the eight slider steps that read 12, 13 or 14 Hz): most of them flip within 40 s, hovering or after a new target, some after a few seconds and some after tens of seconds
+ok   cq (own code) k_x = 4: overshoots by about 0.7 m and stays within 5 cm only after six or seven seconds
+ok   cq k_x = 4: the status says the position loop's gain is too large
+ok   cq rate loop off while hovering: crashes after three or four seconds (interactive: status “crashed”; own code: 3 to 4.5 s)
+-- step ⑤ · pw: a switch and a coil
+ok   pw manual 50%, 20 kHz: 12.0 A, 1.20 N·m, ripple 0.30 A = 2.5% of the average
+ok   pw 1 kHz: ripple 5.88 A, 49% of the average
+ok   pw 20 kHz, supply drops to 18 V, manual: the current falls to 9.0 A, a quarter less
+ok   pw current loop with the same drop: still 12.0 A, the duty cycle goes from 50% to about 66%
+ok   pw (own code) switch-on at 20 kHz: manual reaches 63% after 1 ms and 95% after 3 ms; the current loop reaches 95% after about 0.65 ms, more than four times sooner
+-- step ⑥ · sc: who reacts first
+ok   sc vacuum, moment 3 (the sill): the ③ wheel loop reacts first; right wheel down to 0.17 m/s, voltage 6.3 V → about 10 V, back at 0.25 m/s within 0.1 s; the body is less than 1° off
+ok   sc vacuum, moment 5 (the wet patch): the ② route loop reacts first (heading 8° off); the encoders count every pulse
+ok   sc arm, moment 3: the ③ velocity loop reacts first, not the innermost ④ current loop; 0.2 kg × 9.8 × 0.6 m ≈ 1.2 N·m, ÷ 100 ÷ 0.1 N·m/A ≈ 0.12 A
+ok   sc quadrotor, moment 2 (a gust): the innermost ⑤ rate loop reacts first
+ok   sc car, moment 2: the new target enters at the outermost ① loop and passes through ② tracking, ③ brake pressure, ④ motor current; about 0.3 s in all, in which a car at 40 km/h covers over 3 m (3.3 m)
+-- step ⑥ · tz: the same 0.3 s on eight clocks
+ok   tz runs in the 0.3 s after the push: task 0, navigation 0, camera 9, MPC 12, whole-body 150, state estimate 300, joint PD 3000, current loop 12000
+ok   tz 1 s window: navigation, camera and MPC tick by tick; whole-body control, state estimate, joint PD and current loop are solid bands
+ok   tz 0.1 ms window: only joint PD and current loop are visible, the rows above have not run; in the 85 µs after the push the current loop (every 25 µs) runs 3 times and the joint PD once
+-- step ⑦ · sk: layers × levels
+ok   sk vacuum, “Perception and estimation”: ① coverage map, ② SLAM, ③ does not pass through this layer
+ok   sk arm, “Control”: ② position P at 4000/s, ③ velocity PI at 8000/s, ④ current PI at 16,000/s; ① does not pass through
+ok   sk the three control levels of the arm are all computed in the joint drive
+ok   sk where each level compares (column 2 = decision, 3 = planning, 4 = control): outermost always decision; vacuum route loop and quadruped MPC loop in planning; all others in control; 3, 4, 4, 5, 5 levels
+-- step ⑧ · st: the whole vacuum
+ok   st (own code) one lap dock → A → B → dock takes about 61 s of simulated time (about half a minute at speed ×2): task 3, global planning 4, perception about 300, local planning about 600, base control about 3000, wheel loop over 60,000 runs; safety 0
+ok   st (own code) a box dropped on the path, perception on: global planning searches again, the robot reaches B without a bump
+ok   st (own code) perception off, a box in the open: the robot bumps into it (safety takes over and backs off), the spot goes into the map, global planning finds a way round, and it reaches B
+ok   st (own code) perception off, a box blocking the narrow passage: after the bump global planning finds no route, and 3 s later the task program moves on to the next goal without having reached B
+ok   st (own code) global planning off: in 30 s it bumps into furniture again and again and never reaches A
+ok   st (own code) wheel loop off: A → B takes nearly a fifth longer (about 25 s against 21 s)
+ok   st (own code) main computer frozen: 0.35 s later the watchdog has stopped both wheels; the four programs on the main computer stop counting, base control and the wheel loop go on
+ok   st interactive: when it reaches A the wheel loop has run about 17,200 times, as in the copy (16801)
+ok   st interactive, main computer frozen: the safety row reads “watchdog: stop”, both wheel targets are 0.00, local planning stops counting and the wheel loop goes on
+-- step ⑨ · rb: five robots by frequency
+ok   rb arm: control layer from the controller's real-time interface (125 Hz – 1 kHz) through the joint position and velocity loops (1 – 8 kHz) to the current loop (10 – 40 kHz); camera from 15 Hz; about 3 orders of magnitude
+ok   rb quadrotor rate loop 400 Hz – 8 kHz; car lateral and longitudinal control 50 – 100 Hz
+ok   rb quadruped: current loop at 40 kHz against navigation planning at 0.5 Hz, about 5 orders of magnitude, the widest of the five (3, 5, 4, 4, 4)
+ok   rb vacuum: motor PWM at 20 kHz (the innermost box of figure 1)
+-- step ⑩ · bs: CAN and EtherCAT
+ok   bs all four send: Air con (0x3E8) drops out at bit 9, Battery (0x1F4) at bit 8, Steering (0x0C8) at bit 7; Brakes (0x064) wins
+ok   bs without Brakes: Steering (0x0C8) wins
+ok   bs EtherCAT, 4 drives: polling over CAN takes 0.9 ms and still fits; with 5 it takes 1.1 ms and no longer fits in 1 ms
+ok   bs EtherCAT, 60 drives: a frame of about 1472 bytes takes about 161 µs, 16% of the 1 ms cycle (about a sixth); CAN would take 13.3 ms
+-- step ⑩ · tm: time stamps that disagree
+ok   tm 20 m/s, Δt = 0: aligned, 6.0 m
+ok   tm Δt = 1 ms: 2 cm out of place, 2% of the points already behind the car, 6.2 m
+ok   tm Δt = 10 ms: 0.20 m, 5%, 6.3 m; 30 ms: 0.60 m, 15%, 7.0 m
+ok   tm Δt = 50 ms: 1.00 m out of place, 22% of the points behind the car, fused distance 7.5 m, 1.5 m too far
+ok   tm speed 0 with Δt = 50 ms: nothing out of place, 6.0 m
+ok   tm PTP: clocks about 1 µs apart, the car 0.02 mm out of place
+-- text · the header and step 0
+ok   hdr "the route is recomputed over a thousand times, the wheel speed corrected hundreds of thousands of times, the power switches flipped millions of times" in a few minutes: at 10, 1000 and 20,000 times a second, 3 to 5 minutes give 1800–3000, 180,000–300,000 and 3.6–6 million
+ok   fig 1: the rates on the nested boxes (10 and 1000 times a second, about 20,000) are those of the interactives
+-- text · step ① the wheel loop
+ok   card: with the proportional term alone the wheel settles at 0.24 m/s; the missing 0.06 m/s times K_p is 6 V, and 6 V gives 0.24 m/s; 0.30 m/s needs 7.5 V
+ok   card: K_i ≈ 1700 V/m (K_p ÷ 0.06 s = 1667); example: e = 0.03 m/s gives 3 V, plus about 7.5 V, about 10.5 V
+ok   text: circumference 0.22 m ÷ 360 pulses = 0.61 mm a pulse; 7.5 V on the carpet gives only 0.18 m/s
+ok   quiz 1: 0.20 ÷ 0.22 ≈ 0.91, so the wheel really turns at 0.30 ÷ 0.91 ≈ 0.33 m/s, 10% fast
+ok   fig 2: at 0.30 m/s a pulse comes about every 2 ms; 1 or 2 pulses in 2 ms read 0.31 or 0.61 m/s, 9 or 10 in 20 ms read 0.275 or 0.306, 24 or 25 in 50 ms read 0.293 or 0.306
+-- text · step ② the joint
+ok   card example: 50 × 0.1 rad = 5 N·m (0.1 rad is about 6°), minus 4 N·m of damping leaves 1 N·m
+ok   text: gravity torque (0.5 × 0.2 + 1 × 0.4) × 9.8 × cos 30° ≈ 4.2 N·m; sag ≈ 4.2 ÷ 50 ≈ 0.084 rad, about 5°
+ok   quiz 2: 4.2 ÷ 50 = 0.084 rad ≈ 4.8°; 1° ≈ 0.0175 rad; K_p at least 4.2 ÷ 0.0175 = 240 N·m/rad
+-- text · step ③ rate and delay
+ok   card example: T = √(1.2 ∕ 9.8) ≈ 0.35 s for the broom, √(0.15 ∕ 9.8) ≈ 0.12 s for the pencil
+ok   fig 4: starting from rest the tilt grows as cosh(t ∕ T): after 0.15 s the broom is at ×1.1 (a tenth more) and the pencil at ×1.8; after 0.30 s the pencil is at ×5.7 and the broom at ×1.4
+ok   quiz 3: T at least 0.15 ÷ 0.5 = 0.3 s, so l = g · T² ≈ 9.8 × 0.09 ≈ 0.9 m
+-- text · step ④ the cascade
+ok   card example: 2 m × 1 /s = 2 m/s; 2.5 /s × 2 m/s = 5 m/s²; 5 ∕ 9.8 ≈ 0.5 rad, nearly 30°; 8 /s × 0.5 rad ≈ 4 rad/s, about 230° a second
+ok   the gains of the card example are those of the interactive (k_v = 2.5 /s, k_θ = 8 /s) and the motors take about 20 ms to follow
+-- text · step ⑤ the current loop
+ok   card example: D ≈ 7.5 ∕ 14.4 ≈ 0.52; 24 V at 50% is 12 V, 12 A through 1 Ω, 1.2 N·m at 0.1 N·m/A; ripple 24 × 0.5 × 0.5 ∕ (0.001 × 20000) = 0.3 A, about 6 A at 1 kHz
+ok   quiz 5: from 20 kHz to 2 kHz the ripple grows about 10 times (formula: exactly 10; the interactive: 2.98 A against 0.30 A)
+-- text · steps ⑥ to ⑩
+ok   step 6 text: whole-body control 500 times a second, camera 30 frames, navigation once a second, joint PD drawn at 10,000 and the current loop at 40,000: the rows of the time-zoom interactive; 40,000 against 1 is nearly five orders of magnitude
+ok   step 8 card example and fig 7: v = 0.3 m/s, ω = 1 rad/s, b = 0.25 m give 0.175 m/s for the left wheel and 0.425 m/s for the right
+ok   step 8 text: the watchdog stops the base 0.3 s after the last command (the interactive's constant)
+ok   step 10 card example: 72 km/h is 20 m/s, × 10 ms = 0.2 m; clocks 50 ppm apart drift 600 × 0.00005 = 0.03 s in ten minutes
+ok   quiz 6: 15 m/s × 0.03 s = 0.45 m
+ok   summary: 3 levels for the vacuum, 4 for the arm and the car, 5 for the quadrotor and the quadruped, as in the table interactive
+
+108 checks, 0 failed; page errors: 0
