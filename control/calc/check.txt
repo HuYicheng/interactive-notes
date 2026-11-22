@@ -1,0 +1,160 @@
+-- step ① · pid: on-off, P, PD, PI, PID; anti-windup; sensor noise
+ok   on-off does not settle and the swing grows: about 67° peak to peak after 5 s, about 90° after 20 s (readouts 69.5°, 90.5°)
+ok   same loop as the interactive, on-off entered 0.5, 1.5 or 3 s after loading: 69.3° / 89.3°, 66.7° / 90.1°, 69.2° / 89.8°
+ok   the status no longer says it only "chatters around the target"
+ok   P: after 20 s the swing is still there (readout 13.9°) and the mean error is near 10.7° (9.8°)
+ok   same loop: with P the swing is 14.6° after 20 s and 0.59° after a minute; it stops 10.7° below the target (10.66°)
+ok   PD: no swinging after three or four seconds, the error is still 10.7°
+ok   PI: the swing grows (readout 43.4° after 12 s)
+ok   PID: the error is back to zero after about 8 s
+ok   anti-windup off, 60° → 120°: overshoot 52%
+ok   anti-windup on, back to 60°: overshoot 116%
+ok   anti-windup on, 60° → 120°: overshoot 21%
+ok   same loop: PD alone overshoots the step back to 60° by 146.8%; holding the arm at 60° takes 4.25 N·m of the 6 N·m, leaving 1.75
+ok   sensor noise: with the D filter the arm swings by less than 0.5° (0.2°), without it by 4° to 9° (4.8°)
+ok   same loop: the torque jitters by 1.19 N·m (standard deviation) with the filter and at least 2.9 N·m without it; the swing without it is 4.2° to 9.4°
+-- step ② · bode: delay, bandwidth, the D and I terms
+ok   Robust: ωc 9.3 rad/s, phase margin 61°, overshoot 6%
+ok   Robust with 40 ms: the delay eats ωc·τ = 21.3° and the margin is 40°
+ok   Robust with 60 ms: phase margin 29°, overshoot 14%, the status says the response swings
+ok   Add delay: ωc 18.8 rad/s, margin 15°, overshoot 32%; 40 ms eat 43.1°
+ok   Robust with Kd = 0: phase margin 2°, overshoot 96%
+ok   Robust with Ki = 20: phase margin still 55°, overshoot 42%
+-- step ③ · lqr: the price of torque, differencing against the Kalman filter
+ok   torque cost 0.01: K = (16.0, 2.78), poles −5.7 ± 3.5j
+ok   torque cost 0.0001: K = (105.0, 7.20), poles −14.5 ± 13.8j
+ok   torque cost 1: K = (9.9, 2.18), poles −4.5 ± 0.4j; the open-loop poles are 4.33 and -4.53
+ok   finite differences: speed estimate off by about 85 °/s, torque jitter about 4 N·m (readouts 81.6 °/s, 3.79 N·m; same loop over 40 s: 87.1 °/s and 3.99 N·m)
+ok   Kalman filter: about 3 °/s and 0.16 N·m (readouts 3.2 °/s, 0.18 N·m; same loop: 2.77 °/s and 0.16 N·m)
+ok   noise 0.3° → 1°: the estimator poles go from -24.8 ± 24.3j to -13.8 ± 13.1j (same computation as the interactive)
+-- step ④ · swing: LQR alone, the energy pump, pump then catch
+ok   LQR only at 1.5 N·m: torque pinned at +1.5, at most 32° from hanging
+ok   limit above 4: it goes over the top and is held
+ok   same loop, restarted from the bottom: 3.7 N·m fails (peak 118.4°), 3.8 N·m gets up; at 1.5 the peak is 32.1°
+ok   energy pump: the energy reaches 0.99 and the arm comes within about 6° of upright on every turn (status: 6°)
+ok   pump, then LQR catches: caught at 3.4 s
+ok   limit 0.5 N·m: caught at 13.4 s, 10 s later; the catch zone shrinks from ±34.5° to ±11.4° along the angle axis
+-- step ⑤ · smc: sliding mode against PD; chattering and the boundary layer
+ok   same loop after a restart: the sliding line is reached at 0.08 s; the error is then -3.31°, -1.23°, -0.47° at 0.1, 0.2, 0.3 s (ratios 0.37, 0.38) and below 0.1° from 0.48 s
+ok   default (1.5×, switching): error RMS 0.026°, torque jumps 8.7 N·m per step
+ok   PD: error RMS 0.000° at 1× and 3.24° at 2×
+ok   sliding mode at 2×: about 0.04° (0.04°), torque jumps 5.3 N·m per step
+ok   dry friction on: largest model error about 3.9 N·m (3.93), speed ripple about 0.4 °/s (0.38)
+ok   k = 4 still holds (0.04°); k = 3.5: 1.54°; k = 3: 6.78°
+ok   k back at 6, 200 Hz: speed ripple about 1.7 °/s (1.66), error about 0.2° (0.2°)
+ok   boundary layer at 200 Hz: φ = 1 still jumps (4.9 N·m per step), φ = 2 does not (0.012 N·m) with an error of 0.11°; 0.34° at φ = 6, 1.11° at φ = 20
+-- step ⑤ · dob: a payload nobody announced
+ok   2 kg payload: PD + feedforward sags 6.91° and stays 5.70° short; PID 5.96°, 1.75 s; Adaptive 4.49°, 1.01 s; ADRC 2.18°, 0.34 s
+ok   ADRC at ωo = 60: torque noise about 0.02 N·m per step (0.019)
+ok   Adaptive with γ = 0 is exactly PD + feedforward (6.91°)
+ok   γ = 5 with 3 kg: the mass estimate overshoots back and forth
+ok   ADRC: ωo = 10 sags 14.60° with torque noise 0.000; ωo = 150 sags 0.77° with about 0.21 N·m (0.209), 11 times the 0.019 at ωo = 60
+ok   payload taken off: PD goes straight back; PID and Adaptive first shoot up by about 5.6° and 4.2° (status: 5.6°, 4.2°)
+-- step ⑥ · imp: position, impedance, admittance and force control against a wall
+ok   position control: 54.5 N at 2 000 N/m, 158.8 N at 7 200, 200.0 N from 14 000 up; in series it would need 247 N to 429 N
+ok   impedance against the stiffest wall: 23.6 N at K = 800, 136.4 N at K = 5 000; softest wall: 42.9 N at K = 5 000, 17.1 N at K = 800
+ok   the status for a soft wall now names the series stiffness instead of "K × 3 cm ≈ 43 N"
+ok   pulled by hand: impedance (K = 800) gives way 12.5 mm per 10 N, position control 0.5 mm
+ok   admittance, stiffest wall, D = 20: the contact force jumps by over 100 N (status: 106 N)
+ok   the same settings under impedance: a steady 23.6 N
+ok   force control: 15.0 N against the softest and the stiffest wall; pressed in 7.50 mm and 0.30 mm
+-- step ⑦ · mpc: horizon, solver, planning once, a wrong model
+ok   default (iLQR, 1.2 s): upright after 1.7 s; the first plan pushes at −2.5 N·m, swings out to 36.4° and ends at 105.3° on the other side
+ok   0.5 s horizon: never reaches the top; the plan sits at the torque limit (readout 92%; the first plan: 100%, pushing one way to -45.7°)
+ok   MPPI with 0.5 s: upright after about 2 seconds (1.9 s)
+ok   planning once: at the top after 1.7 s, then it falls (now 113° from upright)
+ok   re-planning every step with the model wrong: upright after 2.4 s, and held
+ok   computation per step on this machine: iLQR 0.6 ms, MPPI 2.5 ms, both far below the 20 ms period
+-- step ⑧ · rl: random search finds the LQR gains; domain randomisation
+ok   before training: gains (3.0, 0.60), LQR (10.7, 2.47)
+ok   the first training after loading the page pauses at 150 iterations with the gains at (11.2, 2.59) and a cost of 0.086, the same as LQR
+ok   same training re-run in the page (seed and update rule of the interactive): gains (11.19, 2.59) after 150 iterations; first within 10% of LQR at iteration 7 (224 episodes) with a cost of 0.089
+ok   test mass 2.5 kg: it falls; holding it needs k₁ above m·g·l = 12.3
+ok   randomised for another 150 iterations: gains (20.6, 4.23), all three test masses hold, cost at 1 kg 0.119 against 0.086
+-- step ⑧ · cbf: the safety filter
+ok   filter off: the cart hits the wall at 0.83 s doing 1.44 m/s (status: 刚才 1.4 m/s)
+ok   filter on, γ = 3: no crash; the command is edited from 0.26 s to the end (4.99 s); 10.8 cm from the wall at 1 s, 3.7 mm at 2 s
+ok   a clean run no longer shows the "it still crashed" status left over from an earlier run
+ok   γ = 0.5: edited from 0.06 s; still 8.3 cm short when the 5 s are up (readout just before the end: 8.9 cm)
+ok   γ = 20: edited only from 0.52 s; 5.4 mm from the wall at 1 s; no crash
+ok   learned policy, γ = 3, dry floor: no crash (readout after two runs; same loop: 0 of 300 runs crash)
+ok   slippery floor, γ = 3: no crash (same loop: 0 of 300)
+ok   slippery floor, γ = 6: it crashes at around 0.2 m/s (status: 0.2 m/s; same loop: 220 of 300 runs crash, the fastest at 0.24 m/s)
+ok   γ = 20: nearly every run crashes, the fastest at about 0.8 m/s (same loop: 299 of 300, 0.76 m/s; the plain PD: 0.24 m/s at γ = 6 and 0.72 at 20)
+-- step ⑨ · wm: MPC with a learned model
+ok   default (physics features, 500 samples): one-step error 6%, upright after 1.9 s; the learned gravity curve is at most 0.16 N·m from the true one
+ok   linear model: one-step error 57%; it believes gravity at the top is 4.7 N·m; never upright; imagination and reality 125° apart
+ok   50 samples, batches 1 to 3: 27% and upright after 5.1 s; 30% and not upright; 28% and 2.8 s
+ok   same loop, the first 12 batches at 50 samples: errors 15% to 34%; 5 are not upright within 9 s, the others take 1.8 to 6.8 s
+ok   200 samples: errors 6% to 17%, 10 of 12 upright; 2000 samples: 5% to 7%, all upright after 1.8 to 2.4 s
+ok   2000 samples, upright, then a push: the imagination error jumps from 12° to 291° and is back at 11° a few seconds later
+-- step ⑩ · sp: the map of 51 methods
+ok   by family: 10 groups, 51 methods; PID's relatives: LQR comes out as a PD, the sliding surface has the shape of a PD, ADRC's total disturbance does the integral's job
+ok   the detail panel no longer refers to "the previous page"
+ok   by loop level: PID is in 4 groups (电流 / 力矩环; 关节环; 全身 / 平衡环; 工业过程与家电); the current / torque loop holds 6 methods
+ok   by when the work is done: "trained offline, a network online" holds 8 methods; first years: 1989, 2018, 2019, 2019, 2020, 2023, 2023, 2025
+ok   by where the model comes from: "a learned model" holds 9 methods, each named in the "What you will see" line
+ok   the note of the "layers" grouping names the six layers itself
+-- step ⑪ · hum: the waves of humanoid control
+ok   teal ("learned") first appears in the row "2019–2024 …" with three layers; the next row takes the decision layer too
+ok   MPC plus whole-body control: gait timing, MPC 30–100 Hz, whole-body control 0.5–1 kHz, joint torque loop; RL: one policy at ~50 Hz above the joint PD and the current loop
+ok   where the model sits: online for MPC plus whole-body control, in the simulator for RL
+ok   motion tracking plus a VLA: VLA at ~7–9 Hz, current loop up to 40 kHz: 3.65 to 3.76 orders of magnitude
+-- text · the arm, the header and figure 1
+ok   I = m l² = 0.25 kg·m², friction 0.05, mgl about 4.9 N·m
+ok   figure 1 and the lead: 1 kg, 0.5 m, 4.9 N·m; the header promises 51 methods
+ok   no sentence refers to "the previous page" any more (the page stands alone; the link to the previous page in the header is the navigation)
+-- text · step ① PID
+ok   card: with Kp = 20 the arm rests at 49.34°, where gravity needs 3.72 N·m; that takes an error of 0.19 rad = 10.66°
+ok   quiz: with Kp = 40 it rests at 54.29° (3.98 N·m), 5.71° short: about half the 10.66° of Kp = 20
+ok   lead: on-off grows to about 90° peak to peak after ten to twenty seconds (85.8°, 88.4°, 89.2° after 12, 15, 19 s)
+ok   legend: dead band ±1.5°, noise 0.4°, D filter at 30 Hz, push of 6 N·m for 0.08 s, 6 N·m limit by default (constants in the interactive's code)
+-- text · step ② frequency
+ok   card: Robust has ωc ≈ 9.3 rad/s and a 61° margin; 40 ms cost 9.3 × 0.04 = 0.37 rad = 21.3° and leave 40°
+ok   card: at twice the crossover frequency (18.8) the same 40 ms eat 43° and the margin drops from 58° to 15°
+ok   text: Kd from 2 to 0 takes the margin from 61° to 2° and the overshoot from 6% to 96%; with Ki = 20 the margin is 55° and the overshoot 42% (readouts checked in Part A)
+ok   quiz: 20 × 0.03 = 0.6 rad = 34.4°, leaving about 16° of 50°
+-- text · step ③ state space
+ok   card: mgl ∕ I = 19.62 s⁻², A = [[0, 1], [19.6, −0.2]], B = [0, 4]ᵀ
+ok   card: open-loop poles 4.33 and -4.53; the deviation grows e-fold every 0.23 s; released 1° off, the linear model is 38.8° off after 1 s
+ok   card: at 30° sin φ and φ differ by 4.7%
+ok   card: K = [16.0, 2.78], closed-loop poles −5.7 ± 3.5j; 2·mgl = 9.81
+ok   card: differencing turns 0.3° of noise into √2 × 0.3 ÷ 0.005 = 84.9 °/s; in the interactive's loop the one-second readings range from 74.4 to 96.7 °/s (mean 87.1), torque jitter 3.99 N·m
+ok   card: Kalman filter: speed error 2.77 °/s, torque jitter 0.16 N·m
+ok   quiz: K₁ must exceed mgl ≈ 4.9; flipping +4.3 to −4.3 gives K₁ ≈ 9.8
+-- text · step ④ nonlinear control and figure 5
+ok   lead and figure 5: a 1.5 N·m motor holds the arm still up to asin(1.5 ∕ 4.9) = 17.8°
+ok   card: from −4.9 J to +4.9 J is 9.81 J; caught after 3.41 s at 1.5 N·m, 13.38 s at 0.5, 1.46 s at 2.5
+ok   text: LQR alone fails below about 3.8 N·m, reaches about 32° and then rocks around 18°; catch zone ±11.4° at 0.5 N·m and ±57.9° at 2.5
+-- text · step ⑤ uncertainty
+ok   card: at 1.5× mass PD has an error RMS of 1.67°, sliding mode 0.026° with jumps of 8.7 N·m per step (readouts)
+ok   text: at 2× mass with friction the model error reaches 3.92 N·m; k = 3 fails (6.78°), k = 4 holds (0.04°)
+ok   legend of the sliding-mode interactive: target 45° ± 20° with a 2 s period, 15 N·m limit, dry friction ±0.3 N·m (constants in its code)
+ok   card: 2 kg payload: 6.9° and 5.7° short for PD; 6.0° and 1.75 s for PID; 4.5° and 1.0 s for Adaptive; 2.2° and 0.34 s for ADRC (readouts 6.91, −5.70, 5.96, 4.49, 2.18)
+ok   card and quiz: ωo 60 → 150 cuts the sag from 2.2° to 0.77° and raises the torque noise from 0.02 to 0.21 N·m per step, about 11 times
+-- text · step ⑥ contact
+ok   card: 20 000 × 0.03 = 600 N; 800 × 0.03 = 24 N (23.6 N in the interactive); in series with a 2 000 N/m wall 571.4 N/m and 17.1 N; position control against 50 000 N/m would need 428.6 N
+ok   text: admittance with D = 20 against the 50 000 N/m wall makes the contact force jump by over 100 N (status in Part A: 106 N)
+ok   legend: a 1 kg tip, a 200 N motor, the wall at 30 cm, the target 3 cm inside, walls from 2 000 to 50 000 N/m, Kp = 20 000 N/m, virtual mass 0.5 kg, approach at 0.15 m/s (constants in the code)
+-- text · step ⑦ MPC
+ok   card: the natural period is 2π ∕ 4.4 = 1.42 s
+ok   card: with iLQR a horizon shorter than about 0.8 s never gets up (0.7 s: "到达竖直用时 到不了"; 0.8 s: "到达竖直用时 3.4 s")
+ok   card: MPPI gets up even with a 0.3 s horizon ("到达竖直用时 3.5 s")
+ok   legend: 128 random torque sequences, 20 ms steps, the true mass 30% heavier, disturbances of about 0.02 N·m, "upright" within 14.1° (constants in the code)
+-- text · step ⑧ learning
+ok   card: with qω = 0.1 and r = 0.1 LQR gives K = (10.7, 2.47)
+ok   card: 30 trainings from (3, 0.6) (the interactive's seeds 2 to 31, 60 iterations): median 6 iterations and 192 episodes (9.6 minutes) to come within 10% of LQR; mean gains after 60 iterations (10.87, 2.52)
+ok   text: none of the 30 holds 2.5 kg (largest k₁ 11.68 < mgl = 12.26); after 60 randomised iterations all 30 do, at about (18.04, 4.15), with a cost at 1 kg 23.2% above LQR
+ok   legend of the learning interactive: 6 N·m limit, starts at ±0.15 or ±0.3 rad, 3 s episodes, cost φ² + 0.1ω² + 0.1u² (constants in the code)
+ok   card: without the filter the PD hits the wall at 1.4 m/s; with it (γ = 3, dry) never; on the slippery floor it crashes again from γ = 6 (same loop: no crash at 3, 0.24 m/s at 6)
+-- text · steps ⑨ and ⑩
+ok   card: with 500 samples and physics features the one-step error is about 6% (5.8%) and MPC has the arm upright after about 2 s (1.88 s); the linear model: 57% (57.2%), gravity at the top 4.7 N·m (4.73) against the motor's 3 N·m
+ok   card: an error of 10° is 0.17 rad and costs 0.030461741978670857 per step; 3 N·m costs 0.09
+ok   text: the map holds 51 methods and PID appears in four loop-level groups (counted in Part A)
+-- figures
+ok   8 figures: k-map 1, k-pid 1, k-freq 1, k-ss 1, k-nl 1, k-unc 1, k-con 1, k-model 1
+ok   figure 3: a lag of 120° is 60° short of 180°; a lag of 180° means a margin of 0
+ok   figure 4 is drawn from the Kalman update for two Gaussians (widths 28 and 40): the estimate moves 0.33 of the way to the measurement and its width is 22.9, narrower than both
+ok   figure 5: the peak is 4.9 N·m, the limit 1.5 N·m, the holding angle 18°
+
+134 checks, 0 failed; page errors: 0
