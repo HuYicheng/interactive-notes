@@ -1,0 +1,105 @@
+ok   every interactive is followed by a "你会看到" line
+-- Part A · the interactives, operated along their "先玩" prompts
+ok   sp demos: 6 frames, each with the teacher's action
+ok   sp demos: exactly 6 frames carry a teacher's action
+ok   sp video: the actions of all 6 frames are question marks; a human hand
+ok   sp prefs: two clips, one lands in the pan and one flies out; one sentence "A 比 B 好"
+ok   sp reward: 3 tries; the frames shown are 0 five times and 1 once, at the last frame of try 3
+ok   sp no labels: the answer for each frame is the next frame
+ok   sp bars: information 5, 3, 2, 1, 0 of 5; cheapness 1, 4, 3, 3, 5 of 5
+ok   kn demo: 1.50 → 3.84 → 4.78, inside the window at step 2 (not at step 1)
+ok   kn demo: then 5.15, 5.30, 5.36; at 5.40 from step 8 on, the teacher's force
+ok   kn success only: never moves from 1.50; "上一步：没动"; the 12 tries all failed
+ok   kn how far off: 4.00 after one step, then 4.52, 4.88, 4.65, 4.81, 4.92
+ok   kn how far off: from step 6 on it stays within 0.15 of 5.0, always closer than the teacher's 5.4
+ok   mdp: two steps right take the small cheese: 2 steps, plain sum 1.90, return 1.70
+ok   mdp: across the bridge to the big cheese: 10 steps, plain sum 9.10, return 3.26
+ok   mdp ①: γ = 0.8, the optimal policy goes to the small cheese (big cheese worth 0.91, small 1.50)
+ok   mdp ①: the engine agrees: route ends at the small cheese, V*(start) = 1.50, and 10 discounted steps to the big cheese give 0.91
+ok   mdp ②: γ = 0.9 with the slippery floor (20%): no longer across the bridge, back to the small cheese
+ok   mdp ②: the engine agrees: with slip at γ = 0.9 the route ends at the small cheese and does not touch the bridge
+ok   mdp ③: with slip and γ above 0.95 the arrows take the top row, 14 steps
+ok   mdp ③: the route already changes at γ = 0.93 (not yet at 0.92)
+ok   bc: at σ = 0.30 the student finishes 5 of 20 laps (25%), from 1235 pairs
+ok   bc: the 15 crashes are spread over all four quarters of the lap (own code: same 5/20 and 1235 pairs)
+ok   bc: the expert finishes all 20 under the same noise
+ok   bc: back to the student: σ = 0 gives 20/20, σ = 0.5 gives 0/20
+ok   bc: at σ = 0.5 the expert still finishes 17
+ok   bc: one round of DAgger at σ = 0.30: 1235 → 2368 pairs, 20/20
+ok   bc: noisy demonstrations instead: 1298 pairs, 14 laps finished
+ok   mm at 50%: averaging 0/8, sampling every step 2/8, sampling a whole chunk 8/8
+ok   mm: own code gives the same first batches (0, 2, 8); averaged flights all end at the tree, never more than 0.3 off the straight line
+ok   mm: at the small circle the demonstrated directions split about half up, half down, almost none straight ahead; their average points straight ahead
+ok   mm, 40 batches each: averaging mostly 0 and at most 2; every step 1 to 6; whole chunk 5 to 8, usually 7 or 8
+ok   mm: with 0% or 100% going over, averaging gets all 8 past (12 batches each with the own code too)
+ok   vi: for sweeps 1 to 8 the news has spread k cells and the arrow at the start leads to the small cheese
+ok   vi: at sweep 9 the arrow turns up towards the big cheese while the start still reads 1.70; 3.26 at sweep 10
+ok   vi: converged at sweep 12 (not yet at 11); the engine also needs 12 sweeps
+ok   vi Q-learning (ε = 0.1, Q from 0): after 400 episodes still the small cheese; right = 1.70 is the largest; big cheese never touched
+ok   vi optimistic init: after 100 episodes the greedy path goes to the big cheese, first reached between episode 7 and 14
+ok   vi optimistic init: the first hit shown is within 7 to 14
+ok   vi: own code, same history as the page (400 plain episodes, then optimistic): same first hit; plain run: same values at the start
+ok   vi: for 18 different histories the first hit with optimistic init is at episode 7 to 14, and after 100 episodes the greedy path ends at the big cheese
+ok   pg without baseline: 1.22, 1.07, 0.83, 0.67, 0.46; 0.15 at round 9
+ok   pg without baseline: 0.06 at round 14, 0.76 at round 15; rounds 11 to 40 between 0.06 and 0.76; all lines green
+ok   pg with baseline: 1.26, 1.19, 1.07; 0.17 at round 10; rounds 11 to 40 within 0.21; darts below average have red lines
+ok   rw door only (γ = 0.99): straight 9.23, pacing 0; the dog enters after 9 steps with G = 9.23
+ok   rw +1 per step closer: straight 17.88, pacing 53.63; the dog paces (more than 12 steps without entering)
+ok   rw +1: γ = 0.95: 14.03 vs 13.20 (enters); 0.96: 14.90 vs 15.80 (paces); 0.97: 15.83 vs 20.07
+ok   rw shaping: straight 18.23, pacing 9.00; straight wins at every γ tried from 0.5 to 0.99
+ok   dr one simulator: real ice 0.0115 stops at 24.3 m, 3.7 m short
+ok   dr one simulator: in the house only from 0.0095 to 0.0105; 2.5 m short at 0.011
+ok   dr random ±20%: in the house for exactly 0.008 to 0.012; 2.7 m short at 0.0125, 3.5 m too far at 0.0075
+ok   dr ±0%: the same as one simulator at every slider position
+ok   dr ±40% (0.006 to 0.014): in the house only from 0.0085 to 0.0125; both ends of the range miss
+ok   sys: the seven buttons are the seven systems named in the text
+ok   sys: only "插电池、开杯盖" uses one stop (demos); the others use two or three
+ok   sys: the orders named in the see line
+ok   sys: none of the seven uses the video stop
+-- Part B · numbers in the text, recomputed here
+ok   header: only the slippery floor (grid world) and "随机换一个 θ" (knob) use unseeded random numbers
+ok   knob: 36° per unit of force, half a turn at θ = 5, success from 150° to 210° = θ 4.2 to 5.8, teacher at 5.4
+ok   knob: from θ = 1.5 the pancake turns 54° and the demonstration loss is (1.5 − 5.4)² = 15.21 (also the readout)
+ok   knob: with a reward the direction is estimated from 12 tries
+ok   grid: rewards −0.1 per step, +2, +10, −10 (the engine's own table)
+ok   grid: 2 steps to the small cheese give −0.1 + 0.9 × 2 = 1.70; the big cheese: 10 × 0.9⁹ = 3.87, total 3.26
+ok   grid: shortest ways are 2 and 10 steps; two cells of the long one lie between traps (engine)
+ok   grid legend: the +10 at step 10 counts 10 × 0.9⁹ ≈ 3.9
+ok   grid card: slipping on the bridge: 0.8 ahead, 0.1 to each side, so 20% for a trap
+ok   grid card: γ = 0.9: −0.1 × 6.13 + 10 × 0.387 ≈ 3.26 against 1.70; γ = 0.8: 1.50 against 0.91
+ok   grid card: 1 + γ + γ² + … = 1 ∕ (1 − γ) = 10 at γ = 0.9
+ok   BC card: squared errors (6 − 10)² = 16 and (9 − 10)² = 1
+ok   distribution shift: T = 100, ε = 1%: about 1 extra mistake against about 50 (ε × (T + … + 1) = 50.5 ≈ εT² ∕ 2 = 50)
+ok   race track: 0.3 rad is about 17°; 5 nearest demonstrated positions; 5 laps of demonstrations; 20 test drives
+ok   multimodality: (c − 30)² + (c + 30)² is smallest at c = 0
+ok   drone: 10 demonstrations, chunks of 30 steps, 8 test flights
+ok   preference card: σ(0) = 0.5, σ(1) ≈ 0.73, σ(3) ≈ 0.95, σ(−1) ≈ 0.27
+ok   preference card: e⁻¹ ≈ 0.37, 1 ∕ (1 + 0.37) ≈ 0.73, 1 − 0.73 = 0.27, −log 0.73 ≈ 0.31, −log 0.27 ≈ 1.31
+ok   maximum-entropy IRL: one more point of reward makes a trajectory e ≈ 2.7 times as likely
+ok   values (lead): under the big cheese 10; one cell left −0.1 + 0.9 × 10 = 8.9; one more −0.1 + 0.9 × 8.9 = 7.91 (engine: the same)
+ok   value card: Q*(s, up) = 10 and Q*(s, left) = −0.1 − 0.09 + 0.81 × 10 = 7.91
+ok   Bellman card: slipping on the bridge costs 0.1 × 10 + 0.1 × 10 = 2 points at once; what the optimal policy then does
+ok   Q-learning card: target −0.1 + 0.9 × 8 = 7.1; new Q = 5 + 0.5 × (7.1 − 5) = 6.05; α = 0.5 in the interactive
+ok   grid of step 4 (legend): an episode ends after at most 200 steps; optimistic init sets every Q to 10
+ok   Q-learning card: ε = 0.1 from 0 never reaches the big cheese (5000 episodes); ε = 0.2, 0.3, 0.4: none in 1000 or 5000; optimistic: within ten or so
+ok   darts (lead): μ starts 1.37 from the bull's-eye; σ = 0.3; 8 darts a round; 10 points dead centre
+ok   policy-gradient card: a dart at (−0.7, 0) scores about 5 (μ itself about 2.5); (5 − 2.5) × 0.3 ∕ 0.09 ≈ 8.3; η = 0.03
+ok   shaping card: door +10 discounted 9.23; with shaping 9 + 9.23 = 18.23 against 9 for pacing
+ok   shaping card: "+1 per step closer": 17.88 straight, 53.63 pacing for ever
+ok   corridor (lead): 10 cells, +10 at the door; Φ = minus the cells still to go
+ok   curling (lead): 28 × 0.010 ÷ 0.0115 ≈ 24.3 m, 3.7 m short; house radius 1.83 m; sweeping from 4 m, at most −30%
+ok   curling: the distance is inversely proportional to μ (the interactive's formula v² ∕ (2 g μ) with the speed tuned for 0.010)
+ok   world-model card: 2 cm per second, target 10 cm away: push for 5 seconds
+ok   offline RL: the largest of 5 guesses with errors of typical size 1 averages 1.16 too high
+-- Figures
+ok   8 figures, in steps 3, 3, 3, 4, 5, 6, 7, 8
+ok   fig 1: three numbered steps: train, guess the actions, behaviour cloning
+ok   fig 2: inner loop (reinforcement learning) and outer loop (adjust the reward)
+ok   fig 3: the marked points are σ(−1) = 0.27, σ(0) = 0.5, σ(1) = 0.73, σ(3) = 0.95
+ok   fig 4: old 5, target 7.1, new 6.05; difference 2.1, half of it 1.05
+ok   fig 5: three steps whose shaping rewards cancel in pairs
+ok   fig 6: teacher (privileged information, reinforcement learning), student (sensor history), real robot
+ok   fig 7: three imagined sequences of four states each; the lowest cost is marked; said to be illustrative
+ok   fig 8: five guesses (−0.9, +1.3, +0.4, −0.3, +0.7); the largest, +1.3, is the one picked; the line is at +1.16
+
+100 checks, 0 failed; page errors: 0
